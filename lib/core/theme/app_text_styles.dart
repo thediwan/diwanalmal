@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../constants/app_colors.dart';
+
 /// Typography helpers based on design system.
 abstract final class AppTextStyles {
   static TextStyle get _headingBase => GoogleFonts.almarai(
@@ -34,5 +36,19 @@ abstract final class AppTextStyles {
   static TextStyle label = GoogleFonts.cairo(
     fontSize: 13,
     fontWeight: FontWeight.w500,
+  );
+
+  /// Small captions on white backgrounds (dashboard labels, hints).
+  static TextStyle captionOnLight = bodySmall.copyWith(
+    color: AppColors.textSecondaryLight,
+    fontWeight: FontWeight.w500,
+    fontSize: 12,
+  );
+
+  /// Section labels on white backgrounds.
+  static TextStyle labelOnLight = label.copyWith(
+    color: AppColors.textSecondaryLight,
+    fontWeight: FontWeight.w600,
+    fontSize: 13,
   );
 }

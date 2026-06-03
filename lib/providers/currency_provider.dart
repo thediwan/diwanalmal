@@ -5,9 +5,7 @@ import '../services/currency_service.dart';
 
 /// Exposes currency list and mutations to the UI.
 class CurrencyProvider extends ChangeNotifier {
-  CurrencyProvider(this._currencyService) {
-    loadCurrencies();
-  }
+  CurrencyProvider(this._currencyService);
 
   final CurrencyService _currencyService;
 
@@ -19,11 +17,18 @@ class CurrencyProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Currency? get baseCurrency => _currencyService.getBaseCurrency();
+  Currency? get baseCurrency =>
+      _currencies.where((c) => c.isBase).firstOrNull;
 
-  void loadCurrencies() {
-    _currencies = _currencyService.getAll();
+  Future<void> loadCurrencies() async {
+    _isLoading = true;
     notifyListeners();
+    try {
+      _currencies = await _currencyService.getAll();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<Currency> createBaseCurrency({
@@ -38,7 +43,7 @@ class CurrencyProvider extends ChangeNotifier {
         name: name,
         symbol: symbol,
       );
-      loadCurrencies();
+      await loadCurrencies();
       return currency;
     } catch (e) {
       _error = e.toString();
@@ -62,7 +67,7 @@ class CurrencyProvider extends ChangeNotifier {
         symbol: symbol,
         rateToBase: rateToBase,
       );
-      loadCurrencies();
+      await loadCurrencies();
     } catch (e) {
       _error = e.toString();
       rethrow;
@@ -75,7 +80,7 @@ class CurrencyProvider extends ChangeNotifier {
     _setLoading(true);
     try {
       await _currencyService.updateCurrency(currency);
-      loadCurrencies();
+      await loadCurrencies();
     } finally {
       _setLoading(false);
     }
@@ -85,7 +90,7 @@ class CurrencyProvider extends ChangeNotifier {
     _setLoading(true);
     try {
       await _currencyService.deleteCurrency(id);
-      loadCurrencies();
+      await loadCurrencies();
     } catch (e) {
       _error = e.toString();
       rethrow;
@@ -97,5 +102,13 @@ class CurrencyProvider extends ChangeNotifier {
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+}
+
+extension _FirstOrNull<E> on Iterable<E> {
+  E? get firstOrNull {
+    final iterator = this.iterator;
+    if (iterator.moveNext()) return iterator.current;
+    return null;
   }
 }

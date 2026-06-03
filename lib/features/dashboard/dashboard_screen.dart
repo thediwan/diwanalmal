@@ -3,134 +3,180 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
-import '../../core/constants/app_constants.dart';
-import '../../core/helpers/currency_formatter.dart';
-import '../../core/theme/app_text_styles.dart';
-import '../../core/widgets/empty_state.dart';
-import '../../core/widgets/summary_card.dart';
+import '../../core/extensions/context_l10n.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/currency_provider.dart';
 import '../../providers/wallet_provider.dart';
+import '../../services/dashboard_service.dart';
+import '../../services/lazarus_database_service.dart';
+import 'data/dashboard_currency_balances.dart';
+import 'widgets/dashboard_currency_carousel.dart';
+import 'widgets/dashboard_expense_chart.dart';
+import 'widgets/dashboard_goals_section.dart';
+import 'widgets/dashboard_header.dart';
+import 'widgets/dashboard_monthly_summary.dart';
+import 'widgets/dashboard_recent_transactions.dart';
+import 'widgets/dashboard_section_divider.dart';
+import 'widgets/dashboard_total_balance.dart';
 
-/// Main dashboard — Phase 1 shows balance summary and recent wallets.
-class DashboardScreen extends StatelessWidget {
+/// Main dashboard — layout and colors match client mockup.
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppConstants.appName),
-      ),
-      body: Consumer2<WalletProvider, CurrencyProvider>(
-        builder: (context, walletProvider, currencyProvider, _) {
-          final baseCurrency = currencyProvider.baseCurrency;
-          final baseCode = baseCurrency?.code ?? '---';
-          final totalBalance = walletProvider.totalBalanceInBase;
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              walletProvider.loadWallets();
-              currencyProvider.loadCurrencies();
-            },
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                SummaryCard(
-                  title: 'الرصيد الحالي',
-                  value: CurrencyFormatter.formatWithCode(totalBalance, baseCode),
-                  accentColor: AppColors.primary,
-                  icon: Icons.account_balance_wallet,
-                ),
-                const SizedBox(height: 12),
-                Row(
+class _DashboardScreenState extends State<DashboardScreen> {
+  DashboardSnapshot? _snapshot;
+  String? _error;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDashboard());
+  }
+
+  Future<void> _loadDashboard() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
+    try {
+      final walletProvider = context.read<WalletProvider>();
+      final currencyProvider = context.read<CurrencyProvider>();
+      final l10n = context.l10n;
+      final locale = Localizations.localeOf(context).languageCode;
+
+      await walletProvider.loadWallets();
+      await currencyProvider.loadCurrencies();
+
+      final snapshot = await DashboardService(LazarusDatabaseService.instance)
+          .loadSnapshot(l10n, localeName: locale);
+
+      if (!mounted) return;
+      setState(() {
+        _snapshot = snapshot;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/transactions/add'),
+        elevation: 6,
+        backgroundColor: AppColors.dashboardPrimary,
+        foregroundColor: Colors.white,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, size: 32),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      body: _buildBody(l10n),
+    );
+  }
+
+  Widget _buildBody(AppLocalizations l10n) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _error!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.expense),
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: _loadDashboard,
+                child: const Text('إعادة المحاولة'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final data = _snapshot ?? DashboardSnapshot.empty();
+
+    return Consumer2<WalletProvider, CurrencyProvider>(
+      builder: (context, walletProvider, currencyProvider, _) {
+        final baseCode = currencyProvider.baseCurrency?.code ?? 'USD';
+        final totalBalance = walletProvider.totalBalanceInBase;
+        final currencyBalances = buildDashboardCurrencyBalances(
+          walletProvider: walletProvider,
+          currencyProvider: currencyProvider,
+        );
+
+        return RefreshIndicator(
+          onRefresh: _loadDashboard,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: SummaryCard(
-                        title: 'دخل الشهر',
-                        value: CurrencyFormatter.formatWithCode(0, baseCode),
-                        accentColor: AppColors.success,
-                        icon: Icons.arrow_downward,
+                    const DashboardHeader(),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: DashboardTotalBalance(
+                        label: l10n.dashboardTotalBalance(baseCode),
+                        amount: totalBalance,
+                        currencyCode: baseCode,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: SummaryCard(
-                        title: 'مصروف الشهر',
-                        value: CurrencyFormatter.formatWithCode(0, baseCode),
-                        accentColor: AppColors.expense,
-                        icon: Icons.arrow_upward,
-                      ),
+                    const SizedBox(height: 20),
+                    DashboardCurrencyBalancesRow(
+                      balances: currencyBalances,
+                      baseCode: baseCode,
+                    ),
+                    const DashboardSectionDivider(),
+                    DashboardMonthlySummary(
+                      baseCode: baseCode,
+                      monthlyIncome: data.monthlyIncome,
+                      monthlyExpense: data.monthlyExpense,
+                      debts: data.debts,
+                    ),
+                    const DashboardSectionDivider(),
+                    DashboardGoalsSection(goals: data.goals),
+                    const DashboardSectionDivider(),
+                    DashboardExpenseChart(
+                      dailyPoints: data.dailyChart,
+                      weeklyPoints: data.weeklyChart,
+                    ),
+                    const DashboardSectionDivider(),
+                    DashboardRecentTransactions(
+                      transactions: data.transactions,
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('المحافظ', style: AppTextStyles.headingSmall),
-                    TextButton(
-                      onPressed: () => context.go('/wallets'),
-                      child: const Text('عرض الكل'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                if (walletProvider.wallets.isEmpty)
-                  EmptyState(
-                    message: 'لا توجد محافظ بعد.\nأضف محفظتك الأولى.',
-                    icon: Icons.account_balance_wallet_outlined,
-                    actionLabel: 'إضافة محفظة',
-                    onAction: () => context.push('/wallets/add'),
-                  )
-                else
-                  ...walletProvider.wallets.take(5).map((wallet) {
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: ListTile(
-                        leading: Text(
-                          wallet.icon,
-                          style: const TextStyle(fontSize: 28),
-                        ),
-                        title: Text(wallet.name),
-                        subtitle: Text(wallet.currencyCode),
-                        trailing: Text(
-                          walletProvider.formattedBalance(wallet),
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                const SizedBox(height: 16),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('المرحلة 1', style: AppTextStyles.label),
-                        const SizedBox(height: 4),
-                        Text(
-                          'تم إعداد العملات والمحافظ. المصروفات والإيرادات في المرحلة 2.',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textSecondaryLight,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/wallets/add'),
-        icon: const Icon(Icons.add),
-        label: const Text('محفظة'),
-      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

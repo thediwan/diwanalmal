@@ -93,6 +93,53 @@
   "authWrongSecurityCode": "Incorrect security code",
   "authPasswordChanged": "Password changed successfully",
   "navHome": "Home",
+  "navTransactions": "Transactions",
   "navWallets": "Wallets",
-  "navSettings": "Settings"
+  "navSettings": "Settings",
+  "dashboardMyCurrencies": "My currencies & balances",
+  "dashboardNoCurrencyBalances": "No wallet balances yet",
+  "dashboardTotalBalance": "Total balance ({code})",
+  "@dashboardTotalBalance": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "dashboardApproxBase": "≈ {amount}",
+  "@dashboardApproxBase": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "dashboardMonthlyIncome": "Monthly income",
+  "dashboardMonthlyExpense": "Monthly expenses",
+  "dashboardDebts": "Debts",
+  "dashboardDebtsOwedToOthers": "Owed to others",
+  "dashboardIncomeChange": "+{percent}% ↑",
+  "@dashboardIncomeChange": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "dashboardExpenseChange": "-{percent}% ↓",
+  "@dashboardExpenseChange": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "dashboardFinancialGoals": "Financial goals",
+  "dashboardAddGoal": "Add goal",
+  "dashboardExpenseAnalysis": "Expense analysis",
+  "dashboardLast30Days": "Last 30 days",
+  "dashboardDaily": "Daily",
+  "dashboardWeekly": "Weekly",
+  "dashboardRecentTransactions": "Recent transactions",
+  "dashboardMore": "More",
+  "dashboardToday": "Today",
+  "dashboardYesterday": "Yesterday",
+  "dashboardGoalBuyCar": "Buy a car",
+  "dashboardTxGroceryTitle": "Al-Majd Grocery",
+  "dashboardTxGroceryTime": "Today, 10:30 AM",
+  "dashboardTxSalaryTitle": "Monthly salary",
+  "dashboardTxSalaryTime": "Yesterday, 9:00 AM",
+  "dashboardChartMay1": "May 1",
+  "dashboardChartMay10": "May 10",
+  "dashboardChartMay20": "May 20",
+  "dashboardChartMay30": "May 30",
+  "profileTitle": "Profile",
+  "profileComingSoon": "Profile page is under development",
+  "transactionAddTitle": "Add transaction",
+  "transactionAddComingSoon": "Adding transactions will be available soon",
+  "comingSoon": "Coming soon"
 }

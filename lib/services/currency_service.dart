@@ -1,29 +1,51 @@
+import 'package:drift/drift.dart';
+
 import '../core/helpers/uuid_helper.dart';
+import '../database/lazarus_database.dart';
 import '../models/currency.dart';
 import 'hive_service.dart';
+import 'lazarus_database_service.dart';
 
-/// CRUD operations for currencies.
+/// Currency CRUD backed by Lazarus SQLite.
 class CurrencyService {
-  CurrencyService(this._hiveService);
+  CurrencyService(this._lazarus, this._hiveService);
 
+  final LazarusDatabaseService _lazarus;
   final HiveService _hiveService;
 
-  List<Currency> getAll() {
-    return _hiveService.currenciesBox.values.toList()
-      ..sort((a, b) {
-        if (a.isBase != b.isBase) return a.isBase ? -1 : 1;
-        return a.code.compareTo(b.code);
-      });
+  LazarusDatabase get _db => _lazarus.database;
+
+  Future<List<Currency>> getAll() async {
+    final userId = await _lazarus.getActiveUserId();
+    if (userId == null) return [];
+
+    final rows = await (_db.select(_db.currencies)
+          ..where((c) => c.userId.equals(userId))
+          ..where((c) => c.deletedAt.isNull())
+          ..orderBy([
+            (c) => OrderingTerm.desc(c.isBase),
+            (c) => OrderingTerm.asc(c.code),
+          ]))
+        .get();
+
+    return rows.map(LazarusDatabaseService.toAppCurrency).toList();
   }
 
-  Currency? getById(String id) => _hiveService.currenciesBox.get(id);
-
-  Currency? getByCode(String code) {
-    return getAll().where((c) => c.code == code).firstOrNull;
+  Future<Currency?> getById(String id) async {
+    final row = await (_db.select(_db.currencies)
+          ..where((c) => c.id.equals(id)))
+        .getSingleOrNull();
+    return row == null ? null : LazarusDatabaseService.toAppCurrency(row);
   }
 
-  Currency? getBaseCurrency() {
-    return getAll().where((c) => c.isBase).firstOrNull;
+  Future<Currency?> getByCode(String code) async {
+    final all = await getAll();
+    return all.where((c) => c.code == code).firstOrNull;
+  }
+
+  Future<Currency?> getBaseCurrency() async {
+    final all = await getAll();
+    return all.where((c) => c.isBase).firstOrNull;
   }
 
   /// Creates the base currency during first-time setup.
@@ -32,75 +54,168 @@ class CurrencyService {
     required String name,
     required String symbol,
   }) async {
-    final currency = Currency(
-      id: UuidHelper.generate(),
-      code: code.toUpperCase(),
-      name: name,
-      symbol: symbol,
-      rateToBase: 1.0,
-      isBase: true,
-      createdAt: DateTime.now(),
-    );
+    final userId = await _ensureUserId();
+    final now = DateTime.now();
+    final id = UuidHelper.generate();
 
-    await _hiveService.currenciesBox.put(currency.id, currency);
+    await _db.into(_db.currencies).insert(
+          CurrenciesCompanion.insert(
+            id: id,
+            userId: userId,
+            code: code.toUpperCase(),
+            name: name,
+            symbol: symbol,
+            rateToBase: 1,
+            isBase: const Value(true),
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+
+    await _upsertUserSettings(userId: userId, baseCurrencyId: id, now: now);
 
     final settings = _hiveService.getSettings().copyWith(
           isSetupComplete: true,
-          baseCurrencyCode: currency.code,
+          baseCurrencyCode: code.toUpperCase(),
         );
     await _hiveService.saveSettings(settings);
 
-    return currency;
+    return Currency(
+      id: id,
+      code: code.toUpperCase(),
+      name: name,
+      symbol: symbol,
+      rateToBase: 1,
+      isBase: true,
+      createdAt: now,
+    );
   }
 
-  /// Adds a non-base currency with exchange rate to base.
   Future<Currency> addCurrency({
     required String code,
     required String name,
     required String symbol,
     required double rateToBase,
   }) async {
-    final existing = getByCode(code);
+    final existing = await getByCode(code);
     if (existing != null) {
       throw Exception('العملة موجودة مسبقاً');
     }
 
-    final currency = Currency(
-      id: UuidHelper.generate(),
+    final userId = await _ensureUserId();
+    final now = DateTime.now();
+    final id = UuidHelper.generate();
+
+    await _db.into(_db.currencies).insert(
+          CurrenciesCompanion.insert(
+            id: id,
+            userId: userId,
+            code: code.toUpperCase(),
+            name: name,
+            symbol: symbol,
+            rateToBase: rateToBase,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+
+    return Currency(
+      id: id,
       code: code.toUpperCase(),
       name: name,
       symbol: symbol,
       rateToBase: rateToBase,
       isBase: false,
-      createdAt: DateTime.now(),
+      createdAt: now,
     );
-
-    await _hiveService.currenciesBox.put(currency.id, currency);
-    return currency;
   }
 
   Future<Currency> updateCurrency(Currency currency) async {
-    await _hiveService.currenciesBox.put(currency.id, currency);
+    final now = DateTime.now();
+    await (_db.update(_db.currencies)..where((c) => c.id.equals(currency.id)))
+        .write(
+      CurrenciesCompanion(
+        name: Value(currency.name),
+        symbol: Value(currency.symbol),
+        rateToBase: Value(currency.rateToBase),
+        updatedAt: Value(now),
+      ),
+    );
     return currency;
   }
 
   Future<void> deleteCurrency(String id) async {
-    final currency = getById(id);
+    final currency = await getById(id);
     if (currency == null) return;
 
     if (currency.isBase) {
       throw Exception('لا يمكن حذف العملة الرئيسية');
     }
 
-    final walletsUsingCurrency = _hiveService.walletsBox.values
-        .where((w) => w.currencyCode == currency.code)
-        .toList();
+    final wallets = await (_db.select(_db.wallets)
+          ..where((w) => w.currencyId.equals(id))
+          ..where((w) => w.deletedAt.isNull()))
+        .get();
 
-    if (walletsUsingCurrency.isNotEmpty) {
+    if (wallets.isNotEmpty) {
       throw Exception('العملة مستخدمة في محفظة');
     }
 
-    await _hiveService.currenciesBox.delete(id);
+    await (_db.update(_db.currencies)..where((c) => c.id.equals(id))).write(
+      CurrenciesCompanion(deletedAt: Value(DateTime.now())),
+    );
+  }
+
+  Future<String> _ensureUserId() async {
+    final existing = await _lazarus.getActiveUserId();
+    if (existing != null) return existing;
+
+    final settings = _hiveService.getSettings();
+    final now = DateTime.now();
+    final userId = UuidHelper.generate();
+
+    await _db.into(_db.appUsers).insert(
+          AppUsersCompanion.insert(
+            id: userId,
+            fullName:
+                settings.username.isNotEmpty ? settings.username : 'مستخدم',
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+
+    return userId;
+  }
+
+  Future<void> _upsertUserSettings({
+    required String userId,
+    required String baseCurrencyId,
+    required DateTime now,
+  }) async {
+    final existing = await (_db.select(_db.userSettings)
+          ..where((s) => s.userId.equals(userId)))
+        .getSingleOrNull();
+
+    if (existing == null) {
+      await _db.into(_db.userSettings).insert(
+            UserSettingsCompanion.insert(
+              id: UuidHelper.generate(),
+              userId: userId,
+              baseCurrencyId: baseCurrencyId,
+              createdAt: now,
+              updatedAt: now,
+            ),
+          );
+    } else {
+      await (_db.update(_db.userSettings)
+            ..where((s) => s.id.equals(existing.id)))
+          .write(
+        UserSettingsCompanion(
+          baseCurrencyId: Value(baseCurrencyId),
+          updatedAt: Value(now),
+        ),
+      );
+    }
   }
 }
 

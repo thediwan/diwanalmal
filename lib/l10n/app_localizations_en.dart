@@ -268,8 +268,122 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navHome => 'Home';
 
   @override
+  String get navTransactions => 'Transactions';
+
+  @override
   String get navWallets => 'Wallets';
 
   @override
   String get navSettings => 'Settings';
+
+  @override
+  String get dashboardMyCurrencies => 'My currencies & balances';
+
+  @override
+  String get dashboardNoCurrencyBalances => 'No wallet balances yet';
+
+  @override
+  String dashboardTotalBalance(String code) {
+    return 'Total balance ($code)';
+  }
+
+  @override
+  String dashboardApproxBase(String amount) {
+    return '≈ $amount';
+  }
+
+  @override
+  String get dashboardMonthlyIncome => 'Monthly income';
+
+  @override
+  String get dashboardMonthlyExpense => 'Monthly expenses';
+
+  @override
+  String get dashboardDebts => 'Debts';
+
+  @override
+  String get dashboardDebtsOwedToOthers => 'Owed to others';
+
+  @override
+  String dashboardIncomeChange(int percent) {
+    return '+$percent% ↑';
+  }
+
+  @override
+  String dashboardExpenseChange(int percent) {
+    return '-$percent% ↓';
+  }
+
+  @override
+  String get dashboardFinancialGoals => 'Financial goals';
+
+  @override
+  String get dashboardAddGoal => 'Add goal';
+
+  @override
+  String get dashboardExpenseAnalysis => 'Expense analysis';
+
+  @override
+  String get dashboardLast30Days => 'Last 30 days';
+
+  @override
+  String get dashboardDaily => 'Daily';
+
+  @override
+  String get dashboardWeekly => 'Weekly';
+
+  @override
+  String get dashboardRecentTransactions => 'Recent transactions';
+
+  @override
+  String get dashboardMore => 'More';
+
+  @override
+  String get dashboardToday => 'Today';
+
+  @override
+  String get dashboardYesterday => 'Yesterday';
+
+  @override
+  String get dashboardGoalBuyCar => 'Buy a car';
+
+  @override
+  String get dashboardTxGroceryTitle => 'Al-Majd Grocery';
+
+  @override
+  String get dashboardTxGroceryTime => 'Today, 10:30 AM';
+
+  @override
+  String get dashboardTxSalaryTitle => 'Monthly salary';
+
+  @override
+  String get dashboardTxSalaryTime => 'Yesterday, 9:00 AM';
+
+  @override
+  String get dashboardChartMay1 => 'May 1';
+
+  @override
+  String get dashboardChartMay10 => 'May 10';
+
+  @override
+  String get dashboardChartMay20 => 'May 20';
+
+  @override
+  String get dashboardChartMay30 => 'May 30';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileComingSoon => 'Profile page is under development';
+
+  @override
+  String get transactionAddTitle => 'Add transaction';
+
+  @override
+  String get transactionAddComingSoon =>
+      'Adding transactions will be available soon';
+
+  @override
+  String get comingSoon => 'Coming soon';
 }

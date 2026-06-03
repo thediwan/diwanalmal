@@ -16,6 +16,7 @@ import 'services/auth_service.dart';
 import 'services/biometric_service.dart';
 import 'services/currency_service.dart';
 import 'services/hive_service.dart';
+import 'services/lazarus_database_service.dart';
 import 'services/wallet_balance_service.dart';
 import 'services/wallet_service.dart';
 
@@ -31,11 +32,14 @@ Future<void> main() async {
   final hiveService = HiveService();
   await hiveService.init();
 
+  final lazarusService = await LazarusDatabaseService.initialize(hiveService);
+
   final authService = AuthService(hiveService);
   final biometricService = BiometricService();
-  final currencyService = CurrencyService(hiveService);
-  final walletService = WalletService(hiveService);
-  final walletBalanceService = WalletBalanceService(hiveService, currencyService);
+  final currencyService = CurrencyService(lazarusService, hiveService);
+  final walletService = WalletService(lazarusService);
+  final walletBalanceService =
+      WalletBalanceService(lazarusService, currencyService);
 
   final settingsProvider = SettingsProvider(
     hiveService,
@@ -44,6 +48,11 @@ Future<void> main() async {
   );
   final currencyProvider = CurrencyProvider(currencyService);
   final walletProvider = WalletProvider(walletService, walletBalanceService);
+
+  await Future.wait([
+    walletProvider.loadWallets(),
+    currencyProvider.loadCurrencies(),
+  ]);
 
   final appRouter = AppRouter(settingsProvider);
 

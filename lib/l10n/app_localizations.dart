@@ -596,6 +596,12 @@ abstract class AppLocalizations {
   /// **'الرئيسية'**
   String get navHome;
 
+  /// No description provided for @navTransactions.
+  ///
+  /// In ar, this message translates to:
+  /// **'المعاملات'**
+  String get navTransactions;
+
   /// No description provided for @navWallets.
   ///
   /// In ar, this message translates to:
@@ -607,6 +613,210 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'الإعدادات'**
   String get navSettings;
+
+  /// No description provided for @dashboardMyCurrencies.
+  ///
+  /// In ar, this message translates to:
+  /// **'عملاتي وأرصدة'**
+  String get dashboardMyCurrencies;
+
+  /// No description provided for @dashboardNoCurrencyBalances.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أرصدة في المحافظ بعد'**
+  String get dashboardNoCurrencyBalances;
+
+  /// No description provided for @dashboardTotalBalance.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرصيد الإجمالي ({code})'**
+  String dashboardTotalBalance(String code);
+
+  /// No description provided for @dashboardApproxBase.
+  ///
+  /// In ar, this message translates to:
+  /// **'≈ {amount}'**
+  String dashboardApproxBase(String amount);
+
+  /// No description provided for @dashboardMonthlyIncome.
+  ///
+  /// In ar, this message translates to:
+  /// **'دخل الشهر'**
+  String get dashboardMonthlyIncome;
+
+  /// No description provided for @dashboardMonthlyExpense.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصروف الشهر'**
+  String get dashboardMonthlyExpense;
+
+  /// No description provided for @dashboardDebts.
+  ///
+  /// In ar, this message translates to:
+  /// **'الديون'**
+  String get dashboardDebts;
+
+  /// No description provided for @dashboardDebtsOwedToOthers.
+  ///
+  /// In ar, this message translates to:
+  /// **'علي للآخرين'**
+  String get dashboardDebtsOwedToOthers;
+
+  /// No description provided for @dashboardIncomeChange.
+  ///
+  /// In ar, this message translates to:
+  /// **'+{percent}% ↑'**
+  String dashboardIncomeChange(int percent);
+
+  /// No description provided for @dashboardExpenseChange.
+  ///
+  /// In ar, this message translates to:
+  /// **'-{percent}% ↓'**
+  String dashboardExpenseChange(int percent);
+
+  /// No description provided for @dashboardFinancialGoals.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأهداف المالية'**
+  String get dashboardFinancialGoals;
+
+  /// No description provided for @dashboardAddGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة هدف'**
+  String get dashboardAddGoal;
+
+  /// No description provided for @dashboardExpenseAnalysis.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحليل المصروفات'**
+  String get dashboardExpenseAnalysis;
+
+  /// No description provided for @dashboardLast30Days.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر 30 يوم'**
+  String get dashboardLast30Days;
+
+  /// No description provided for @dashboardDaily.
+  ///
+  /// In ar, this message translates to:
+  /// **'يومي'**
+  String get dashboardDaily;
+
+  /// No description provided for @dashboardWeekly.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسبوعي'**
+  String get dashboardWeekly;
+
+  /// No description provided for @dashboardRecentTransactions.
+  ///
+  /// In ar, this message translates to:
+  /// **'المعاملات الأخيرة'**
+  String get dashboardRecentTransactions;
+
+  /// No description provided for @dashboardMore.
+  ///
+  /// In ar, this message translates to:
+  /// **'المزيد'**
+  String get dashboardMore;
+
+  /// No description provided for @dashboardToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'اليوم'**
+  String get dashboardToday;
+
+  /// No description provided for @dashboardYesterday.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمس'**
+  String get dashboardYesterday;
+
+  /// No description provided for @dashboardGoalBuyCar.
+  ///
+  /// In ar, this message translates to:
+  /// **'شراء سيارة'**
+  String get dashboardGoalBuyCar;
+
+  /// No description provided for @dashboardTxGroceryTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'بقالة المجد'**
+  String get dashboardTxGroceryTitle;
+
+  /// No description provided for @dashboardTxGroceryTime.
+  ///
+  /// In ar, this message translates to:
+  /// **'اليوم، 10:30 ص'**
+  String get dashboardTxGroceryTime;
+
+  /// No description provided for @dashboardTxSalaryTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'راتب الشهر'**
+  String get dashboardTxSalaryTitle;
+
+  /// No description provided for @dashboardTxSalaryTime.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمس، 09:00 ص'**
+  String get dashboardTxSalaryTime;
+
+  /// No description provided for @dashboardChartMay1.
+  ///
+  /// In ar, this message translates to:
+  /// **'1 مايو'**
+  String get dashboardChartMay1;
+
+  /// No description provided for @dashboardChartMay10.
+  ///
+  /// In ar, this message translates to:
+  /// **'10 مايو'**
+  String get dashboardChartMay10;
+
+  /// No description provided for @dashboardChartMay20.
+  ///
+  /// In ar, this message translates to:
+  /// **'20 مايو'**
+  String get dashboardChartMay20;
+
+  /// No description provided for @dashboardChartMay30.
+  ///
+  /// In ar, this message translates to:
+  /// **'30 مايو'**
+  String get dashboardChartMay30;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف الشخصي'**
+  String get profileTitle;
+
+  /// No description provided for @profileComingSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'صفحة الملف الشخصي قيد التطوير'**
+  String get profileComingSoon;
+
+  /// No description provided for @transactionAddTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة معاملة'**
+  String get transactionAddTitle;
+
+  /// No description provided for @transactionAddComingSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة المعاملات ستتوفر قريباً'**
+  String get transactionAddComingSoon;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'قريباً'**
+  String get comingSoon;
 }
 
 class _AppLocalizationsDelegate

@@ -22,4 +22,25 @@ plugins {
     id "org.jetbrains.kotlin.android" version "2.2.20" apply false
 }
 
+// sqlite3_flutter_libs pins AGP 8.7.3 in its buildscript; force a version
+// available from Google Maven that matches this project.
+gradle.beforeProject { project ->
+    project.buildscript {
+        repositories {
+            google()
+            mavenCentral()
+            gradlePluginPortal()
+        }
+        configurations.classpath {
+            resolutionStrategy.eachDependency { details ->
+                if (details.requested.group == "com.android.tools.build"
+                        && details.requested.name == "gradle") {
+                    details.useVersion("8.11.1")
+                    details.because("Align plugin AGP with root project")
+                }
+            }
+        }
+    }
+}
+
 include ":app"

@@ -57,6 +57,24 @@ abstract final class AppTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return AppTextStyles.label.copyWith(
+              color: AppColors.primaryContainer,
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+            );
+          }
+          return AppTextStyles.labelOnLight.copyWith(fontSize: 12);
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: AppColors.primaryContainer);
+          }
+          return const IconThemeData(color: AppColors.textSecondaryLight);
+        }),
+      ),
     );
   }
 

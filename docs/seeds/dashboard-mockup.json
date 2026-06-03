@@ -1,0 +1,193 @@
+{
+  "$schema": "BaytAlmal dashboard mockup seed — import via DatabaseSeedService",
+  "version": "1.0.0",
+  "user": {
+    "id": "seed-user-0001",
+    "full_name": "مستخدم تجريبي",
+    "email": "demo@baytalmal.app",
+    "settings": {
+      "base_currency_code": "USD",
+      "language": "ar",
+      "theme_mode": "system"
+    },
+    "auth_local": {
+      "username": "demo",
+      "password_hash": "local:demo123",
+      "pin_hash": "local:1234"
+    }
+  },
+  "currencies": [
+    {
+      "id": "cur-usd-0001",
+      "code": "USD",
+      "name": "دولار أمريكي",
+      "symbol": "$",
+      "rate_to_base": 1.0,
+      "is_base": true
+    },
+    {
+      "id": "cur-try-0001",
+      "code": "TRY",
+      "name": "الليرة التركية",
+      "symbol": "₺",
+      "rate_to_base": 0.000031,
+      "is_base": false,
+      "target_balance_native": 40320.0,
+      "approx_base": 1250.0
+    },
+    {
+      "id": "cur-syp-0001",
+      "code": "SYP",
+      "name": "الليرة السورية",
+      "symbol": "ل.س",
+      "rate_to_base": 6.67e-8,
+      "is_base": false,
+      "target_balance_native": 18750000.0,
+      "approx_base": 1250.0
+    },
+    {
+      "id": "cur-eur-0001",
+      "code": "EUR",
+      "name": "اليورو",
+      "symbol": "€",
+      "rate_to_base": 1.087,
+      "is_base": false,
+      "target_balance_native": 1150.0,
+      "approx_base": 1250.0
+    }
+  ],
+  "wallets": [
+    {
+      "id": "wal-usd-cash",
+      "currency_id": "cur-usd-0001",
+      "name": "محفظة نقدية",
+      "icon": "💵",
+      "opening_balance": 0
+    },
+    {
+      "id": "wal-try-cash",
+      "currency_id": "cur-try-0001",
+      "name": "محفظة تركيا",
+      "icon": "🇹🇷",
+      "opening_balance": 39840.0
+    },
+    {
+      "id": "wal-syp-cash",
+      "currency_id": "cur-syp-0001",
+      "name": "محفظة سوريا",
+      "icon": "🇸🇾",
+      "opening_balance": 18750000.0
+    },
+    {
+      "id": "wal-eur-cash",
+      "currency_id": "cur-eur-0001",
+      "name": "محفظة يورو",
+      "icon": "🇪🇺",
+      "opening_balance": 1150.0
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-food",
+      "name": "طعام",
+      "type": "expense",
+      "icon": "🛒",
+      "color": "#EA580C"
+    },
+    {
+      "id": "cat-salary",
+      "name": "راتب",
+      "type": "income",
+      "icon": "💰",
+      "color": "#16A34A"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "tx-grocery-01",
+      "wallet_id": "wal-try-cash",
+      "category_id": "cat-food",
+      "type": "expense",
+      "title": "بقالة المجد",
+      "amount": 480.0,
+      "currency_id": "cur-try-0001",
+      "exchange_rate": 0.000031,
+      "base_amount": 15.0,
+      "transaction_date_offset": "-2h",
+      "ui_primary": "USD 15.00-",
+      "ui_secondary": "TRY 480.00"
+    },
+    {
+      "id": "tx-salary-01",
+      "wallet_id": "wal-usd-cash",
+      "category_id": "cat-salary",
+      "type": "income",
+      "title": "راتب الشهر",
+      "amount": 1500.0,
+      "currency_id": "cur-usd-0001",
+      "exchange_rate": 1.0,
+      "base_amount": 1500.0,
+      "transaction_date_offset": "-1d@09:00",
+      "ui_primary": "USD 1,500.00+"
+    },
+    {
+      "id": "tx-misc-expense",
+      "wallet_id": "wal-usd-cash",
+      "category_id": "cat-food",
+      "type": "expense",
+      "title": "مصروف متفرق",
+      "amount": 235.0,
+      "currency_id": "cur-usd-0001",
+      "exchange_rate": 1.0,
+      "base_amount": 235.0,
+      "transaction_date_offset": "month_day_5"
+    }
+  ],
+  "monthly_summary_targets": {
+    "income_base": 1500.0,
+    "expense_base": 250.0,
+    "income_change_percent": 12,
+    "expense_change_percent": 5
+  },
+  "debts": [
+    {
+      "id": "debt-ahmed-01",
+      "person_name": "أحمد",
+      "type": "i_owe",
+      "amount": 100.0,
+      "currency_id": "cur-usd-0001",
+      "exchange_rate": 1.0,
+      "base_amount": 100.0,
+      "payments": [
+        {
+          "amount": 50.0,
+          "base_amount": 50.0,
+          "payment_date_offset": "-3d"
+        }
+      ],
+      "outstanding_base": 50.0,
+      "ui_subtitle_key": "dashboardDebtsOwedToOthers"
+    }
+  ],
+  "goals": [
+    {
+      "id": "goal-car-01",
+      "title": "شراء سيارة",
+      "target_amount": 15000.0,
+      "saved_amount": 3600.0,
+      "currency_id": "cur-usd-0001",
+      "progress_percent": 24,
+      "icon": "car"
+    }
+  ],
+  "chart_expense_seed": [
+    { "month": 5, "day": 1, "base_amount": 40.0 },
+    { "month": 5, "day": 10, "base_amount": 120.0 },
+    { "month": 5, "day": 20, "base_amount": 80.0 },
+    { "month": 5, "day": 30, "base_amount": 60.0 }
+  ],
+  "ui_validation": {
+    "total_balance_base": 1250.0,
+    "tolerance": 0.05
+  }
+}

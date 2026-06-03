@@ -39,11 +39,11 @@ class SummaryCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: isDark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.textSecondaryLight,
-                    ),
+                    style: isDark
+                        ? AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textSecondaryDark,
+                          )
+                        : AppTextStyles.labelOnLight,
                   ),
                 ),
               ],
@@ -57,11 +57,11 @@ class SummaryCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 subtitle!,
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: isDark
-                      ? AppColors.textSecondaryDark
-                      : AppColors.textSecondaryLight,
-                ),
+                style: isDark
+                    ? AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondaryDark,
+                      )
+                    : AppTextStyles.captionOnLight,
               ),
             ],
           ],

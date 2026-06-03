@@ -268,8 +268,121 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navHome => 'الرئيسية';
 
   @override
+  String get navTransactions => 'المعاملات';
+
+  @override
   String get navWallets => 'المحافظ';
 
   @override
   String get navSettings => 'الإعدادات';
+
+  @override
+  String get dashboardMyCurrencies => 'عملاتي وأرصدة';
+
+  @override
+  String get dashboardNoCurrencyBalances => 'لا توجد أرصدة في المحافظ بعد';
+
+  @override
+  String dashboardTotalBalance(String code) {
+    return 'الرصيد الإجمالي ($code)';
+  }
+
+  @override
+  String dashboardApproxBase(String amount) {
+    return '≈ $amount';
+  }
+
+  @override
+  String get dashboardMonthlyIncome => 'دخل الشهر';
+
+  @override
+  String get dashboardMonthlyExpense => 'مصروف الشهر';
+
+  @override
+  String get dashboardDebts => 'الديون';
+
+  @override
+  String get dashboardDebtsOwedToOthers => 'علي للآخرين';
+
+  @override
+  String dashboardIncomeChange(int percent) {
+    return '+$percent% ↑';
+  }
+
+  @override
+  String dashboardExpenseChange(int percent) {
+    return '-$percent% ↓';
+  }
+
+  @override
+  String get dashboardFinancialGoals => 'الأهداف المالية';
+
+  @override
+  String get dashboardAddGoal => 'إضافة هدف';
+
+  @override
+  String get dashboardExpenseAnalysis => 'تحليل المصروفات';
+
+  @override
+  String get dashboardLast30Days => 'آخر 30 يوم';
+
+  @override
+  String get dashboardDaily => 'يومي';
+
+  @override
+  String get dashboardWeekly => 'أسبوعي';
+
+  @override
+  String get dashboardRecentTransactions => 'المعاملات الأخيرة';
+
+  @override
+  String get dashboardMore => 'المزيد';
+
+  @override
+  String get dashboardToday => 'اليوم';
+
+  @override
+  String get dashboardYesterday => 'أمس';
+
+  @override
+  String get dashboardGoalBuyCar => 'شراء سيارة';
+
+  @override
+  String get dashboardTxGroceryTitle => 'بقالة المجد';
+
+  @override
+  String get dashboardTxGroceryTime => 'اليوم، 10:30 ص';
+
+  @override
+  String get dashboardTxSalaryTitle => 'راتب الشهر';
+
+  @override
+  String get dashboardTxSalaryTime => 'أمس، 09:00 ص';
+
+  @override
+  String get dashboardChartMay1 => '1 مايو';
+
+  @override
+  String get dashboardChartMay10 => '10 مايو';
+
+  @override
+  String get dashboardChartMay20 => '20 مايو';
+
+  @override
+  String get dashboardChartMay30 => '30 مايو';
+
+  @override
+  String get profileTitle => 'الملف الشخصي';
+
+  @override
+  String get profileComingSoon => 'صفحة الملف الشخصي قيد التطوير';
+
+  @override
+  String get transactionAddTitle => 'إضافة معاملة';
+
+  @override
+  String get transactionAddComingSoon => 'إضافة المعاملات ستتوفر قريباً';
+
+  @override
+  String get comingSoon => 'قريباً';
 }

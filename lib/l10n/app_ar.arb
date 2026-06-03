@@ -93,6 +93,53 @@
   "authWrongSecurityCode": "رمز الأمان غير صحيح",
   "authPasswordChanged": "تم تغيير كلمة المرور بنجاح",
   "navHome": "الرئيسية",
+  "navTransactions": "المعاملات",
   "navWallets": "المحافظ",
-  "navSettings": "الإعدادات"
+  "navSettings": "الإعدادات",
+  "dashboardMyCurrencies": "عملاتي وأرصدة",
+  "dashboardNoCurrencyBalances": "لا توجد أرصدة في المحافظ بعد",
+  "dashboardTotalBalance": "الرصيد الإجمالي ({code})",
+  "@dashboardTotalBalance": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "dashboardApproxBase": "≈ {amount}",
+  "@dashboardApproxBase": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "dashboardMonthlyIncome": "دخل الشهر",
+  "dashboardMonthlyExpense": "مصروف الشهر",
+  "dashboardDebts": "الديون",
+  "dashboardDebtsOwedToOthers": "علي للآخرين",
+  "dashboardIncomeChange": "+{percent}% ↑",
+  "@dashboardIncomeChange": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "dashboardExpenseChange": "-{percent}% ↓",
+  "@dashboardExpenseChange": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "dashboardFinancialGoals": "الأهداف المالية",
+  "dashboardAddGoal": "إضافة هدف",
+  "dashboardExpenseAnalysis": "تحليل المصروفات",
+  "dashboardLast30Days": "آخر 30 يوم",
+  "dashboardDaily": "يومي",
+  "dashboardWeekly": "أسبوعي",
+  "dashboardRecentTransactions": "المعاملات الأخيرة",
+  "dashboardMore": "المزيد",
+  "dashboardToday": "اليوم",
+  "dashboardYesterday": "أمس",
+  "dashboardGoalBuyCar": "شراء سيارة",
+  "dashboardTxGroceryTitle": "بقالة المجد",
+  "dashboardTxGroceryTime": "اليوم، 10:30 ص",
+  "dashboardTxSalaryTitle": "راتب الشهر",
+  "dashboardTxSalaryTime": "أمس، 09:00 ص",
+  "dashboardChartMay1": "1 مايو",
+  "dashboardChartMay10": "10 مايو",
+  "dashboardChartMay20": "20 مايو",
+  "dashboardChartMay30": "30 مايو",
+  "profileTitle": "الملف الشخصي",
+  "profileComingSoon": "صفحة الملف الشخصي قيد التطوير",
+  "transactionAddTitle": "إضافة معاملة",
+  "transactionAddComingSoon": "إضافة المعاملات ستتوفر قريباً",
+  "comingSoon": "قريباً"
 }

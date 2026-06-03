@@ -13,6 +13,9 @@ import '../features/auth/setup_lock_screen.dart';
 import '../features/auth/start_auth_screen.dart';
 import '../features/auth/unlock_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
+import '../features/profile/profile_placeholder_screen.dart';
+import '../features/transactions/transaction_add_placeholder_screen.dart';
+import '../features/transactions/transactions_list_placeholder_screen.dart';
 import '../features/onboarding/select_base_currency_screen.dart';
 import '../features/settings/currencies/currencies_screen.dart';
 import '../features/settings/currencies/currency_form_screen.dart';
@@ -91,6 +94,14 @@ class AppRouter {
         path: '/onboarding',
         builder: (context, state) => const SelectBaseCurrencyScreen(),
       ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const ProfilePlaceholderScreen(),
+      ),
+      GoRoute(
+        path: '/transactions/add',
+        builder: (context, state) => const TransactionAddPlaceholderScreen(),
+      ),
       ShellRoute(
         builder: (context, state, child) {
           return AppScaffoldShell(
@@ -102,6 +113,11 @@ class AppRouter {
           GoRoute(
             path: '/',
             builder: (context, state) => const DashboardScreen(),
+          ),
+          GoRoute(
+            path: '/transactions',
+            builder: (context, state) =>
+                const TransactionsListPlaceholderScreen(),
           ),
           GoRoute(
             path: '/wallets',

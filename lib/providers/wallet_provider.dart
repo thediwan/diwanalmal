@@ -6,32 +6,45 @@ import '../services/wallet_service.dart';
 
 /// Exposes wallet list, balances, and mutations to the UI.
 class WalletProvider extends ChangeNotifier {
-  WalletProvider(this._walletService, this._balanceService) {
-    loadWallets();
-  }
+  WalletProvider(this._walletService, this._balanceService);
 
   final WalletService _walletService;
   final WalletBalanceService _balanceService;
 
   List<Wallet> _wallets = [];
+  final Map<String, double> _balances = {};
+  double _totalBalanceInBase = 0;
   bool _isLoading = false;
 
   List<Wallet> get wallets => List.unmodifiable(_wallets);
   bool get isLoading => _isLoading;
+  double get totalBalanceInBase => _totalBalanceInBase;
 
-  double get totalBalanceInBase => _balanceService.getTotalBalanceInBase();
-
-  void loadWallets() {
-    _wallets = _walletService.getAll();
+  Future<void> loadWallets() async {
+    _isLoading = true;
     notifyListeners();
+
+    try {
+      _wallets = await _walletService.getAll();
+      _balances.clear();
+
+      for (final wallet in _wallets) {
+        final balance = await _balanceService.getBalanceInWalletCurrency(wallet);
+        _balances[wallet.id] = balance;
+      }
+
+      _totalBalanceInBase = await _balanceService.getTotalBalanceInBase();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
-  double balanceFor(Wallet wallet) {
-    return _balanceService.getBalanceInWalletCurrency(wallet);
-  }
+  double balanceFor(Wallet wallet) => _balances[wallet.id] ?? 0;
 
   String formattedBalance(Wallet wallet) {
-    return _balanceService.formatWalletBalance(wallet, null);
+    final balance = balanceFor(wallet);
+    return _balanceService.formatWalletBalanceSync(wallet, balance);
   }
 
   Future<Wallet> createWallet({
@@ -50,7 +63,7 @@ class WalletProvider extends ChangeNotifier {
         initialBalance: initialBalance,
         icon: icon,
       );
-      loadWallets();
+      await loadWallets();
       return wallet;
     } finally {
       _isLoading = false;
@@ -64,7 +77,7 @@ class WalletProvider extends ChangeNotifier {
 
     try {
       await _walletService.update(wallet);
-      loadWallets();
+      await loadWallets();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -77,7 +90,7 @@ class WalletProvider extends ChangeNotifier {
 
     try {
       await _walletService.delete(id);
-      loadWallets();
+      await loadWallets();
     } finally {
       _isLoading = false;
       notifyListeners();
