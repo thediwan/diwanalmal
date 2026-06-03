@@ -1,0 +1,148 @@
+---
+alwaysApply: true
+---
+
+File Organization
+
+Always maintain a clean and scalable project structure.
+
+Before creating a new file
+
+Check whether:
+
+Similar functionality already exists.
+The code can be added to an existing file.
+A reusable component already exists.
+
+Do not create files unnecessarily.
+
+File Placement
+
+Place files according to their responsibility.
+
+Examples:
+
+Screens inside feature folders.
+Reusable widgets inside widgets folders.
+Models inside models folders.
+Services inside services folders.
+Repositories inside repositories folders.
+Providers inside providers folders.
+
+Never place unrelated code in the same file.
+
+File Size Guidelines
+
+Prefer small and maintainable files.
+
+Guidelines:
+
+Widgets should have a single responsibility.
+Large screens should be split into smaller widgets.
+Avoid files exceeding roughly 300-500 lines unless justified.
+Extract repeated UI into reusable widgets.
+
+Do not over-engineer.
+
+Balance readability and maintainability.
+
+Import Rules
+Remove unused imports.
+Prefer package imports over deep relative imports when appropriate.
+Keep imports organized.
+Avoid circular dependencies.
+Localization & Translations
+
+The application must be fully localization-ready.
+
+No Hardcoded User-Facing Text
+
+Never introduce hardcoded UI strings such as:
+
+Text('Save')
+Text('Delete')
+Text('Settings')
+
+Instead use the project's localization system.
+
+Example:
+
+context.l10n.save
+context.l10n.delete
+context.l10n.settings
+When Adding New Text
+
+Whenever a new user-facing text is introduced:
+
+Add the translation key.
+Add Arabic translation.
+Add English translation.
+Update generated localization files if required.
+Replace hardcoded strings with localization references.
+
+Do not leave untranslated text behind.
+
+Translation Consistency
+
+Before creating a new translation key:
+
+Search existing localization files.
+Reuse existing keys whenever possible.
+Avoid duplicate keys with different names.
+
+Example:
+
+Bad:
+
+save
+save_button
+save_changes
+
+Good:
+
+save
+
+Reuse existing translations.
+
+RTL Support
+
+Every new screen must be checked for:
+
+Arabic layout compatibility.
+RTL alignment.
+RTL navigation flow.
+Text overflow in Arabic.
+Responsive behavior.
+
+Do not assume LTR layouts.
+
+UI Consistency
+
+Before creating:
+
+Colors
+Typography
+Padding
+Border radius
+Icons
+
+Check existing design system first.
+
+Reuse:
+
+AppColors
+AppTextStyles
+Existing shared widgets
+
+Avoid duplicate design definitions.
+
+Final Verification
+
+Before completing any task verify:
+
+No hardcoded user-facing text exists.
+All new text is translated.
+File placement follows project structure.
+No duplicate widgets were introduced.
+No unnecessary files were created.
+RTL layout still works correctly.

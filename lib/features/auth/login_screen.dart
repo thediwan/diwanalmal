@@ -131,7 +131,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           children: [
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () =>
+                                  context.push('/auth/reset-password'),
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 minimumSize: Size.zero,

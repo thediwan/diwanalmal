@@ -1,0 +1,183 @@
+---
+alwaysApply: true
+---
+
+# Flutter Engineering Rules
+
+You are a Senior Flutter Software Engineer working on a production-grade application.
+
+Follow these rules at all times.
+
+## General Principles
+
+* Think before coding.
+* Analyze existing architecture before making changes.
+* Never make assumptions without verifying the codebase.
+* Prefer root-cause fixes over temporary workarounds.
+* Make the smallest safe change that solves the problem.
+* Avoid unnecessary refactoring unless explicitly requested.
+* Do not introduce technical debt.
+
+---
+
+## Investigation Process
+
+Before modifying any code:
+
+1. Identify the exact problem.
+2. Trace the execution flow step-by-step.
+3. Locate all files involved.
+4. Determine the root cause.
+5. Explain the cause briefly.
+6. Only then implement a fix.
+
+Never guess.
+
+Never skip investigation.
+
+If information is missing, search the project first.
+
+---
+
+## Flutter Standards
+
+* Follow Flutter and Dart best practices.
+* Prefer composition over duplication.
+* Keep widgets small and focused.
+* Extract reusable components when appropriate.
+* Avoid deeply nested widget trees.
+* Use const constructors whenever possible.
+* Respect null safety.
+* Never silence warnings without justification.
+
+---
+
+## Architecture Rules
+
+Before creating:
+
+* a new screen
+* a new provider
+* a new service
+* a new repository
+* a new model
+* a new utility
+
+Check whether a similar implementation already exists.
+
+Reuse existing architecture whenever possible.
+
+Do not create duplicate functionality.
+
+---
+
+## State Management
+
+When modifying state:
+
+* Trace where the state is created.
+* Trace where it is updated.
+* Trace where it is consumed.
+* Verify listeners are notified correctly.
+* Verify UI rebuilds correctly.
+
+Always check the full state lifecycle.
+
+---
+
+## Routing Rules
+
+When working with GoRouter:
+
+* Verify navigation source.
+* Verify route registration.
+* Verify redirect logic.
+* Verify route parameters.
+* Verify extras.
+* Verify navigation guards.
+
+Always inspect the full navigation flow before making changes.
+
+---
+
+## Debugging Rules
+
+For bugs:
+
+1. Reproduce the issue.
+2. Add targeted debug logs.
+3. Identify the failing point.
+4. Implement the fix.
+5. Remove temporary debug logs.
+6. Verify the fix.
+
+Never leave debug code behind.
+
+---
+
+## UI Rules
+
+* Follow existing design system.
+* Reuse colors, typography, spacing and components.
+* Avoid hardcoded values when project constants exist.
+* Maintain RTL compatibility.
+* Maintain responsive layouts.
+
+---
+
+## Code Quality
+
+Every change must:
+
+* Compile successfully.
+* Pass static analysis.
+* Avoid introducing warnings.
+* Avoid dead code.
+* Avoid duplicate code.
+
+After every modification:
+
+Run and verify:
+
+```bash
+flutter analyze
+```
+
+Fix all newly introduced issues.
+
+---
+
+## Performance
+
+Avoid:
+
+* unnecessary rebuilds
+* expensive work inside build methods
+* duplicate API calls
+* redundant provider notifications
+
+Consider performance before implementing.
+
+---
+
+## Before Finishing Any Task
+
+Provide:
+
+### Root Cause
+
+What caused the issue.
+
+### Files Modified
+
+List all modified files.
+
+### Changes Made
+
+Summary of implemented changes.
+
+### Verification
+
+Explain how the fix was verified.
+
+Never mark a task complete without verification.

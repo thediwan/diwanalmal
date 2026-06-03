@@ -6,6 +6,7 @@ import '../core/widgets/app_scaffold_shell.dart';
 import '../features/auth/auth_splash_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/register_screen.dart';
+import '../features/auth/reset_password_screen.dart';
 import '../features/auth/security_code_screen.dart';
 import '../features/auth/setup_lock_screen.dart';
 import '../features/auth/start_auth_screen.dart';
@@ -56,6 +57,10 @@ class AppRouter {
       GoRoute(
         path: '/auth/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/auth/reset-password',
+        builder: (context, state) => const ResetPasswordScreen(),
       ),
       GoRoute(
         path: '/auth/register',
@@ -160,7 +165,13 @@ class AppRouter {
     }
 
     if (settings.requiresUnlock) {
-      return location == '/auth/unlock' ? null : '/auth/unlock';
+      const allowedWhileLocked = {
+        '/auth/unlock',
+        '/auth/login',
+        '/auth/reset-password',
+      };
+      if (allowedWhileLocked.contains(location)) return null;
+      return '/auth/unlock';
     }
 
     if (!settings.isSetupComplete) {

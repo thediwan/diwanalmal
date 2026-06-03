@@ -1,0 +1,19 @@
+---
+alwaysApply: true
+---
+
+* Offline-first architecture.
+* Single-user application in Phase 1.
+* Future multi-user support must not be blocked by current decisions.
+* Arabic is the primary language.
+* RTL support is mandatory.
+* Headings use "قمرة" font.
+* Body text uses "Alyamama" font.
+* Follow existing project structure.
+* Do not rename files, folders, routes, providers or models unless explicitly requested.
+* Do not change business logic without explaining why.
+* When fixing a bug, prefer minimal targeted changes.
+* Always inspect related Providers, Services and Routing before modifying UI code.
+* Never generate placeholder implementations.
+* Never leave TODO comments as final solutions.
+* Production-quality code only.

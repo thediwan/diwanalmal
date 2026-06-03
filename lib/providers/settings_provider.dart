@@ -137,6 +137,22 @@ class SettingsProvider extends ChangeNotifier {
     return _authService.validatePin(pin);
   }
 
+  /// Resets password when the stored recovery security code matches.
+  Future<bool> resetPassword({
+    required String securityCode,
+    required String newPassword,
+  }) async {
+    final ok = await _authService.resetPassword(
+      securityCode: securityCode,
+      newPassword: newPassword,
+    );
+    if (ok) {
+      _settings = _hiveService.getSettings();
+      notifyListeners();
+    }
+    return ok;
+  }
+
   Future<bool> authenticateWithBiometric() async {
     if (!biometricEnabled) return false;
     final ok = await _biometricService.authenticate();

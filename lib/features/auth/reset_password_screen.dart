@@ -1,0 +1,466 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_constants.dart';
+import '../../core/theme/app_text_styles.dart';
+import '../../core/widgets/auth_form_card.dart';
+import '../../providers/settings_provider.dart';
+
+/// Resets account password using the offline recovery security code.
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({super.key});
+
+  @override
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+}
+
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _securityCodeController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _securityCodeController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  int get _passwordStrength {
+    final password = _passwordController.text;
+    if (password.isEmpty) return 0;
+
+    var score = 0;
+    if (password.length >= 6) score++;
+    if (password.length >= 8) score++;
+    if (RegExp(r'[A-Za-z]').hasMatch(password)) score++;
+    if (RegExp(r'[0-9]').hasMatch(password)) score++;
+    return score.clamp(0, 4);
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final settings = context.read<SettingsProvider>();
+    if (!settings.hasAccount) {
+      _showMessage('لا يوجد حساب على هذا الجهاز');
+      return;
+    }
+
+    setState(() => _loading = true);
+
+    try {
+      final ok = await settings.resetPassword(
+        securityCode: _securityCodeController.text,
+        newPassword: _passwordController.text,
+      );
+
+      if (!mounted) return;
+
+      if (!ok) {
+        _showMessage('رمز الأمان غير صحيح');
+        return;
+      }
+
+      _showMessage('تم تغيير كلمة المرور بنجاح');
+      context.go('/auth/login');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  void _showMessage(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasAccount = context.watch<SettingsProvider>().hasAccount;
+
+    return Scaffold(
+      body: _ResetPasswordBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => context.pop(),
+                      icon: const Icon(CupertinoIcons.arrow_right),
+                      color: AppColors.textPrimaryLight,
+                    ),
+                    Expanded(
+                      child: Text(
+                        AppConstants.appName,
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.headingSmall.copyWith(
+                          color: AppColors.primaryContainer,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 48),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 88,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryContainer
+                                .withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            CupertinoIcons.lock_rotation,
+                            size: 44,
+                            color: AppColors.primaryContainer,
+                          ),
+                        ),
+                        const SizedBox(height: 22),
+                        Text(
+                          'إعادة تعيين كلمة المرور',
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.headingMedium.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimaryLight,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'أدخل رمز الأمان الذي حفظته عند التسجيل وكلمة المرور الجديدة لتأمين حسابك.',
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textSecondaryLight,
+                            height: 1.55,
+                          ),
+                        ),
+                        if (!hasAccount) ...[
+                          const SizedBox(height: 16),
+                          Text(
+                            'لا يوجد حساب مسجّل على هذا الجهاز.',
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.expense,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 28),
+                        AuthFormCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _labeledField(
+                                label: 'رمز الأمان',
+                                child: TextFormField(
+                                  controller: _securityCodeController,
+                                  enabled: hasAccount,
+                                  textCapitalization:
+                                      TextCapitalization.characters,
+                                  textDirection: TextDirection.ltr,
+                                  textAlign: TextAlign.center,
+                                  maxLength: 6,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'[A-Za-z0-9]'),
+                                    ),
+                                    UpperCaseTextFormatter(),
+                                  ],
+                                  style: AppTextStyles.headingSmall.copyWith(
+                                    color: AppColors.primaryContainer,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 4,
+                                  ),
+                                  decoration: _fieldDecoration(
+                                    suffixIcon: const Icon(
+                                      CupertinoIcons.shield_fill,
+                                      color: AppColors.primaryContainer,
+                                      size: 22,
+                                    ),
+                                  ),
+                                  validator: (v) {
+                                    if (v == null || v.trim().length != 6) {
+                                      return 'أدخل رمز الأمان (6 أحرف)';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              _labeledField(
+                                label: 'كلمة المرور الجديدة',
+                                child: TextFormField(
+                                  controller: _passwordController,
+                                  enabled: hasAccount,
+                                  obscureText: _obscurePassword,
+                                  onChanged: (_) => setState(() {}),
+                                  decoration: _fieldDecoration(
+                                    suffixIcon: IconButton(
+                                      onPressed: () => setState(
+                                        () => _obscurePassword = !_obscurePassword,
+                                      ),
+                                      icon: Icon(
+                                        _obscurePassword
+                                            ? CupertinoIcons.eye
+                                            : CupertinoIcons.eye_slash,
+                                        color: AppColors.textSecondaryLight,
+                                      ),
+                                    ),
+                                    prefixIcon: const Icon(
+                                      CupertinoIcons.lock_fill,
+                                      color: AppColors.textSecondaryLight,
+                                    ),
+                                  ),
+                                  validator: (v) {
+                                    if (v == null || v.length < 6) {
+                                      return 'كلمة المرور قصيرة (6 أحرف على الأقل)';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              _PasswordStrengthBar(strength: _passwordStrength),
+                              const SizedBox(height: 18),
+                              _labeledField(
+                                label: 'تأكيد كلمة المرور الجديدة',
+                                child: TextFormField(
+                                  controller: _confirmPasswordController,
+                                  enabled: hasAccount,
+                                  obscureText: _obscureConfirm,
+                                  decoration: _fieldDecoration(
+                                    suffixIcon: IconButton(
+                                      onPressed: () => setState(
+                                        () => _obscureConfirm = !_obscureConfirm,
+                                      ),
+                                      icon: Icon(
+                                        _obscureConfirm
+                                            ? CupertinoIcons.eye
+                                            : CupertinoIcons.eye_slash,
+                                        color: AppColors.textSecondaryLight,
+                                      ),
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.vpn_key_outlined,
+                                      color: AppColors.textSecondaryLight,
+                                    ),
+                                  ),
+                                  validator: (v) {
+                                    if (v != _passwordController.text) {
+                                      return 'كلمتا المرور غير متطابقتين';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 54,
+                          child: FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.primaryContainer,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            onPressed:
+                                hasAccount && !_loading ? _submit : null,
+                            child: _loading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        CupertinoIcons.arrow_left,
+                                        size: 20,
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'إعادة تعيين كلمة المرور',
+                                        style: AppTextStyles.bodyLarge.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _labeledField({required String label, required Widget child}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            label,
+            style: AppTextStyles.label.copyWith(
+              color: AppColors.textSecondaryLight,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        child,
+      ],
+    );
+  }
+
+  InputDecoration _fieldDecoration({
+    String? hint,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: AppTextStyles.bodyMedium.copyWith(
+        color: AppColors.textSecondaryLight,
+      ),
+      prefixIcon: prefixIcon,
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: const Color(0xFFF8FAFC),
+      counterText: '',
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: AppColors.primaryContainer.withValues(alpha: 0.12),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: AppColors.primaryContainer.withValues(alpha: 0.12),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: AppColors.primaryContainer,
+          width: 1.5,
+        ),
+      ),
+    );
+  }
+}
+
+/// Four-segment password strength indicator.
+class _PasswordStrengthBar extends StatelessWidget {
+  const _PasswordStrengthBar({required this.strength});
+
+  final int strength;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: List.generate(4, (index) {
+        final filled = index < strength;
+        Color color;
+        if (!filled) {
+          color = const Color(0xFFE2E8F0);
+        } else if (strength <= 2) {
+          color = AppColors.warning;
+        } else if (strength == 3) {
+          color = AppColors.primaryContainer;
+        } else {
+          color = AppColors.success;
+        }
+
+        return Expanded(
+          child: Container(
+            height: 4,
+            margin: EdgeInsetsDirectional.only(start: index == 0 ? 0 : 4),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+/// Blue-to-green gradient background for reset password screen.
+class _ResetPasswordBackground extends StatelessWidget {
+  const _ResetPasswordBackground({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFFE8F0FF),
+            Color(0xFFF5FAF7),
+            Color(0xFFEAF8F0),
+          ],
+        ),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// Forces uppercase for security code input.
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}

@@ -61,6 +61,24 @@ class AuthService {
     return _settings.pinCode.isNotEmpty && _settings.pinCode == pin;
   }
 
+  /// Verifies recovery code (case-insensitive) and updates the account password.
+  Future<bool> resetPassword({
+    required String securityCode,
+    required String newPassword,
+  }) async {
+    if (!_settings.hasAccount || _settings.securityCode.isEmpty) {
+      return false;
+    }
+
+    final normalizedInput = securityCode.trim().toUpperCase();
+    final normalizedStored = _settings.securityCode.trim().toUpperCase();
+    if (normalizedInput != normalizedStored) return false;
+
+    final updated = _settings.copyWith(password: newPassword);
+    await _hiveService.saveSettings(updated);
+    return true;
+  }
+
   bool get hasAccount => _settings.hasAccount;
   bool get isSecuritySetupComplete => _settings.isSecuritySetupComplete;
   bool get biometricEnabled => _settings.biometricEnabled;
