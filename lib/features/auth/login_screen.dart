@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/extensions/context_l10n.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
@@ -42,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!settings.validateLogin(username, password)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('بيانات الدخول غير صحيحة')),
+        SnackBar(content: Text(context.l10n.authInvalidCredentials)),
       );
       return;
     }
@@ -67,6 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       body: AuthBackground(
         child: SafeArea(
@@ -84,21 +87,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          'تسجيل الدخول',
+                          l10n.authLoginTitle,
                           style: AppTextStyles.headingSmall.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'أدخل بياناتك للوصول إلى حسابك',
+                          l10n.authLoginSubtitle,
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.textSecondaryLight,
                           ),
                         ),
                         const SizedBox(height: 22),
                         Text(
-                          'البريد الإلكتروني أو الهاتف',
+                          l10n.authEmailOrPhone,
                           style: AppTextStyles.label,
                         ),
                         const SizedBox(height: 8),
@@ -108,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           textDirection: TextDirection.ltr,
                           textAlign: TextAlign.left,
                           decoration: InputDecoration(
-                            hintText: 'example@mail.com',
+                            hintText: l10n.authEmailHint,
                             hintStyle: AppTextStyles.bodyMedium.copyWith(
                               color: AppColors.textSecondaryLight,
                             ),
@@ -124,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           validator: (value) => value == null || value.trim().isEmpty
-                              ? 'الحقل مطلوب'
+                              ? l10n.fieldRequired
                               : null,
                         ),
                         const SizedBox(height: 18),
@@ -139,14 +142,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
                               child: Text(
-                                'نسيت كلمة المرور؟',
+                                l10n.authForgotPassword,
                                 style: AppTextStyles.bodySmall.copyWith(
                                   color: AppColors.primaryContainer,
                                 ),
                               ),
                             ),
                             const Spacer(),
-                            Text('كلمة المرور', style: AppTextStyles.label),
+                            Text(l10n.authPassword, style: AppTextStyles.label),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -175,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           validator: (value) => value == null || value.length < 6
-                              ? 'كلمة المرور غير صالحة'
+                              ? l10n.authInvalidPassword
                               : null,
                         ),
                         const SizedBox(height: 12),
@@ -187,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               onChanged: (v) => setState(() => _remember = v ?? false),
                             ),
                             Text(
-                              'تذكرني على هذا الجهاز',
+                              l10n.authRememberDevice,
                               style: AppTextStyles.bodyMedium,
                             ),
                           ],
@@ -216,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text('دخول', style: AppTextStyles.bodyLarge),
+                                      Text(l10n.login, style: AppTextStyles.bodyLarge),
                                       const SizedBox(width: 8),
                                       const Icon(CupertinoIcons.arrow_left, size: 20),
                                     ],
@@ -237,9 +240,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: AppColors.textSecondaryLight,
                       ),
                       children: [
-                        const TextSpan(text: 'ليس لديك حساب؟ '),
+                        TextSpan(text: l10n.authNoAccount),
                         TextSpan(
-                          text: 'أنشئ حساباً جديداً',
+                          text: l10n.authCreateAccountLink,
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.primaryContainer,
                             fontWeight: FontWeight.w600,

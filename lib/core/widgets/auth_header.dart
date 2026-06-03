@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../extensions/context_l10n.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_text_styles.dart';
@@ -51,7 +52,7 @@ class AuthHeader extends StatelessWidget {
         if (showTagline) ...[
           const SizedBox(height: 6),
           Text(
-            tagline ?? 'مستقبلك المالي، بمعايير أخلاقية',
+            tagline ?? context.l10n.appTagline,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.textSecondaryLight,

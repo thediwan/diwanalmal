@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'core/constants/app_constants.dart';
 import 'core/theme/app_theme.dart';
+import 'l10n/app_localizations.dart';
 import 'core/widgets/app_lifecycle_observer.dart';
 import 'providers/currency_provider.dart';
 import 'providers/settings_provider.dart';
@@ -79,8 +80,9 @@ class BaytAlmalApp extends StatelessWidget {
         darkTheme: AppTheme.dark(),
         themeMode: themeMode,
         locale: const Locale('ar'),
-        supportedLocales: const [Locale('ar'), Locale('en')],
+        supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: const [
+          AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,

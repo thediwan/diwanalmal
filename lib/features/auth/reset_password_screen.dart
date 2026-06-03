@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/extensions/context_l10n.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -53,7 +54,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     final settings = context.read<SettingsProvider>();
     if (!settings.hasAccount) {
-      _showMessage('لا يوجد حساب على هذا الجهاز');
+      _showMessage(context.l10n.authNoAccountOnDevice);
       return;
     }
 
@@ -68,11 +69,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       if (!mounted) return;
 
       if (!ok) {
-        _showMessage('رمز الأمان غير صحيح');
+        _showMessage(context.l10n.authWrongSecurityCode);
         return;
       }
 
-      _showMessage('تم تغيير كلمة المرور بنجاح');
+      _showMessage(context.l10n.authPasswordChanged);
       context.go('/auth/login');
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -85,6 +86,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final hasAccount = context.watch<SettingsProvider>().hasAccount;
 
     return Scaffold(
@@ -138,7 +140,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         ),
                         const SizedBox(height: 22),
                         Text(
-                          'إعادة تعيين كلمة المرور',
+                          l10n.authResetPassword,
                           textAlign: TextAlign.center,
                           style: AppTextStyles.headingMedium.copyWith(
                             fontWeight: FontWeight.w800,
@@ -147,7 +149,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'أدخل رمز الأمان الذي حفظته عند التسجيل وكلمة المرور الجديدة لتأمين حسابك.',
+                          l10n.authResetPasswordDesc,
                           textAlign: TextAlign.center,
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.textSecondaryLight,
@@ -157,7 +159,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         if (!hasAccount) ...[
                           const SizedBox(height: 16),
                           Text(
-                            'لا يوجد حساب مسجّل على هذا الجهاز.',
+                            l10n.authNoLocalAccount,
                             textAlign: TextAlign.center,
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.expense,
@@ -170,7 +172,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               _labeledField(
-                                label: 'رمز الأمان',
+                                label: l10n.authSecurityCode,
                                 child: TextFormField(
                                   controller: _securityCodeController,
                                   enabled: hasAccount,
@@ -199,7 +201,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   ),
                                   validator: (v) {
                                     if (v == null || v.trim().length != 6) {
-                                      return 'أدخل رمز الأمان (6 أحرف)';
+                                      return l10n.authSecurityCodeInvalid;
                                     }
                                     return null;
                                   },
@@ -207,7 +209,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               ),
                               const SizedBox(height: 18),
                               _labeledField(
-                                label: 'كلمة المرور الجديدة',
+                                label: l10n.authNewPassword,
                                 child: TextFormField(
                                   controller: _passwordController,
                                   enabled: hasAccount,
@@ -232,7 +234,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   ),
                                   validator: (v) {
                                     if (v == null || v.length < 6) {
-                                      return 'كلمة المرور قصيرة (6 أحرف على الأقل)';
+                                      return l10n.authNewPasswordShort;
                                     }
                                     return null;
                                   },
@@ -242,7 +244,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               _PasswordStrengthBar(strength: _passwordStrength),
                               const SizedBox(height: 18),
                               _labeledField(
-                                label: 'تأكيد كلمة المرور الجديدة',
+                                label: l10n.authConfirmNewPassword,
                                 child: TextFormField(
                                   controller: _confirmPasswordController,
                                   enabled: hasAccount,
@@ -266,7 +268,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   ),
                                   validator: (v) {
                                     if (v != _passwordController.text) {
-                                      return 'كلمتا المرور غير متطابقتين';
+                                      return l10n.authPasswordMismatch;
                                     }
                                     return null;
                                   },
@@ -308,7 +310,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'إعادة تعيين كلمة المرور',
+                                        l10n.authResetPassword,
                                         style: AppTextStyles.bodyLarge.copyWith(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,

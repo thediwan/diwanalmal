@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/extensions/context_l10n.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -50,13 +51,14 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذر التحقق بالبصمة، استخدم PIN')),
+        SnackBar(content: Text(context.l10n.authBiometricFailed)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final settings = context.watch<SettingsProvider>();
     final hasAccount = settings.hasAccount;
 
@@ -110,7 +112,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                       ),
                       const SizedBox(height: 22),
                       Text(
-                        hasAccount ? 'مرحباً بك مجدداً' : 'مرحباً بك',
+                        hasAccount ? l10n.authWelcomeBack : l10n.authWelcome,
                         style: AppTextStyles.headingMedium.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
@@ -118,8 +120,8 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                       const SizedBox(height: 10),
                       Text(
                         hasAccount
-                            ? 'يرجى تأكيد الهوية للمتابعة إلى حسابك في ${AppConstants.appName}'
-                            : 'سجّل حساباً جديداً أو سجّل الدخول للمتابعة',
+                            ? l10n.authStartWithAccount(AppConstants.appName)
+                            : l10n.authStartNoAccount,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.bodyLarge.copyWith(
                           color: AppColors.textSecondaryLight,
@@ -149,7 +151,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                                 )
                               : const Icon(CupertinoIcons.person_crop_circle),
                           label: Text(
-                            hasAccount ? 'بدء المصادقة' : 'إنشاء حساب',
+                            hasAccount ? l10n.authStartBiometric : l10n.authCreateAccount,
                             style: AppTextStyles.bodyLarge,
                           ),
                         ),
@@ -177,7 +179,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                           },
                           icon: const Icon(CupertinoIcons.lock),
                           label: Text(
-                            hasAccount ? 'استخدام رمز PIN' : 'استخدام كلمة المرور',
+                            hasAccount ? l10n.authUsePin : l10n.authUsePassword,
                             style: AppTextStyles.bodyLarge,
                           ),
                         ),
@@ -187,7 +189,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                         TextButton(
                           onPressed: () => context.go('/auth/register'),
                           child: Text(
-                            'إنشاء حساب جديد',
+                            l10n.authCreateAccountNew,
                             style: AppTextStyles.bodyMedium.copyWith(
                               color: AppColors.primaryContainer,
                               fontWeight: FontWeight.w600,
@@ -215,7 +217,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'تشفير وحماية بمواصفات مصرفية',
+                        l10n.authBankGradeSecurity,
                         style: AppTextStyles.bodySmall.copyWith(
                           color: AppColors.success,
                           fontWeight: FontWeight.w600,
@@ -226,7 +228,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  '© ٢٠٢٤ بيت المال للخدمات المالية. جميع الحقوق محفوظة.',
+                  l10n.authCopyright,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.textSecondaryLight,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/extensions/context_l10n.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -52,7 +53,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
     }
 
     setState(() {
-      _error = 'رمز PIN غير صحيح';
+      _error = context.l10n.authPinInvalid;
       _pin = '';
     });
   }
@@ -67,7 +68,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
     if (ok) {
       _goNext();
     } else {
-      setState(() => _error = 'فشلت المصادقة البيومترية');
+      setState(() => _error = context.l10n.authBiometricSetupFailed);
     }
   }
 
@@ -84,6 +85,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final settings = context.watch<SettingsProvider>();
 
     return Scaffold(
@@ -104,7 +106,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'أدخل رمز PIN أو استخدم البصمة',
+                  l10n.authUnlockSubtitle,
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondaryLight,
                   ),
@@ -137,7 +139,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
                       onPressed: _loading ? null : _tryBiometric,
                       icon: const Icon(CupertinoIcons.hand_raised),
                       label: Text(
-                        'استخدام البصمة',
+                        l10n.authUseBiometric,
                         style: AppTextStyles.bodyLarge.copyWith(
                           color: AppColors.primaryContainer,
                         ),

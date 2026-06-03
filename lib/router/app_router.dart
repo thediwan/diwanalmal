@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/extensions/context_l10n.dart';
 import '../core/widgets/app_scaffold_shell.dart';
 import '../features/auth/auth_splash_screen.dart';
 import '../features/auth/login_screen.dart';
@@ -37,7 +38,7 @@ class AppRouter {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              state.error?.toString() ?? 'تعذر فتح هذه الشاشة',
+              state.error?.toString() ?? context.l10n.routeError,
               textAlign: TextAlign.center,
             ),
           ),

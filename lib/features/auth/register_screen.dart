@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/extensions/context_l10n.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
@@ -39,7 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (!_acceptedTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يجب الموافقة على الشروط والأحكام')),
+        SnackBar(content: Text(context.l10n.authTermsRequired)),
       );
       return;
     }
@@ -61,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('حدث خطأ: $e')),
+          SnackBar(content: Text(context.l10n.errorGenericWithDetail('$e'))),
         );
         setState(() => _loading = false);
       }
@@ -70,6 +71,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       body: AuthBackground(
         child: SafeArea(
@@ -82,20 +85,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const AuthHeader(
-                        tagline: 'ننمو معك بذكاء وأمان',
-                      ),
+                      AuthHeader(tagline: l10n.authRegisterTagline),
                       const SizedBox(height: 28),
-                      _fieldLabel('اسم المستخدم'),
+                      _fieldLabel(l10n.authUsername),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _usernameController,
-                        decoration: _inputDecoration('أدخل اسمك الكامل'),
+                        decoration: _inputDecoration(l10n.authUsernameHint),
                         validator: (v) =>
-                            v == null || v.trim().isEmpty ? 'الاسم مطلوب' : null,
+                            v == null || v.trim().isEmpty ? l10n.authNameRequired : null,
                       ),
                       const SizedBox(height: 18),
-                      _fieldLabel('كلمة المرور'),
+                      _fieldLabel(l10n.authPassword),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _passwordController,
@@ -113,13 +114,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: (v) {
                           if (v == null || v.length < 6) {
-                            return 'كلمة المرور قصيرة جداً';
+                            return l10n.authPasswordShort;
                           }
                           return null;
                         },
                       ),
                       const SizedBox(height: 18),
-                      _fieldLabel('تأكيد كلمة المرور'),
+                      _fieldLabel(l10n.authConfirmPassword),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _confirmPasswordController,
@@ -137,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: (v) {
                           if (v != _passwordController.text) {
-                            return 'كلمتا المرور غير متطابقتين';
+                            return l10n.authPasswordMismatch;
                           }
                           return null;
                         },
@@ -161,19 +162,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     color: AppColors.textSecondaryLight,
                                   ),
                                   children: [
-                                    const TextSpan(
-                                      text: 'بإنشاء حساب، أنت توافق على ',
+                                    TextSpan(
+                                      text: l10n.authTermsPrefix,
                                     ),
                                     TextSpan(
-                                      text: 'الشروط والأحكام',
+                                      text: l10n.authTerms,
                                       style: AppTextStyles.bodySmall.copyWith(
                                         color: AppColors.primaryContainer,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                    const TextSpan(text: ' و '),
+                                    TextSpan(text: l10n.authTermsAnd),
                                     TextSpan(
-                                      text: 'سياسة الخصوصية',
+                                      text: l10n.authPrivacy,
                                       style: AppTextStyles.bodySmall.copyWith(
                                         color: AppColors.primaryContainer,
                                         fontWeight: FontWeight.w600,
@@ -211,7 +212,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text('إنشاء حساب', style: AppTextStyles.bodyLarge),
+                                    Text(l10n.authCreateAccount, style: AppTextStyles.bodyLarge),
                                     const SizedBox(width: 8),
                                     const Icon(CupertinoIcons.arrow_right, size: 20),
                                   ],
@@ -228,9 +229,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 color: AppColors.textSecondaryLight,
                               ),
                               children: [
-                                const TextSpan(text: 'لديك حساب بالفعل؟ '),
+                                TextSpan(text: l10n.authHasAccount),
                                 TextSpan(
-                                  text: 'تسجيل الدخول',
+                                  text: l10n.login,
                                   style: AppTextStyles.bodyMedium.copyWith(
                                     color: AppColors.primaryContainer,
                                     fontWeight: FontWeight.w600,

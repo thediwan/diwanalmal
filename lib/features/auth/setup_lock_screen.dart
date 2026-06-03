@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/extensions/context_l10n.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -54,11 +55,11 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
         _error = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم إعداد البصمة بنجاح')),
+        SnackBar(content: Text(context.l10n.authFingerprintSuccess)),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذر إعداد البصمة')),
+        SnackBar(content: Text(context.l10n.authFingerprintError)),
       );
     }
   }
@@ -95,8 +96,10 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
   }
 
   Future<void> _savePin() async {
+    final l10n = context.l10n;
+
     if (_pin.length < 4) {
-      setState(() => _error = 'أدخل 4 أرقام');
+      setState(() => _error = l10n.authPinMinDigits);
       return;
     }
 
@@ -107,7 +110,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
 
     if (_pin != _confirmPin) {
       setState(() {
-        _error = 'رمز PIN غير متطابق';
+        _error = l10n.authPinMismatch;
         _pin = '';
         _confirmPin = '';
         _isConfirmStep = false;
@@ -130,7 +133,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
       if (code.isEmpty) {
         setState(() {
           _saving = false;
-          _error = 'تعذر إنشاء رمز الأمان';
+          _error = l10n.authSecurityCodeFailed;
         });
         return;
       }
@@ -143,7 +146,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
       if (mounted) {
         setState(() {
           _saving = false;
-          _error = 'حدث خطأ، حاول مرة أخرى';
+          _error = l10n.errorGeneric;
         });
       }
     }
@@ -151,6 +154,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final pinLength = _isConfirmStep ? _confirmPin.length : _pin.length;
 
     return Scaffold(
@@ -213,14 +217,14 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'بصمة الإصبع',
+                                l10n.authFingerprint,
                                 style: AppTextStyles.headingSmall.copyWith(
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'استخدم المقاييس الحيوية لتسجيل الدخول الفوري والمؤمّن',
+                                l10n.authFingerprintDesc,
                                 textAlign: TextAlign.center,
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   color: AppColors.textSecondaryLight,
@@ -243,8 +247,8 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                                       _checkingBiometric ? null : _setupBiometric,
                                   child: Text(
                                     _biometricEnabled
-                                        ? 'تم إعداد البصمة ✓'
-                                        : 'إعداد البصمة',
+                                        ? l10n.authFingerprintDone
+                                        : l10n.authSetupFingerprint,
                                     style: AppTextStyles.bodyMedium,
                                   ),
                                 ),
@@ -261,8 +265,8 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                             const SizedBox(height: 16),
                             Text(
                               _isConfirmStep
-                                  ? 'أعد إدخال رمز PIN'
-                                  : 'رمز PIN الشخصي',
+                                  ? l10n.authPinReenter
+                                  : l10n.authPinPersonal,
                               style: AppTextStyles.headingSmall.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
@@ -270,8 +274,8 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                             const SizedBox(height: 8),
                             Text(
                               _isConfirmStep
-                                  ? 'تأكيد الرمز للمتابعة'
-                                  : 'أدخل 4 أرقام لتأمين عملياتك المالية',
+                                  ? l10n.authPinConfirmHint
+                                  : l10n.authPinEnterHint,
                               textAlign: TextAlign.center,
                               style: AppTextStyles.bodyMedium.copyWith(
                                 color: AppColors.textSecondaryLight,
@@ -324,7 +328,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                                         ),
                                       )
                                     : Text(
-                                        'حفظ الرمز',
+                                        l10n.authSavePin,
                                         style: AppTextStyles.bodyLarge.copyWith(
                                           fontWeight: FontWeight.w600,
                                         ),

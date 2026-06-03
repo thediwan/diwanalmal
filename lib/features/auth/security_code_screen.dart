@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/extensions/context_l10n.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_form_card.dart';
@@ -18,6 +19,8 @@ class SecurityCodeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     if (securityCode.isEmpty) {
       return Scaffold(
         body: SplitAuthBackground(
@@ -26,7 +29,7 @@ class SecurityCodeScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  'تعذر تحميل رمز الأمان. أعد تشغيل التطبيق أو سجّل حساباً جديداً.',
+                  l10n.authSecurityCodeLoadError,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondaryLight,
@@ -75,7 +78,7 @@ class SecurityCodeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 22),
                 Text(
-                  'تم إنشاء الحساب بنجاح!',
+                  l10n.authAccountCreated,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.headingMedium.copyWith(
                     fontWeight: FontWeight.w800,
@@ -85,7 +88,7 @@ class SecurityCodeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'احفظ رمز الأمان هذا لاستخدامه في استعادة كلمة المرور في حال فقدانها.',
+                  l10n.authSecurityCodeHint,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondaryLight,
@@ -102,7 +105,7 @@ class SecurityCodeScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        'رمز الأمان الخاص بك',
+                        l10n.authYourSecurityCode,
                         style: AppTextStyles.bodyLarge.copyWith(
                           color: AppColors.primaryContainer,
                           fontWeight: FontWeight.w700,
@@ -183,7 +186,7 @@ class SecurityCodeScreen extends StatelessWidget {
                             ClipboardData(text: securityCode),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('تم نسخ الرمز')),
+                            SnackBar(content: Text(l10n.authCodeCopied)),
                           );
                         },
                         icon: const Icon(
@@ -192,7 +195,7 @@ class SecurityCodeScreen extends StatelessWidget {
                           color: AppColors.textSecondaryLight,
                         ),
                         label: Text(
-                          'نسخ الرمز',
+                          l10n.authCopyCode,
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.textSecondaryLight,
                             fontWeight: FontWeight.w500,
@@ -227,7 +230,7 @@ class SecurityCodeScreen extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'تحذير: لا تشارك هذا الرمز مع أي شخص. موظفو بيت المال لن يطلبوا منك هذا الرمز أبداً.',
+                          l10n.authSecurityWarning,
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.expense,
                             height: 1.55,
@@ -262,7 +265,7 @@ class SecurityCodeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'التالي',
+                          l10n.next,
                           style: AppTextStyles.bodyLarge.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -280,7 +283,7 @@ class SecurityCodeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  'سيتم توجيهك لاختيار العملة الرئيسية',
+                  l10n.authGoToCurrency,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.textSecondaryLight,
