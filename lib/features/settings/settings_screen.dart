@@ -57,6 +57,16 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.lock_outline),
+            title: const Text('قفل التطبيق'),
+            subtitle: const Text('يتطلب PIN أو البصمة للدخول مجدداً'),
+            onTap: () {
+              settings.lockSession();
+              context.go('/auth/unlock');
+            },
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.backup_outlined),
             title: const Text('النسخ الاحتياطي'),
             subtitle: const Text('متاح في المرحلة 8'),

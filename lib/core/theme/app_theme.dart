@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import '../constants/app_colors.dart';
 import 'app_text_styles.dart';
 
@@ -14,6 +12,9 @@ abstract final class AppTheme {
         seedColor: AppColors.primary,
         brightness: Brightness.light,
         primary: AppColors.primary,
+        surface: AppColors.backgroundLight,
+        secondary: AppColors.success,
+        error: AppColors.expense,
       ),
       scaffoldBackgroundColor: AppColors.backgroundLight,
       textTheme: _textTheme(Brightness.light),
@@ -27,7 +28,7 @@ abstract final class AppTheme {
           color: AppColors.textPrimaryLight,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         color: AppColors.surfaceLight,
         shape: RoundedRectangleBorder(
@@ -80,7 +81,7 @@ abstract final class AppTheme {
           color: AppColors.textPrimaryDark,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         color: AppColors.surfaceDark,
         shape: RoundedRectangleBorder(
@@ -113,7 +114,7 @@ abstract final class AppTheme {
   }
 
   static TextTheme _textTheme(Brightness brightness) {
-    final base = GoogleFonts.getTextTheme('Alyamama');
+    final base = ThemeData(brightness: brightness).textTheme;
     final primaryColor = brightness == Brightness.light
         ? AppColors.textPrimaryLight
         : AppColors.textPrimaryDark;

@@ -1,20 +1,64 @@
 import 'package:flutter/material.dart';
 
 import '../models/app_settings.dart';
+import '../services/auth_service.dart';
+import '../services/biometric_service.dart';
 import '../services/hive_service.dart';
 
-/// Manages app settings including setup state and theme mode.
+/// Manages app settings, registration, and session lock state.
 class SettingsProvider extends ChangeNotifier {
-  SettingsProvider(this._hiveService) {
+  SettingsProvider(
+    this._hiveService,
+    this._authService,
+    this._biometricService,
+  ) {
     _settings = _hiveService.getSettings();
+    _syncMustShowSecurityCode();
+  }
+
+  void _syncMustShowSecurityCode() {
+    _mustShowSecurityCode = _settings.isSecuritySetupComplete &&
+        !_settings.securityCodeAcknowledged &&
+        _settings.securityCode.isNotEmpty;
   }
 
   final HiveService _hiveService;
+  final AuthService _authService;
+  final BiometricService _biometricService;
+
   late AppSettings _settings;
+  bool _isSessionUnlocked = false;
+
+  /// In-memory until user taps Next on the security code screen.
+  bool _mustShowSecurityCode = false;
+
+  /// Code shown on security screen (survives redirect without [GoRouter] extra).
+  String _displaySecurityCode = '';
 
   bool get isSetupComplete => _settings.isSetupComplete;
   String get baseCurrencyCode => _settings.baseCurrencyCode;
   ThemeMode get themeMode => _settings.themeMode;
+  bool get hasAccount => _settings.hasAccount;
+  bool get isSecuritySetupComplete => _settings.isSecuritySetupComplete;
+  bool get biometricEnabled => _settings.biometricEnabled;
+  String get securityCode => _settings.securityCode;
+
+  /// Best available code for the security screen (memory, then Hive).
+  String get displaySecurityCode =>
+      _displaySecurityCode.isNotEmpty ? _displaySecurityCode : securityCode;
+
+  bool get isSessionUnlocked => _isSessionUnlocked;
+
+  /// User must view the recovery security code before onboarding.
+  bool get needsSecurityCodeScreen =>
+      _mustShowSecurityCode ||
+      (isSecuritySetupComplete &&
+          !_settings.securityCodeAcknowledged &&
+          securityCode.isNotEmpty);
+
+  /// App requires PIN or biometric before entering main flow.
+  bool get requiresUnlock =>
+      hasAccount && isSecuritySetupComplete && !_isSessionUnlocked;
 
   Future<void> refresh() async {
     _settings = _hiveService.getSettings();
@@ -33,6 +77,99 @@ class SettingsProvider extends ChangeNotifier {
       baseCurrencyCode: baseCurrencyCode,
     );
     await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> registerAccount({
+    required String username,
+    required String password,
+  }) async {
+    await _authService.register(
+      username: username,
+      password: password,
+      securityCode: '',
+    );
+    _settings = _hiveService.getSettings();
+    _mustShowSecurityCode = false;
+    _displaySecurityCode = '';
+    _isSessionUnlocked = false;
+  }
+
+  /// Reloads settings from storage and notifies listeners (e.g. after navigation).
+  void reloadFromStorage() {
+    _settings = _hiveService.getSettings();
+    _syncMustShowSecurityCode();
+    notifyListeners();
+  }
+
+  /// Saves PIN/biometric, generates recovery code, unlocks session for code screen.
+  Future<String> completeSecuritySetup({
+    required String pinCode,
+    required bool enableBiometric,
+  }) async {
+    final code = await _authService.completeSecuritySetup(
+      pinCode: pinCode,
+      biometricEnabled: enableBiometric,
+    );
+    _settings = _hiveService.getSettings();
+    _isSessionUnlocked = true;
+    _mustShowSecurityCode = true;
+    _displaySecurityCode = code;
+    // Do NOT notifyListeners here — triggers GoRouter redirect while
+    // SetupLockScreen navigates and causes a permanent white screen.
+    return code;
+  }
+
+  /// Called after user views and acknowledges the security recovery code.
+  Future<void> acknowledgeSecurityCode() async {
+    _mustShowSecurityCode = false;
+    _displaySecurityCode = '';
+    _settings = _settings.copyWith(securityCodeAcknowledged: true);
+    await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  bool validateLogin(String username, String password) {
+    return _authService.validateLogin(username, password);
+  }
+
+  bool validatePin(String pin) {
+    return _authService.validatePin(pin);
+  }
+
+  Future<bool> authenticateWithBiometric() async {
+    if (!biometricEnabled) return false;
+    final ok = await _biometricService.authenticate();
+    if (ok) {
+      _isSessionUnlocked = true;
+      notifyListeners();
+    }
+    return ok;
+  }
+
+  Future<bool> canUseBiometric() => _biometricService.canCheckBiometrics();
+
+  /// Prompts biometric during initial setup (before it is saved as enabled).
+  Future<bool> promptBiometricSetup() {
+    return _biometricService.authenticate(
+      reason: 'إعداد البصمة لتسجيل الدخول',
+    );
+  }
+
+  void unlockSession() {
+    _isSessionUnlocked = true;
+    notifyListeners();
+  }
+
+  void lockSession() {
+    if (!hasAccount || !isSecuritySetupComplete) return;
+    if (needsSecurityCodeScreen) return;
+    _isSessionUnlocked = false;
+    notifyListeners();
+  }
+
+  void logout() {
+    _isSessionUnlocked = false;
     notifyListeners();
   }
 }

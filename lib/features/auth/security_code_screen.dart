@@ -1,0 +1,297 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../../core/constants/app_colors.dart';
+import '../../core/theme/app_text_styles.dart';
+import '../../core/widgets/auth_form_card.dart';
+import '../../core/widgets/split_auth_background.dart';
+import '../../providers/settings_provider.dart';
+
+/// Shows recovery security code after PIN and biometric setup.
+class SecurityCodeScreen extends StatelessWidget {
+  const SecurityCodeScreen({super.key, required this.securityCode});
+
+  final String securityCode;
+
+  @override
+  Widget build(BuildContext context) {
+    if (securityCode.isEmpty) {
+      return Scaffold(
+        body: SplitAuthBackground(
+          child: SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'تعذر تحميل رمز الأمان. أعد تشغيل التطبيق أو سجّل حساباً جديداً.',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondaryLight,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final chars = securityCode.split('');
+
+    return Scaffold(
+      body: SplitAuthBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.success.withValues(alpha: 0.4),
+                        blurRadius: 24,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    decoration: const BoxDecoration(
+                      color: AppColors.success,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      CupertinoIcons.check_mark,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 22),
+                Text(
+                  'تم إنشاء الحساب بنجاح!',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.headingMedium.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimaryLight,
+                    fontSize: 24,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'احفظ رمز الأمان هذا لاستخدامه في استعادة كلمة المرور في حال فقدانها.',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondaryLight,
+                    height: 1.55,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                AuthFormCard(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 28,
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'رمز الأمان الخاص بك',
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          color: AppColors.primaryContainer,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          const boxSpacing = 8.0;
+                          final count = chars.length;
+                          final maxBoxWidth = count > 0
+                              ? (constraints.maxWidth -
+                                      (count - 1) * boxSpacing) /
+                                  count
+                              : 46.0;
+                          final boxWidth = maxBoxWidth.clamp(36.0, 46.0);
+                          final fontSize =
+                              (boxWidth * 0.48).clamp(16.0, 22.0);
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              for (var i = 0; i < chars.length; i++) ...[
+                                if (i > 0) const SizedBox(width: boxSpacing),
+                                Container(
+                                  width: boxWidth,
+                                  height: 54,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: AppColors.primaryContainer
+                                          .withValues(alpha: 0.28),
+                                      width: 1.2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.primaryContainer
+                                            .withValues(alpha: 0.06),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    chars[i],
+                                    style:
+                                        AppTextStyles.headingSmall.copyWith(
+                                      color: AppColors.primaryContainer,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: fontSize,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 22),
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.textSecondaryLight,
+                          backgroundColor: const Color(0xFFF0F2F5),
+                          side: BorderSide.none,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 22,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                        onPressed: () {
+                          Clipboard.setData(
+                            ClipboardData(text: securityCode),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('تم نسخ الرمز')),
+                          );
+                        },
+                        icon: const Icon(
+                          CupertinoIcons.doc_on_doc,
+                          size: 18,
+                          color: AppColors.textSecondaryLight,
+                        ),
+                        label: Text(
+                          'نسخ الرمز',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textSecondaryLight,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF2F2),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: AppColors.expense.withValues(alpha: 0.15),
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        CupertinoIcons.exclamationmark_triangle_fill,
+                        color: AppColors.expense,
+                        size: 22,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'تحذير: لا تشارك هذا الرمز مع أي شخص. موظفو بيت المال لن يطلبوا منك هذا الرمز أبداً.',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.expense,
+                            height: 1.55,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 28),
+                SizedBox(
+                  width: double.infinity,
+                  height: 54,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primaryContainer,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    onPressed: () async {
+                      await context
+                          .read<SettingsProvider>()
+                          .acknowledgeSecurityCode();
+                      if (!context.mounted) return;
+                      context.go('/onboarding');
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'التالي',
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(
+                          CupertinoIcons.arrow_left,
+                          size: 20,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'سيتم توجيهك لاختيار العملة الرئيسية',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondaryLight,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

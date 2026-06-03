@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Typography helpers using Alyamama from Google Fonts.
+/// Typography helpers based on design system.
 abstract final class AppTextStyles {
-  static TextStyle get _headingBase => GoogleFonts.getFont(
-        'Alyamama',
+  static TextStyle get _headingBase => GoogleFonts.almarai(
         fontWeight: FontWeight.w700,
       );
 
@@ -12,32 +11,27 @@ abstract final class AppTextStyles {
 
   static TextStyle headingMedium = _headingBase.copyWith(fontSize: 22);
 
-  static TextStyle headingSmall = GoogleFonts.getFont(
-    'Alyamama',
+  static TextStyle headingSmall = GoogleFonts.almarai(
     fontSize: 18,
     fontWeight: FontWeight.w600,
   );
 
-  static TextStyle bodyLarge = GoogleFonts.getFont(
-    'Alyamama',
+  static TextStyle bodyLarge = GoogleFonts.cairo(
     fontSize: 16,
     fontWeight: FontWeight.w400,
   );
 
-  static TextStyle bodyMedium = GoogleFonts.getFont(
-    'Alyamama',
+  static TextStyle bodyMedium = GoogleFonts.cairo(
     fontSize: 14,
     fontWeight: FontWeight.w400,
   );
 
-  static TextStyle bodySmall = GoogleFonts.getFont(
-    'Alyamama',
+  static TextStyle bodySmall = GoogleFonts.cairo(
     fontSize: 12,
     fontWeight: FontWeight.w400,
   );
 
-  static TextStyle label = GoogleFonts.getFont(
-    'Alyamama',
+  static TextStyle label = GoogleFonts.cairo(
     fontSize: 13,
     fontWeight: FontWeight.w500,
   );
