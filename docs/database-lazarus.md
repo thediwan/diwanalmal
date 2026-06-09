@@ -17,7 +17,8 @@ Local financial data is stored in **`lazarus.db`** (SQLite via [Drift](https://d
 | `security_settings` | PIN hash, biometric flag (no biometric data) |
 | `user_settings` | Base currency, language, theme |
 | `currencies` | Codes, `rate_to_base`, `is_base` |
-| `wallets` | Opening balance only — **current balance is computed** |
+| `wallets` | Treasury (خزينة) — container name, icon, subtitle |
+| `wallet_currency_accounts` | Opening balance per currency inside a treasury — **current balance is computed** |
 | `categories` | income / expense |
 | `transactions` | amount, currency, `exchange_rate`, `base_amount` |
 | `transfers` | Wallet-to-wallet (not income/expense) |

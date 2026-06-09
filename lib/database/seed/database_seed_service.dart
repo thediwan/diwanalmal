@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../core/constants/database_constants.dart';
 import '../lazarus_database.dart';
 
-/// Demo data aligned with the client dashboard mockup image.
+/// Demo data aligned with dashboard and wallets screen mockups.
 class DatabaseSeedService {
   DatabaseSeedService(this._db);
 
@@ -14,22 +14,24 @@ class DatabaseSeedService {
   static const _mockupMarkerTitle = 'بقالة المجد';
 
   static const _usdId = 'cur-usd-0001';
-  static const _tryId = 'cur-try-0001';
   static const _sypId = 'cur-syp-0001';
   static const _eurId = 'cur-eur-0001';
-  static const _walletUsdId = 'wal-usd-cash';
-  static const _walletTryId = 'wal-try-cash';
-  static const _walletSypId = 'wal-syp-cash';
-  static const _walletEurId = 'wal-eur-cash';
+  static const _usdtId = 'cur-usdt-0001';
+
+  static const _walCashId = 'wal-cash';
+  static const _walBankId = 'wal-bank';
+  static const _walCryptoId = 'wal-crypto';
+  static const _walTravelId = 'wal-travel';
+
   static const _catFoodId = 'cat-food';
   static const _catSalaryId = 'cat-salary';
   static const _goalCarId = 'goal-car-01';
   static const _debtAhmedId = 'debt-ahmed-01';
 
   static const _rateUsd = 1.0;
-  static const _rateTry = 0.031003968;
   static const _rateSyp = 0.0000666667;
   static const _rateEur = 1.0869565;
+  static const _rateUsdt = 1.0;
 
   /// Returns true if initial seed ran (no user existed).
   Future<bool> seedIfEmpty() async {
@@ -40,8 +42,7 @@ class DatabaseSeedService {
     return true;
   }
 
-  /// Ensures mockup dashboard rows exist for whoever is the active SQL user
-  /// (including `hive-migrated-user` after registration).
+  /// Ensures mockup rows exist for the active SQL user (treasury model).
   Future<void> ensureDashboardMockupData() async {
     final existingId = await _db.getActiveUserId();
     final String userId;
@@ -57,7 +58,12 @@ class DatabaseSeedService {
           ..where((t) => t.title.equals(_mockupMarkerTitle))
           ..limit(1))
         .getSingleOrNull();
-    if (hasMockup != null) return;
+
+    final hasTreasuryAccounts = await (_db.select(_db.walletCurrencyAccounts)
+          ..limit(1))
+        .getSingleOrNull();
+
+    if (hasMockup != null && hasTreasuryAccounts != null) return;
 
     await _clearDemoFinancialData(userId);
     await _insertMockupFinancialData(userId);
@@ -106,6 +112,7 @@ class DatabaseSeedService {
       await (_db.delete(_db.transactions)..where((t) => t.userId.equals(userId)))
           .go();
       await (_db.delete(_db.goals)..where((g) => g.userId.equals(userId))).go();
+      await (_db.delete(_db.walletCurrencyAccounts)).go();
       await (_db.delete(_db.wallets)..where((w) => w.userId.equals(userId))).go();
       await (_db.delete(_db.categories)..where((c) => c.userId.equals(userId)))
           .go();
@@ -134,16 +141,6 @@ class DatabaseSeedService {
       );
       await _insertCurrency(
         userId: userId,
-        id: _tryId,
-        code: 'TRY',
-        name: 'الليرة التركية',
-        symbol: '₺',
-        rate: _rateTry,
-        isBase: false,
-        now: now,
-      );
-      await _insertCurrency(
-        userId: userId,
         id: _sypId,
         code: 'SYP',
         name: 'الليرة السورية',
@@ -162,6 +159,16 @@ class DatabaseSeedService {
         isBase: false,
         now: now,
       );
+      await _insertCurrency(
+        userId: userId,
+        id: _usdtId,
+        code: 'USDT',
+        name: 'تيثر',
+        symbol: 'USDT',
+        rate: _rateUsdt,
+        isBase: false,
+        now: now,
+      );
 
       await _db.into(_db.userSettings).insert(
             UserSettingsCompanion.insert(
@@ -174,58 +181,61 @@ class DatabaseSeedService {
             mode: InsertMode.insertOrReplace,
           );
 
-      await _db.into(_db.wallets).insert(
-            WalletsCompanion.insert(
-              id: _walletUsdId,
-              userId: userId,
-              currencyId: _usdId,
-              name: 'محفظة نقدية',
-              icon: const Value('💵'),
-              openingBalance: const Value(0),
-              createdAt: now,
-              updatedAt: now,
-            ),
-            mode: InsertMode.insertOrReplace,
-          );
-      await _db.into(_db.wallets).insert(
-            WalletsCompanion.insert(
-              id: _walletTryId,
-              userId: userId,
-              currencyId: _tryId,
-              name: 'محفظة تركيا',
-              icon: const Value('🇹🇷'),
-              openingBalance: const Value(40800),
-              createdAt: now,
-              updatedAt: now,
-            ),
-            mode: InsertMode.insertOrReplace,
-          );
-      await _db.into(_db.wallets).insert(
-            WalletsCompanion.insert(
-              id: _walletSypId,
-              userId: userId,
-              currencyId: _sypId,
-              name: 'محفظة سوريا',
-              icon: const Value('🇸🇾'),
-              openingBalance: const Value(18750000),
-              createdAt: now,
-              updatedAt: now,
-            ),
-            mode: InsertMode.insertOrReplace,
-          );
-      await _db.into(_db.wallets).insert(
-            WalletsCompanion.insert(
-              id: _walletEurId,
-              userId: userId,
-              currencyId: _eurId,
-              name: 'محفظة يورو',
-              icon: const Value('🇪🇺'),
-              openingBalance: const Value(1150),
-              createdAt: now,
-              updatedAt: now,
-            ),
-            mode: InsertMode.insertOrReplace,
-          );
+      // محفظة كاش — سوري + دولار
+      await _insertTreasury(
+        userId: userId,
+        id: _walCashId,
+        name: 'الخزنة الرئيسية',
+        subtitle: 'نقد شخصي',
+        iconStyle: 'cash',
+        icon: '💵',
+        now: now,
+        accounts: [
+          (accountId: 'acc-cash-syp', currencyId: _sypId, opening: 7500000.0),
+          (accountId: 'acc-cash-usd', currencyId: _usdId, opening: 3500.0),
+        ],
+      );
+
+      // محفظة بنك — دولار + يورو
+      await _insertTreasury(
+        userId: userId,
+        id: _walBankId,
+        name: 'الحساب البنكي (زراعات)',
+        subtitle: 'حساب جاري',
+        iconStyle: 'bank',
+        icon: '🏦',
+        now: now,
+        accounts: [
+          (accountId: 'acc-bank-usd', currencyId: _usdId, opening: 6000.0),
+          (accountId: 'acc-bank-eur', currencyId: _eurId, opening: 800.0),
+        ],
+      );
+
+      await _insertTreasury(
+        userId: userId,
+        id: _walCryptoId,
+        name: 'المحفظة الرقمية',
+        subtitle: 'تداول أصول رقمية',
+        iconStyle: 'crypto',
+        icon: '₿',
+        now: now,
+        accounts: [
+          (accountId: 'acc-crypto-usdt', currencyId: _usdtId, opening: 1449.0),
+        ],
+      );
+
+      await _insertTreasury(
+        userId: userId,
+        id: _walTravelId,
+        name: 'ميزانية السفر',
+        subtitle: 'ديون مستحقة',
+        iconStyle: 'travel',
+        icon: '✈️',
+        now: now,
+        accounts: [
+          (accountId: 'acc-travel-usd', currencyId: _usdId, opening: 500.0),
+        ],
+      );
 
       await _db.into(_db.categories).insert(
             CategoriesCompanion.insert(
@@ -259,13 +269,13 @@ class DatabaseSeedService {
       await _insertTransaction(
         userId: userId,
         id: 'tx-grocery-01',
-        walletId: _walletTryId,
+        walletId: _walCashId,
         categoryId: _catFoodId,
         type: DatabaseConstants.txExpense,
         title: _mockupMarkerTitle,
-        amount: 480,
-        currencyId: _tryId,
-        rate: _rateTry,
+        amount: 225000,
+        currencyId: _sypId,
+        rate: _rateSyp,
         baseAmount: 15,
         transactionDate: now.subtract(const Duration(hours: 2)),
         createdAt: now,
@@ -274,7 +284,7 @@ class DatabaseSeedService {
       await _insertTransaction(
         userId: userId,
         id: 'tx-salary-01',
-        walletId: _walletUsdId,
+        walletId: _walBankId,
         categoryId: _catSalaryId,
         type: DatabaseConstants.txIncome,
         title: 'راتب الشهر',
@@ -289,7 +299,7 @@ class DatabaseSeedService {
       await _insertTransaction(
         userId: userId,
         id: 'tx-misc-expense',
-        walletId: _walletUsdId,
+        walletId: _walBankId,
         categoryId: _catFoodId,
         type: DatabaseConstants.txExpense,
         title: 'مصروف متفرق',
@@ -298,6 +308,21 @@ class DatabaseSeedService {
         rate: _rateUsd,
         baseAmount: 235,
         transactionDate: monthStart.add(const Duration(days: 5)),
+        createdAt: now,
+      );
+
+      await _insertTransaction(
+        userId: userId,
+        id: 'tx-travel-overdraft',
+        walletId: _walTravelId,
+        categoryId: _catFoodId,
+        type: DatabaseConstants.txExpense,
+        title: 'مصروف سفر',
+        amount: 750,
+        currencyId: _usdId,
+        rate: _rateUsd,
+        baseAmount: 750,
+        transactionDate: monthStart.add(const Duration(days: 2)),
         createdAt: now,
       );
 
@@ -310,7 +335,7 @@ class DatabaseSeedService {
         await _insertTransaction(
           userId: userId,
           id: entry.id,
-          walletId: _walletUsdId,
+          walletId: _walBankId,
           categoryId: _catFoodId,
           type: DatabaseConstants.txExpense,
           title: 'مصروف',
@@ -366,6 +391,49 @@ class DatabaseSeedService {
             mode: InsertMode.insertOrReplace,
           );
     });
+  }
+
+  Future<void> _insertTreasury({
+    required String userId,
+    required String id,
+    required String name,
+    required String icon,
+    required DateTime now,
+    String? subtitle,
+    String? iconStyle,
+    required List<({
+      String accountId,
+      String currencyId,
+      double opening,
+    })> accounts,
+  }) async {
+    await _db.into(_db.wallets).insert(
+          WalletsCompanion.insert(
+            id: id,
+            userId: userId,
+            name: name,
+            icon: Value(icon),
+            subtitle: Value(subtitle),
+            iconStyle: Value(iconStyle),
+            createdAt: now,
+            updatedAt: now,
+          ),
+          mode: InsertMode.insertOrReplace,
+        );
+
+    for (final account in accounts) {
+      await _db.into(_db.walletCurrencyAccounts).insert(
+            WalletCurrencyAccountsCompanion.insert(
+              id: account.accountId,
+              walletId: id,
+              currencyId: account.currencyId,
+              openingBalance: Value(account.opening),
+              createdAt: now,
+              updatedAt: now,
+            ),
+            mode: InsertMode.insertOrReplace,
+          );
+    }
   }
 
   Future<void> _insertCurrency({

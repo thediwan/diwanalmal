@@ -1,58 +1,79 @@
 import '../core/helpers/currency_formatter.dart';
 import '../models/currency.dart';
+import '../models/treasury.dart';
 import '../models/wallet.dart';
-import 'currency_service.dart';
 import 'lazarus_database_service.dart';
 
-/// Computes wallet balances from opening balance + transactions + transfers.
+/// Computes treasury balances from opening balance + transactions + transfers.
 class WalletBalanceService {
-  WalletBalanceService(this._lazarus, this._currencyService);
+  WalletBalanceService(this._lazarus);
 
   final LazarusDatabaseService _lazarus;
-  final CurrencyService _currencyService;
 
-  /// Current balance in the wallet's currency (from Lazarus operations).
+  /// Legacy: first account balance for a flattened wallet row.
   Future<double> getBalanceInWalletCurrency(Wallet wallet) async {
     return _lazarus.database.financeDao.computeWalletBalance(wallet.id);
   }
 
-  /// Balance converted to base currency.
-  Future<double> getBalanceInBaseCurrency(Wallet wallet) async {
-    final balance = await getBalanceInWalletCurrency(wallet);
-    final currency = await _currencyService.getByCode(wallet.currencyCode);
-    if (currency == null) return balance;
-
-    return CurrencyFormatter.toBaseAmount(balance, currency.rateToBase);
-  }
-
-  /// Total balance in base currency (base-currency wallets only — matches mockup total).
+  /// Net total in base currency across all treasury accounts.
   Future<double> getTotalBalanceInBase() async {
     final userId = await _lazarus.getActiveUserId();
     if (userId == null) return 0;
 
-    final wallets = await _lazarus.database.financeDao.getActiveWallets(userId);
+    final treasuries = await _lazarus.database.financeDao.getActiveTreasuries(userId);
     var total = 0.0;
-    for (final item in wallets) {
-      final currency = await _currencyService.getByCode(item.currencyCode);
-      if (currency == null || !currency.isBase) continue;
 
-      final balance =
-          await _lazarus.database.financeDao.computeWalletBalance(item.wallet.id);
-      total += CurrencyFormatter.toBaseAmount(
-        balance,
-        item.currencyRateToBase,
-      );
+    for (final treasury in treasuries) {
+      for (final account in treasury.accounts) {
+        final balance = await _lazarus.database.financeDao.computeAccountBalance(
+          walletId: treasury.wallet.id,
+          currencyId: account.account.currencyId,
+        );
+        total += CurrencyFormatter.toBaseAmount(
+          balance,
+          account.currencyRateToBase,
+        );
+      }
     }
     return total;
   }
 
-  /// Formatted balance string for wallet cards.
+  /// Sum of positive treasury totals in base currency.
+  Future<double> getTotalPositiveBalanceInBase(List<Treasury> treasuries) async {
+    var total = 0.0;
+    for (final treasury in treasuries) {
+      if (treasury.totalInBase > 0) total += treasury.totalInBase;
+    }
+    return total;
+  }
+
+  /// Net income minus expense in base currency for the current calendar month.
+  Future<double> getMonthlyNetChangeInBase() async {
+    final userId = await _lazarus.getActiveUserId();
+    if (userId == null) return 0;
+
+    final now = DateTime.now();
+    final dao = _lazarus.database.financeDao;
+    final income = await dao.sumTransactionsBaseAmount(
+      userId: userId,
+      type: 'income',
+      year: now.year,
+      month: now.month,
+    );
+    final expense = await dao.sumTransactionsBaseAmount(
+      userId: userId,
+      type: 'expense',
+      year: now.year,
+      month: now.month,
+    );
+    return income - expense;
+  }
+
   Future<String> formatWalletBalance(Wallet wallet, Currency? currency) async {
     final balance = await getBalanceInWalletCurrency(wallet);
     return formatWalletBalanceSync(wallet, balance);
   }
 
-  /// Synchronous formatter when balance is already loaded.
   String formatWalletBalanceSync(Wallet wallet, double balance) {
     return CurrencyFormatter.formatWithCode(balance, wallet.currencyCode);
   }

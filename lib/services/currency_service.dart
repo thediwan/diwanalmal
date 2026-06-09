@@ -152,12 +152,12 @@ class CurrencyService {
       throw Exception('لا يمكن حذف العملة الرئيسية');
     }
 
-    final wallets = await (_db.select(_db.wallets)
-          ..where((w) => w.currencyId.equals(id))
-          ..where((w) => w.deletedAt.isNull()))
+    final accounts = await (_db.select(_db.walletCurrencyAccounts)
+          ..where((a) => a.currencyId.equals(id))
+          ..where((a) => a.deletedAt.isNull()))
         .get();
 
-    if (wallets.isNotEmpty) {
+    if (accounts.isNotEmpty) {
       throw Exception('العملة مستخدمة في محفظة');
     }
 

@@ -79,17 +79,32 @@ class UserSettings extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-/// Wallets — balance is derived from operations, not stored.
+/// Treasury (خزينة) — container for multiple currency accounts.
 @DataClassName('DbWallet')
 class Wallets extends Table {
   TextColumn get id => text()();
   TextColumn get userId => text().references(AppUsers, #id)();
-  TextColumn get currencyId => text().references(Currencies, #id)();
   TextColumn get name => text().withLength(min: 1, max: 255)();
   TextColumn get icon => text().nullable()();
-  RealColumn get openingBalance => real().withDefault(const Constant(0))();
+  TextColumn get subtitle => text().nullable()();
+  TextColumn get iconStyle => text().nullable()();
   TextColumn get notes => text().nullable()();
   BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Currency balance inside a treasury — opening balance only; current balance is computed.
+@DataClassName('DbWalletCurrencyAccount')
+class WalletCurrencyAccounts extends Table {
+  TextColumn get id => text()();
+  TextColumn get walletId => text().references(Wallets, #id)();
+  TextColumn get currencyId => text().references(Currencies, #id)();
+  RealColumn get openingBalance => real().withDefault(const Constant(0))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();

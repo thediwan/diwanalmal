@@ -9,6 +9,8 @@ class Wallet extends HiveObject {
     required this.initialBalance,
     required this.icon,
     required this.createdAt,
+    this.notes,
+    this.iconStyle,
   });
 
   final String id;
@@ -17,6 +19,8 @@ class Wallet extends HiveObject {
   final double initialBalance;
   final String icon;
   final DateTime createdAt;
+  final String? notes;
+  final String? iconStyle;
 
   Wallet copyWith({
     String? id,
@@ -25,6 +29,8 @@ class Wallet extends HiveObject {
     double? initialBalance,
     String? icon,
     DateTime? createdAt,
+    String? notes,
+    String? iconStyle,
   }) {
     return Wallet(
       id: id ?? this.id,
@@ -33,6 +39,8 @@ class Wallet extends HiveObject {
       initialBalance: initialBalance ?? this.initialBalance,
       icon: icon ?? this.icon,
       createdAt: createdAt ?? this.createdAt,
+      notes: notes ?? this.notes,
+      iconStyle: iconStyle ?? this.iconStyle,
     );
   }
 }
@@ -50,6 +58,7 @@ class WalletAdapter extends TypeAdapter<Wallet> {
       initialBalance: reader.readDouble(),
       icon: reader.readString(),
       createdAt: DateTime.parse(reader.readString()),
+      notes: reader.availableBytes > 0 ? reader.readString() : null,
     );
   }
 
@@ -61,6 +70,7 @@ class WalletAdapter extends TypeAdapter<Wallet> {
       ..writeString(obj.currencyCode)
       ..writeDouble(obj.initialBalance)
       ..writeString(obj.icon)
-      ..writeString(obj.createdAt.toIso8601String());
+      ..writeString(obj.createdAt.toIso8601String())
+      ..writeString(obj.notes ?? '');
   }
 }

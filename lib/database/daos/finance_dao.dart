@@ -13,6 +13,7 @@ part 'finance_dao.g.dart';
   DebtPayments,
   Goals,
   Wallets,
+  WalletCurrencyAccounts,
   Currencies,
   Categories,
 ])
@@ -20,28 +21,46 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
     with _$FinanceDaoMixin {
   FinanceDao(super.db);
 
-  /// Active wallets with currency code for UI.
-  Future<List<WalletWithCurrency>> getActiveWallets(String userId) {
-    final w = db.wallets;
-    final c = db.currencies;
-    final query = select(w).join([
-      innerJoin(c, c.id.equalsExp(w.currencyId)),
-    ])
-      ..where(w.userId.equals(userId))
-      ..where(w.deletedAt.isNull())
-      ..where(w.isArchived.equals(false));
+  /// Active treasuries with their currency account rows.
+  Future<List<TreasuryWithAccounts>> getActiveTreasuries(String userId) async {
+    final walletRows = await (select(db.wallets)
+          ..where((w) => w.userId.equals(userId))
+          ..where((w) => w.deletedAt.isNull())
+          ..where((w) => w.isArchived.equals(false))
+          ..orderBy([(w) => OrderingTerm.asc(w.name)]))
+        .get();
 
-    return query.get().then(
-          (rows) => rows
-              .map(
-                (row) => WalletWithCurrency(
-                  wallet: row.readTable(w),
-                  currencyCode: row.readTable(c).code,
-                  currencyRateToBase: row.readTable(c).rateToBase,
-                ),
-              )
-              .toList(),
-        );
+    final result = <TreasuryWithAccounts>[];
+
+    for (final wallet in walletRows) {
+      final accounts = await _getAccountsForWallet(wallet.id);
+      result.add(TreasuryWithAccounts(wallet: wallet, accounts: accounts));
+    }
+
+    return result;
+  }
+
+  Future<List<WalletAccountWithCurrency>> _getAccountsForWallet(
+    String walletId,
+  ) async {
+    final a = db.walletCurrencyAccounts;
+    final c = db.currencies;
+    final query = select(a).join([
+      innerJoin(c, c.id.equalsExp(a.currencyId)),
+    ])
+      ..where(a.walletId.equals(walletId))
+      ..where(a.deletedAt.isNull());
+
+    final rows = await query.get();
+    return rows
+        .map(
+          (row) => WalletAccountWithCurrency(
+            account: row.readTable(a),
+            currencyCode: row.readTable(c).code,
+            currencyRateToBase: row.readTable(c).rateToBase,
+          ),
+        )
+        .toList();
   }
 
   /// Sum of base_amount for income/expense in calendar month.
@@ -154,22 +173,27 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
         .toList();
   }
 
-  /// Opening balance + operations for one wallet in its currency.
-  Future<double> computeWalletBalance(String walletId) async {
-    final wallet = await (select(db.wallets)
-          ..where((w) => w.id.equals(walletId)))
+  /// Opening balance + operations for one treasury currency account.
+  Future<double> computeAccountBalance({
+    required String walletId,
+    required String currencyId,
+  }) async {
+    final account = await (select(db.walletCurrencyAccounts)
+          ..where((a) => a.walletId.equals(walletId))
+          ..where((a) => a.currencyId.equals(currencyId))
+          ..where((a) => a.deletedAt.isNull()))
         .getSingleOrNull();
-    if (wallet == null) return 0;
 
     final currency = await (select(db.currencies)
-          ..where((c) => c.id.equals(wallet.currencyId)))
+          ..where((c) => c.id.equals(currencyId)))
         .getSingleOrNull();
-    if (currency == null) return wallet.openingBalance;
+    if (currency == null) return account?.openingBalance ?? 0;
 
-    var balance = wallet.openingBalance;
+    var balance = account?.openingBalance ?? 0;
 
     final txs = await (select(db.transactions)
           ..where((t) => t.walletId.equals(walletId))
+          ..where((t) => t.currencyId.equals(currencyId))
           ..where((t) => t.deletedAt.isNull()))
         .get();
 
@@ -189,6 +213,7 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
 
     final transfersOut = await (select(db.transfers)
           ..where((t) => t.fromWalletId.equals(walletId))
+          ..where((t) => t.currencyId.equals(currencyId))
           ..where((t) => t.deletedAt.isNull()))
         .get();
     for (final tr in transfersOut) {
@@ -202,6 +227,7 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
 
     final transfersIn = await (select(db.transfers)
           ..where((t) => t.toWalletId.equals(walletId))
+          ..where((t) => t.currencyId.equals(currencyId))
           ..where((t) => t.deletedAt.isNull()))
         .get();
     for (final tr in transfersIn) {
@@ -214,6 +240,20 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
     }
 
     return balance;
+  }
+
+  /// Backward-compatible alias keyed by wallet id only (first account).
+  Future<double> computeWalletBalance(String walletId) async {
+    final account = await (select(db.walletCurrencyAccounts)
+          ..where((a) => a.walletId.equals(walletId))
+          ..where((a) => a.deletedAt.isNull())
+          ..limit(1))
+        .getSingleOrNull();
+    if (account == null) return 0;
+    return computeAccountBalance(
+      walletId: walletId,
+      currencyId: account.currencyId,
+    );
   }
 
   double _amountInWalletCurrency({
@@ -229,14 +269,24 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
   }
 }
 
-class WalletWithCurrency {
-  const WalletWithCurrency({
+class TreasuryWithAccounts {
+  const TreasuryWithAccounts({
     required this.wallet,
+    required this.accounts,
+  });
+
+  final DbWallet wallet;
+  final List<WalletAccountWithCurrency> accounts;
+}
+
+class WalletAccountWithCurrency {
+  const WalletAccountWithCurrency({
+    required this.account,
     required this.currencyCode,
     required this.currencyRateToBase,
   });
 
-  final DbWallet wallet;
+  final DbWalletCurrencyAccount account;
   final String currencyCode;
   final double currencyRateToBase;
 }

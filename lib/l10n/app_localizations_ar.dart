@@ -385,4 +385,155 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get comingSoon => 'قريباً';
+
+  @override
+  String get walletsTitle => 'المحافظ';
+
+  @override
+  String get walletsSubtitle => 'إدارة أصولك النقدية والبنكية';
+
+  @override
+  String get walletsAddWallet => 'إضافة محفظة';
+
+  @override
+  String get walletsSearchHint => 'بحث في المحافظ...';
+
+  @override
+  String get walletsEstimatedTotal => 'إجمالي الرصيد المقدر';
+
+  @override
+  String get walletsMonthlyGrowth => 'نمو شهري';
+
+  @override
+  String get walletsWalletCount => 'عدد المحافظ';
+
+  @override
+  String walletsWalletCountValue(int count) {
+    return '$count محفظة';
+  }
+
+  @override
+  String get walletsTotalValue => 'القيمة الكلية';
+
+  @override
+  String get walletsRemainingDebt => 'متبقي السداد';
+
+  @override
+  String get walletsEmpty =>
+      'لا توجد محافظ.\nأضف كاش، بنك، أو محفظة إلكترونية.';
+
+  @override
+  String walletsGrowthValue(String percent) {
+    return '+$percent%';
+  }
+
+  @override
+  String get commonCancel => 'إلغاء';
+
+  @override
+  String get commonDelete => 'حذف';
+
+  @override
+  String get walletFormTitleNew => 'محفظة جديدة';
+
+  @override
+  String get walletFormTitleEdit => 'تعديل المحفظة';
+
+  @override
+  String get walletFormName => 'اسم المحفظة';
+
+  @override
+  String get walletFormNameHint => 'مثال: كاش، بنك';
+
+  @override
+  String get walletFormNameRequired => 'الاسم مطلوب';
+
+  @override
+  String get walletFormCurrency => 'العملة';
+
+  @override
+  String get walletFormSelectCurrency => 'اختر العملة';
+
+  @override
+  String get walletFormOpeningBalance => 'الرصيد الافتتاحي';
+
+  @override
+  String get walletFormBalanceRequired => 'الرصيد مطلوب';
+
+  @override
+  String get walletFormInvalidNumber => 'رقم غير صالح';
+
+  @override
+  String get walletFormIcon => 'الأيقونة';
+
+  @override
+  String get walletFormCreate => 'إنشاء';
+
+  @override
+  String get walletFormSave => 'حفظ';
+
+  @override
+  String get walletFormDeleteTitle => 'حذف المحفظة';
+
+  @override
+  String get walletFormDeleteMessage => 'هل أنت متأكد؟ لا يمكن التراجع.';
+
+  @override
+  String walletFormError(String error) {
+    return 'حدث خطأ: $error';
+  }
+
+  @override
+  String get treasuryIconCash => 'خزنة';
+
+  @override
+  String get treasuryIconCashShort => 'نقد';
+
+  @override
+  String get treasuryIconBank => 'بنك';
+
+  @override
+  String get treasuryIconCrypto => 'رقمية';
+
+  @override
+  String get treasuryIconTravel => 'سفر';
+
+  @override
+  String get walletFormAddTitle => 'إضافة محفظة';
+
+  @override
+  String get walletFormAddSubtitle => 'أضف وعاءً مالياً جديداً لتنظيم ثروتك';
+
+  @override
+  String get walletFormEditSubtitle => 'عدّل بيانات المحفظة';
+
+  @override
+  String get walletFormWalletType => 'نوع المحفظة';
+
+  @override
+  String get walletFormNameHintNew => 'مثلاً: مدخرات الطوارئ';
+
+  @override
+  String get walletFormAddOpeningBalance => 'إضافة رصيد افتتاحي';
+
+  @override
+  String get walletFormConfirmAdd => 'تأكيد الإضافة';
+
+  @override
+  String get walletFormOpeningBalanceRequired =>
+      'يجب إضافة رصيد افتتاحي لعملة واحدة على الأقل';
+
+  @override
+  String get walletFormDuplicateCurrency =>
+      'لا يمكن تكرار العملة في نفس المحفظة';
+
+  @override
+  String get walletsEditWallet => 'تعديل المحفظة';
+
+  @override
+  String get walletFormCurrentBalance => 'الرصيد الحالي';
+
+  @override
+  String get walletFormAccountHasTransactions =>
+      'لا يمكن حذف عملة مرتبطة بمعاملات أو تحويلات';
 }

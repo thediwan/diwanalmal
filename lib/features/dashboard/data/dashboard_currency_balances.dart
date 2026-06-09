@@ -16,17 +16,18 @@ class DashboardCurrencyBalance {
   final double balanceInBase;
 }
 
-/// Aggregates wallet balances grouped by currency code.
+/// Aggregates treasury account balances grouped by currency code.
 List<DashboardCurrencyBalance> buildDashboardCurrencyBalances({
   required WalletProvider walletProvider,
   required CurrencyProvider currencyProvider,
 }) {
   final totalsByCode = <String, double>{};
 
-  for (final wallet in walletProvider.wallets) {
-    final balance = walletProvider.balanceFor(wallet);
-    totalsByCode[wallet.currencyCode] =
-        (totalsByCode[wallet.currencyCode] ?? 0) + balance;
+  for (final treasury in walletProvider.treasuries) {
+    for (final account in treasury.accounts) {
+      totalsByCode[account.currencyCode] =
+          (totalsByCode[account.currencyCode] ?? 0) + account.balance;
+    }
   }
 
   if (totalsByCode.isEmpty) return [];
@@ -37,7 +38,7 @@ List<DashboardCurrencyBalance> buildDashboardCurrencyBalances({
     final currency = currencyProvider.currencies
         .where((c) => c.code == entry.key)
         .firstOrNull;
-    if (currency == null) continue;
+    if (currency == null || currency.isBase) continue;
 
     final balanceInBase = CurrencyFormatter.toBaseAmount(
       entry.value,
@@ -53,7 +54,7 @@ List<DashboardCurrencyBalance> buildDashboardCurrencyBalances({
     );
   }
 
-  const displayOrder = ['TRY', 'SYP', 'EUR', 'GBP', 'SAR'];
+  const displayOrder = ['TRY', 'SYP', 'EUR', 'USDT', 'GBP', 'SAR'];
 
   entries.sort((a, b) {
     final ai = displayOrder.indexOf(a.currency.code);
@@ -64,5 +65,5 @@ List<DashboardCurrencyBalance> buildDashboardCurrencyBalances({
     return a.currency.code.compareTo(b.currency.code);
   });
 
-  return entries.where((e) => !e.currency.isBase).toList();
+  return entries;
 }

@@ -39,7 +39,9 @@ Forgot password:
 
 - **Security code**: 6 characters, generated after PIN setup, stored in Hive. Required for password reset (case-insensitive match).
 - **PIN**: 4 digits, confirmed twice on setup.
-- **Biometric**: Optional; uses `local_auth`.
+- **Biometric**: Optional; uses `local_auth` via `BiometricService`.
+- **Android**: `MainActivity` must extend `FlutterFragmentActivity`; AppCompat theme in `styles.xml`.
+- **iOS**: `NSFaceIDUsageDescription` in `Info.plist` for Face ID.
 - **Session lock**: On app `paused`/`detached` (not `inactive`, to avoid breaking biometric dialog).
 - **Password**: Minimum 6 characters for register, login, and reset.
 

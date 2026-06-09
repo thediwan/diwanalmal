@@ -386,4 +386,156 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get comingSoon => 'Coming soon';
+
+  @override
+  String get walletsTitle => 'Wallets';
+
+  @override
+  String get walletsSubtitle => 'Manage your cash and bank assets';
+
+  @override
+  String get walletsAddWallet => 'Add wallet';
+
+  @override
+  String get walletsSearchHint => 'Search wallets...';
+
+  @override
+  String get walletsEstimatedTotal => 'Estimated total balance';
+
+  @override
+  String get walletsMonthlyGrowth => 'Monthly growth';
+
+  @override
+  String get walletsWalletCount => 'Wallet count';
+
+  @override
+  String walletsWalletCountValue(int count) {
+    return '$count wallets';
+  }
+
+  @override
+  String get walletsTotalValue => 'Total value';
+
+  @override
+  String get walletsRemainingDebt => 'Remaining payment';
+
+  @override
+  String get walletsEmpty =>
+      'No wallets yet.\nAdd cash, bank, or digital wallet.';
+
+  @override
+  String walletsGrowthValue(String percent) {
+    return '+$percent%';
+  }
+
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
+  String get commonDelete => 'Delete';
+
+  @override
+  String get walletFormTitleNew => 'New wallet';
+
+  @override
+  String get walletFormTitleEdit => 'Edit wallet';
+
+  @override
+  String get walletFormName => 'Wallet name';
+
+  @override
+  String get walletFormNameHint => 'e.g. Cash, Bank';
+
+  @override
+  String get walletFormNameRequired => 'Name is required';
+
+  @override
+  String get walletFormCurrency => 'Currency';
+
+  @override
+  String get walletFormSelectCurrency => 'Select a currency';
+
+  @override
+  String get walletFormOpeningBalance => 'Opening balance';
+
+  @override
+  String get walletFormBalanceRequired => 'Balance is required';
+
+  @override
+  String get walletFormInvalidNumber => 'Invalid number';
+
+  @override
+  String get walletFormIcon => 'Icon';
+
+  @override
+  String get walletFormCreate => 'Create';
+
+  @override
+  String get walletFormSave => 'Save';
+
+  @override
+  String get walletFormDeleteTitle => 'Delete wallet';
+
+  @override
+  String get walletFormDeleteMessage => 'Are you sure? This cannot be undone.';
+
+  @override
+  String walletFormError(String error) {
+    return 'An error occurred: $error';
+  }
+
+  @override
+  String get treasuryIconCash => 'Cash safe';
+
+  @override
+  String get treasuryIconCashShort => 'Cash';
+
+  @override
+  String get treasuryIconBank => 'Bank';
+
+  @override
+  String get treasuryIconCrypto => 'Digital';
+
+  @override
+  String get treasuryIconTravel => 'Travel';
+
+  @override
+  String get walletFormAddTitle => 'Add wallet';
+
+  @override
+  String get walletFormAddSubtitle =>
+      'Add a new financial vessel to organize your wealth';
+
+  @override
+  String get walletFormEditSubtitle => 'Edit wallet details';
+
+  @override
+  String get walletFormWalletType => 'Wallet type';
+
+  @override
+  String get walletFormNameHintNew => 'e.g. Emergency savings';
+
+  @override
+  String get walletFormAddOpeningBalance => 'Add opening balance';
+
+  @override
+  String get walletFormConfirmAdd => 'Confirm';
+
+  @override
+  String get walletFormOpeningBalanceRequired =>
+      'At least one opening balance is required';
+
+  @override
+  String get walletFormDuplicateCurrency =>
+      'Duplicate currency is not allowed in the same wallet';
+
+  @override
+  String get walletsEditWallet => 'Edit wallet';
+
+  @override
+  String get walletFormCurrentBalance => 'Current balance';
+
+  @override
+  String get walletFormAccountHasTransactions =>
+      'Cannot remove a currency linked to transactions or transfers';
 }

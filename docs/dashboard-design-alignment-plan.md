@@ -30,7 +30,7 @@ This document maps the **client dashboard image** to the BaytAlmal implementatio
 | Element | Position (visual) | Typography / color | Widget |
 |---------|-------------------|----------------------|--------|
 | Logo AMANAH | Left | 36×36, rounded 8px | `DashboardHeader` → `Image.asset(logo_amanah.png)` |
-| Title «بيت المال» | Center | 20sp, w800, `#1A56BE` | `AppConstants.appName` |
+| Title «ديوان المال» | Center | 20sp, w800, `#1A56BE` | `AppConstants.appName` |
 | Bell | Right | 40×40 circle, icon `#1A56BE` | `CupertinoIcons.bell` |
 | Profile | Right of bell | 40×40, fill `#1A56BE` @ 12% alpha | `CupertinoIcons.person_crop_circle` → `/profile` |
 

@@ -107,9 +107,19 @@ class LazarusDatabaseService {
               WalletsCompanion.insert(
                 id: w.id,
                 userId: userId,
-                currencyId: currency.id,
                 name: w.name,
                 icon: Value(w.icon),
+                createdAt: w.createdAt,
+                updatedAt: now,
+              ),
+              mode: InsertMode.insertOrIgnore,
+            );
+
+        await database.into(database.walletCurrencyAccounts).insert(
+              WalletCurrencyAccountsCompanion.insert(
+                id: '${w.id}-acc',
+                walletId: w.id,
+                currencyId: currency.id,
                 openingBalance: Value(w.initialBalance),
                 createdAt: w.createdAt,
                 updatedAt: now,
@@ -133,18 +143,20 @@ class LazarusDatabaseService {
     );
   }
 
-  /// Maps wallet + code to legacy [Wallet] model for existing UI.
+  /// Maps treasury + currency code to legacy [Wallet] model.
   static app.Wallet toAppWallet({
     required DbWallet row,
     required String currencyCode,
+    double balance = 0,
   }) {
     return app.Wallet(
       id: row.id,
       name: row.name,
       currencyCode: currencyCode,
-      initialBalance: row.openingBalance,
+      initialBalance: balance,
       icon: row.icon ?? '💰',
       createdAt: row.createdAt,
+      notes: row.notes,
     );
   }
 }

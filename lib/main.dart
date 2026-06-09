@@ -18,8 +18,10 @@ import 'services/biometric_service.dart';
 import 'services/currency_service.dart';
 import 'services/hive_service.dart';
 import 'services/lazarus_database_service.dart';
+import 'services/treasury_service.dart';
 import 'services/wallet_balance_service.dart';
 import 'services/wallet_service.dart';
+import 'services/wallets_display_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,8 +42,9 @@ Future<void> main() async {
   final biometricService = BiometricService();
   final currencyService = CurrencyService(lazarusService, hiveService);
   final walletService = WalletService(lazarusService);
-  final walletBalanceService =
-      WalletBalanceService(lazarusService, currencyService);
+  final treasuryService = TreasuryService(lazarusService);
+  final walletBalanceService = WalletBalanceService(lazarusService);
+  final walletsDisplayService = WalletsDisplayService();
 
   final settingsProvider = SettingsProvider(
     hiveService,
@@ -49,7 +52,13 @@ Future<void> main() async {
     biometricService,
   );
   final currencyProvider = CurrencyProvider(currencyService);
-  final walletProvider = WalletProvider(walletService, walletBalanceService);
+  final walletProvider = WalletProvider(
+    walletService,
+    treasuryService,
+    walletBalanceService,
+    walletsDisplayService,
+    currencyService,
+  );
 
   await Future.wait([
     walletProvider.loadWallets(),

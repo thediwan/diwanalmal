@@ -13,11 +13,4 @@ abstract final class AppConstants {
     {'code': 'GBP', 'name': 'جنيه إسترليني', 'symbol': '£'},
   ];
 
-  static const List<Map<String, dynamic>> walletIconOptions = [
-    {'key': 'cash', 'icon': '💵', 'label': 'كاش'},
-    {'key': 'bank', 'icon': '🏦', 'label': 'بنك'},
-    {'key': 'wallet', 'icon': '👛', 'label': 'محفظة'},
-    {'key': 'card', 'icon': '💳', 'label': 'بطاقة'},
-    {'key': 'savings', 'icon': '🐷', 'label': 'ادخار'},
-  ];
 }

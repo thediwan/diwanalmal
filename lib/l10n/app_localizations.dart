@@ -817,6 +817,288 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'قريباً'**
   String get comingSoon;
+
+  /// No description provided for @walletsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحافظ'**
+  String get walletsTitle;
+
+  /// No description provided for @walletsSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إدارة أصولك النقدية والبنكية'**
+  String get walletsSubtitle;
+
+  /// No description provided for @walletsAddWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة محفظة'**
+  String get walletsAddWallet;
+
+  /// No description provided for @walletsSearchHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'بحث في المحافظ...'**
+  String get walletsSearchHint;
+
+  /// No description provided for @walletsEstimatedTotal.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجمالي الرصيد المقدر'**
+  String get walletsEstimatedTotal;
+
+  /// No description provided for @walletsMonthlyGrowth.
+  ///
+  /// In ar, this message translates to:
+  /// **'نمو شهري'**
+  String get walletsMonthlyGrowth;
+
+  /// No description provided for @walletsWalletCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد المحافظ'**
+  String get walletsWalletCount;
+
+  /// No description provided for @walletsWalletCountValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} محفظة'**
+  String walletsWalletCountValue(int count);
+
+  /// No description provided for @walletsTotalValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيمة الكلية'**
+  String get walletsTotalValue;
+
+  /// No description provided for @walletsRemainingDebt.
+  ///
+  /// In ar, this message translates to:
+  /// **'متبقي السداد'**
+  String get walletsRemainingDebt;
+
+  /// No description provided for @walletsEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد محافظ.\nأضف كاش، بنك، أو محفظة إلكترونية.'**
+  String get walletsEmpty;
+
+  /// No description provided for @walletsGrowthValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'+{percent}%'**
+  String walletsGrowthValue(String percent);
+
+  /// No description provided for @commonCancel.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء'**
+  String get commonCancel;
+
+  /// No description provided for @commonDelete.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف'**
+  String get commonDelete;
+
+  /// No description provided for @walletFormTitleNew.
+  ///
+  /// In ar, this message translates to:
+  /// **'محفظة جديدة'**
+  String get walletFormTitleNew;
+
+  /// No description provided for @walletFormTitleEdit.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل المحفظة'**
+  String get walletFormTitleEdit;
+
+  /// No description provided for @walletFormName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم المحفظة'**
+  String get walletFormName;
+
+  /// No description provided for @walletFormNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: كاش، بنك'**
+  String get walletFormNameHint;
+
+  /// No description provided for @walletFormNameRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم مطلوب'**
+  String get walletFormNameRequired;
+
+  /// No description provided for @walletFormCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملة'**
+  String get walletFormCurrency;
+
+  /// No description provided for @walletFormSelectCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر العملة'**
+  String get walletFormSelectCurrency;
+
+  /// No description provided for @walletFormOpeningBalance.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرصيد الافتتاحي'**
+  String get walletFormOpeningBalance;
+
+  /// No description provided for @walletFormBalanceRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرصيد مطلوب'**
+  String get walletFormBalanceRequired;
+
+  /// No description provided for @walletFormInvalidNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم غير صالح'**
+  String get walletFormInvalidNumber;
+
+  /// No description provided for @walletFormIcon.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأيقونة'**
+  String get walletFormIcon;
+
+  /// No description provided for @walletFormCreate.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء'**
+  String get walletFormCreate;
+
+  /// No description provided for @walletFormSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ'**
+  String get walletFormSave;
+
+  /// No description provided for @walletFormDeleteTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف المحفظة'**
+  String get walletFormDeleteTitle;
+
+  /// No description provided for @walletFormDeleteMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل أنت متأكد؟ لا يمكن التراجع.'**
+  String get walletFormDeleteMessage;
+
+  /// No description provided for @walletFormError.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدث خطأ: {error}'**
+  String walletFormError(String error);
+
+  /// No description provided for @treasuryIconCash.
+  ///
+  /// In ar, this message translates to:
+  /// **'خزنة'**
+  String get treasuryIconCash;
+
+  /// No description provided for @treasuryIconCashShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'نقد'**
+  String get treasuryIconCashShort;
+
+  /// No description provided for @treasuryIconBank.
+  ///
+  /// In ar, this message translates to:
+  /// **'بنك'**
+  String get treasuryIconBank;
+
+  /// No description provided for @treasuryIconCrypto.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقمية'**
+  String get treasuryIconCrypto;
+
+  /// No description provided for @treasuryIconTravel.
+  ///
+  /// In ar, this message translates to:
+  /// **'سفر'**
+  String get treasuryIconTravel;
+
+  /// No description provided for @walletFormAddTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة محفظة'**
+  String get walletFormAddTitle;
+
+  /// No description provided for @walletFormAddSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف وعاءً مالياً جديداً لتنظيم ثروتك'**
+  String get walletFormAddSubtitle;
+
+  /// No description provided for @walletFormEditSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدّل بيانات المحفظة'**
+  String get walletFormEditSubtitle;
+
+  /// No description provided for @walletFormWalletType.
+  ///
+  /// In ar, this message translates to:
+  /// **'نوع المحفظة'**
+  String get walletFormWalletType;
+
+  /// No description provided for @walletFormNameHintNew.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثلاً: مدخرات الطوارئ'**
+  String get walletFormNameHintNew;
+
+  /// No description provided for @walletFormAddOpeningBalance.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة رصيد افتتاحي'**
+  String get walletFormAddOpeningBalance;
+
+  /// No description provided for @walletFormConfirmAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد الإضافة'**
+  String get walletFormConfirmAdd;
+
+  /// No description provided for @walletFormOpeningBalanceRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'يجب إضافة رصيد افتتاحي لعملة واحدة على الأقل'**
+  String get walletFormOpeningBalanceRequired;
+
+  /// No description provided for @walletFormDuplicateCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يمكن تكرار العملة في نفس المحفظة'**
+  String get walletFormDuplicateCurrency;
+
+  /// No description provided for @walletsEditWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل المحفظة'**
+  String get walletsEditWallet;
+
+  /// No description provided for @walletFormCurrentBalance.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرصيد الحالي'**
+  String get walletFormCurrentBalance;
+
+  /// No description provided for @walletFormAccountHasTransactions.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يمكن حذف عملة مرتبطة بمعاملات أو تحويلات'**
+  String get walletFormAccountHasTransactions;
 }
 
 class _AppLocalizationsDelegate

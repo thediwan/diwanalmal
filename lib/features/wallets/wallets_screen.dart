@@ -2,71 +2,122 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/theme/app_text_styles.dart';
+import '../../core/extensions/context_l10n.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../providers/wallet_provider.dart';
+import 'widgets/wallet_list_card.dart';
+import 'widgets/wallets_header.dart';
+import 'widgets/wallets_summary_section.dart';
 
-/// Lists all wallets with calculated balances.
-class WalletsScreen extends StatelessWidget {
+/// Treasuries list with summary, search, and currency breakdown per card.
+class WalletsScreen extends StatefulWidget {
   const WalletsScreen({super.key});
 
   @override
+  State<WalletsScreen> createState() => _WalletsScreenState();
+}
+
+class _WalletsScreenState extends State<WalletsScreen> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _refresh() async {
+    await context.read<WalletProvider>().loadWallets();
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() => _searchQuery = value);
+  }
+
+  void _openAddWallet() {
+    context.push('/wallets/add');
+  }
+
+  void _openEditWallet(String treasuryId) {
+    context.push('/wallets/$treasuryId/edit');
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('المحافظ')),
+      backgroundColor: Colors.white,
       body: Consumer<WalletProvider>(
         builder: (context, provider, _) {
-          if (provider.wallets.isEmpty) {
-            return EmptyState(
-              message: 'لا توجد محافظ.\nأضف كاش، بنك، أو محفظة إلكترونية.',
-              icon: Icons.account_balance_wallet_outlined,
-              actionLabel: 'إضافة محفظة',
-              onAction: () => context.push('/wallets/add'),
+          if (provider.isLoading && provider.treasuries.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final summary = provider.summary;
+          final filtered = provider.filterTreasuries(_searchQuery);
+
+          if (provider.treasuries.isEmpty) {
+            return Column(
+              children: [
+                WalletsHeader(
+                  searchController: _searchController,
+                  onSearchChanged: _onSearchChanged,
+                  onAddWallet: _openAddWallet,
+                ),
+                Expanded(
+                  child: EmptyState(
+                    message: l10n.walletsEmpty,
+                    icon: Icons.account_balance_wallet_outlined,
+                    actionLabel: l10n.walletsAddWallet,
+                    onAction: _openAddWallet,
+                  ),
+                ),
+              ],
             );
           }
 
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: provider.wallets.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (context, index) {
-              final wallet = provider.wallets[index];
-
-              return Card(
-                child: ListTile(
-                  leading: Text(
-                    wallet.icon,
-                    style: const TextStyle(fontSize: 32),
+          return RefreshIndicator(
+            onRefresh: _refresh,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: WalletsHeader(
+                    searchController: _searchController,
+                    onSearchChanged: _onSearchChanged,
+                    onAddWallet: _openAddWallet,
                   ),
-                  title: Text(wallet.name, style: AppTextStyles.bodyLarge),
-                  subtitle: Text('عملة: ${wallet.currencyCode}'),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        provider.formattedBalance(wallet),
-                        style: AppTextStyles.bodyLarge.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      if (wallet.initialBalance != provider.balanceFor(wallet))
-                        Text(
-                          'رصيد محسوب',
-                          style: AppTextStyles.bodySmall,
-                        ),
-                    ],
-                  ),
-                  onTap: () => context.push('/wallets/${wallet.id}/edit'),
                 ),
-              );
-            },
+                if (summary != null)
+                  SliverToBoxAdapter(
+                    child: WalletsSummarySection(summary: summary),
+                  ),
+                if (filtered.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Text(
+                        l10n.walletsSearchHint,
+                        style: const TextStyle(color: Color(0xFF6B7280)),
+                      ),
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                    sliver: SliverToBoxAdapter(
+                      child: WalletsGroupedCard(
+                        treasuries: filtered,
+                        onEdit: _openEditWallet,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/wallets/add'),
-        child: const Icon(Icons.add),
       ),
     );
   }

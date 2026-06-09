@@ -5,9 +5,9 @@ part of 'finance_dao.dart';
 // ignore_for_file: type=lint
 mixin _$FinanceDaoMixin on DatabaseAccessor<LazarusDatabase> {
   $AppUsersTable get appUsers => attachedDatabase.appUsers;
-  $CurrenciesTable get currencies => attachedDatabase.currencies;
   $WalletsTable get wallets => attachedDatabase.wallets;
   $CategoriesTable get categories => attachedDatabase.categories;
+  $CurrenciesTable get currencies => attachedDatabase.currencies;
   $TransactionsTable get transactions => attachedDatabase.transactions;
   $TransfersTable get transfers => attachedDatabase.transfers;
   $DebtsTable get debts => attachedDatabase.debts;
@@ -21,12 +21,12 @@ class FinanceDaoManager {
   FinanceDaoManager(this._db);
   $$AppUsersTableTableManager get appUsers =>
       $$AppUsersTableTableManager(_db.attachedDatabase, _db.appUsers);
-  $$CurrenciesTableTableManager get currencies =>
-      $$CurrenciesTableTableManager(_db.attachedDatabase, _db.currencies);
   $$WalletsTableTableManager get wallets =>
       $$WalletsTableTableManager(_db.attachedDatabase, _db.wallets);
   $$CategoriesTableTableManager get categories =>
       $$CategoriesTableTableManager(_db.attachedDatabase, _db.categories);
+  $$CurrenciesTableTableManager get currencies =>
+      $$CurrenciesTableTableManager(_db.attachedDatabase, _db.currencies);
   $$TransactionsTableTableManager get transactions =>
       $$TransactionsTableTableManager(_db.attachedDatabase, _db.transactions);
   $$TransfersTableTableManager get transfers =>
