@@ -1,17 +1,20 @@
 import 'package:drift/drift.dart';
 
+import '../core/helpers/currency_uniqueness.dart';
 import '../core/helpers/uuid_helper.dart';
 import '../database/lazarus_database.dart';
 import '../models/currency.dart';
+import 'currency_deduplication_service.dart';
 import 'hive_service.dart';
 import 'lazarus_database_service.dart';
 
 /// Currency CRUD backed by Lazarus SQLite.
 class CurrencyService {
-  CurrencyService(this._lazarus, this._hiveService);
+  CurrencyService(this._lazarus, this._hiveService, this._deduplication);
 
   final LazarusDatabaseService _lazarus;
   final HiveService _hiveService;
+  final CurrencyDeduplicationService _deduplication;
 
   LazarusDatabase get _db => _lazarus.database;
 
@@ -28,7 +31,9 @@ class CurrencyService {
           ]))
         .get();
 
-    return rows.map(LazarusDatabaseService.toAppCurrency).toList();
+    return uniqueCurrenciesByCode(
+      rows.map(LazarusDatabaseService.toAppCurrency).toList(),
+    );
   }
 
   Future<Currency?> getById(String id) async {
@@ -39,8 +44,17 @@ class CurrencyService {
   }
 
   Future<Currency?> getByCode(String code) async {
-    final all = await getAll();
-    return all.where((c) => c.code == code).firstOrNull;
+    final userId = await _lazarus.getActiveUserId();
+    if (userId == null) return null;
+
+    final normalized = normalizeCurrencyCode(code);
+    final row = await (_db.select(_db.currencies)
+          ..where((c) => c.userId.equals(userId))
+          ..where((c) => c.deletedAt.isNull())
+          ..where((c) => c.code.equals(normalized)))
+        .getSingleOrNull();
+
+    return row == null ? null : LazarusDatabaseService.toAppCurrency(row);
   }
 
   Future<Currency?> getBaseCurrency() async {
@@ -49,40 +63,74 @@ class CurrencyService {
   }
 
   /// Creates the base currency during first-time setup.
+  ///
+  /// Throws [StateError] with message `base_currency_already_exists` when a base
+  /// currency is already registered for the active user.
   Future<Currency> createBaseCurrency({
     required String code,
     required String name,
     required String symbol,
   }) async {
+    final normalized = normalizeCurrencyCode(code);
     final userId = await _ensureUserId();
     final now = DateTime.now();
     final id = UuidHelper.generate();
 
-    await _db.into(_db.currencies).insert(
-          CurrenciesCompanion.insert(
-            id: id,
-            userId: userId,
-            code: code.toUpperCase(),
-            name: name,
-            symbol: symbol,
-            rateToBase: 1,
-            isBase: const Value(true),
-            createdAt: now,
-            updatedAt: now,
-          ),
-        );
+    await _db.transaction(() async {
+      final existingBase = await (_db.select(_db.currencies)
+            ..where((c) => c.userId.equals(userId))
+            ..where((c) => c.deletedAt.isNull())
+            ..where((c) => c.isBase.equals(true))
+            ..limit(1))
+          .getSingleOrNull();
 
-    await _upsertUserSettings(userId: userId, baseCurrencyId: id, now: now);
+      if (existingBase != null) {
+        throw StateError('base_currency_already_exists');
+      }
+
+      final duplicateCode = await (_db.select(_db.currencies)
+            ..where((c) => c.userId.equals(userId))
+            ..where((c) => c.deletedAt.isNull())
+            ..where((c) => c.code.equals(normalized))
+            ..limit(1))
+          .getSingleOrNull();
+
+      if (duplicateCode != null) {
+        throw Exception('currency_already_exists');
+      }
+
+      await _db.into(_db.currencies).insert(
+            CurrenciesCompanion.insert(
+              id: id,
+              userId: userId,
+              code: normalized,
+              name: name,
+              symbol: symbol,
+              rateToBase: 1,
+              isBase: const Value(true),
+              createdAt: now,
+              updatedAt: now,
+            ),
+          );
+
+      await _upsertUserSettings(userId: userId, baseCurrencyId: id, now: now);
+    });
+
+    await _lazarus.seedDemoDataAfterBaseCurrency(
+      userId: userId,
+      baseCurrencyId: id,
+      baseCode: normalized,
+    );
 
     final settings = _hiveService.getSettings().copyWith(
           isSetupComplete: true,
-          baseCurrencyCode: code.toUpperCase(),
+          baseCurrencyCode: normalized,
         );
     await _hiveService.saveSettings(settings);
 
     return Currency(
       id: id,
-      code: code.toUpperCase(),
+      code: normalized,
       name: name,
       symbol: symbol,
       rateToBase: 1,
@@ -97,31 +145,41 @@ class CurrencyService {
     required String symbol,
     required double rateToBase,
   }) async {
-    final existing = await getByCode(code);
+    final normalized = normalizeCurrencyCode(code);
+    if (normalized.isEmpty) {
+      throw Exception('currency_code_invalid');
+    }
+
+    final existing = await getByCode(normalized);
     if (existing != null) {
-      throw Exception('العملة موجودة مسبقاً');
+      throw Exception('currency_already_exists');
     }
 
     final userId = await _ensureUserId();
     final now = DateTime.now();
     final id = UuidHelper.generate();
 
-    await _db.into(_db.currencies).insert(
-          CurrenciesCompanion.insert(
-            id: id,
-            userId: userId,
-            code: code.toUpperCase(),
-            name: name,
-            symbol: symbol,
-            rateToBase: rateToBase,
-            createdAt: now,
-            updatedAt: now,
-          ),
-        );
+    try {
+      await _db.into(_db.currencies).insert(
+            CurrenciesCompanion.insert(
+              id: id,
+              userId: userId,
+              code: normalized,
+              name: name,
+              symbol: symbol,
+              rateToBase: rateToBase,
+              isBase: const Value(false),
+              createdAt: now,
+              updatedAt: now,
+            ),
+          );
+    } on Object {
+      throw Exception('currency_already_exists');
+    }
 
     return Currency(
       id: id,
-      code: code.toUpperCase(),
+      code: normalized,
       name: name,
       symbol: symbol,
       rateToBase: rateToBase,
@@ -131,17 +189,35 @@ class CurrencyService {
   }
 
   Future<Currency> updateCurrency(Currency currency) async {
+    final normalized = normalizeCurrencyCode(currency.code);
+    final userId = await _lazarus.getActiveUserId();
+    if (userId == null) {
+      throw StateError('No active user for currency update');
+    }
+
+    final duplicate = await (_db.select(_db.currencies)
+          ..where((c) => c.userId.equals(userId))
+          ..where((c) => c.deletedAt.isNull())
+          ..where((c) => c.code.equals(normalized))
+          ..where((c) => c.id.equals(currency.id).not()))
+        .getSingleOrNull();
+
+    if (duplicate != null) {
+      throw Exception('العملة موجودة مسبقاً');
+    }
+
     final now = DateTime.now();
     await (_db.update(_db.currencies)..where((c) => c.id.equals(currency.id)))
         .write(
       CurrenciesCompanion(
+        code: Value(normalized),
         name: Value(currency.name),
         symbol: Value(currency.symbol),
         rateToBase: Value(currency.rateToBase),
         updatedAt: Value(now),
       ),
     );
-    return currency;
+    return currency.copyWith(code: normalized);
   }
 
   Future<void> deleteCurrency(String id) async {
@@ -164,6 +240,13 @@ class CurrencyService {
     await (_db.update(_db.currencies)..where((c) => c.id.equals(id))).write(
       CurrenciesCompanion(deletedAt: Value(DateTime.now())),
     );
+  }
+
+  Future<void> ensureUniqueCurrencies() async {
+    await _deduplication.deduplicateAllUsers();
+    await _deduplication.enforceSingleBaseCurrencyPerUser();
+    await _db.ensureCurrencyUniqueIndex();
+    await _db.ensureBaseCurrencyUniqueIndex();
   }
 
   Future<String> _ensureUserId() async {

@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_l10n.dart';
+import '../../../core/extensions/context_theme.dart';
+import '../../../core/theme/app_form_fields.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 /// Top section for the wallets screen (profile, title, search, add).
@@ -25,6 +27,7 @@ class WalletsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -63,14 +66,14 @@ class WalletsHeader extends StatelessWidget {
                 l10n.walletsTitle,
                 style: AppTextStyles.headingMedium.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimaryLight,
+                  color: colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 l10n.walletsSubtitle,
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textSecondaryLight,
+                  color: colors.textSecondary,
                 ),
               ),
             ],
@@ -82,19 +85,29 @@ class WalletsHeader extends StatelessWidget {
                 child: TextField(
                   controller: searchController,
                   onChanged: onSearchChanged,
-                  decoration: InputDecoration(
+                  style: AppFormFields.inputTextStyleOf(context),
+                  decoration: AppFormFields.decoration(
+                    context,
                     hintText: l10n.walletsSearchHint,
-                    prefixIcon: const Icon(
+                    fillColor: colors.searchFieldFill,
+                    prefixIcon: Icon(
                       CupertinoIcons.search,
-                      color: AppColors.textSecondaryLight,
+                      color: colors.textSecondary,
                     ),
-                    filled: true,
-                    fillColor: const Color(0xFFF3F4F6),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                  ).copyWith(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                 ),
               ),
@@ -103,7 +116,7 @@ class WalletsHeader extends StatelessWidget {
                 onPressed: onAddWallet,
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.dashboardPrimary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: colors.onPrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 14,
@@ -116,7 +129,7 @@ class WalletsHeader extends StatelessWidget {
                 label: Text(
                   l10n.walletsAddWallet,
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: Colors.white,
+                    color: colors.onPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

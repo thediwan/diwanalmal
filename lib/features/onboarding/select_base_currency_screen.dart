@@ -3,10 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/context_l10n.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../providers/currency_provider.dart';
 import '../../providers/settings_provider.dart';
+import '../../providers/wallet_provider.dart';
 
 /// First-run screen to pick the base currency.
 class SelectBaseCurrencyScreen extends StatefulWidget {
@@ -40,6 +42,8 @@ class _SelectBaseCurrencyScreenState extends State<SelectBaseCurrencyScreen> {
         symbol: preset['symbol']!,
       );
 
+      if (!mounted) return;
+      await context.read<WalletProvider>().loadWallets();
       await settingsProvider.markSetupComplete(preset['code']!);
 
       if (mounted) {
@@ -47,8 +51,10 @@ class _SelectBaseCurrencyScreenState extends State<SelectBaseCurrencyScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = context.l10n;
+        final message = _mapCurrencyError(l10n, e);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('حدث خطأ: $e')),
+          SnackBar(content: Text(message)),
         );
       }
     } finally {
@@ -137,5 +143,16 @@ class _SelectBaseCurrencyScreenState extends State<SelectBaseCurrencyScreen> {
         ),
       ),
     );
+  }
+
+  String _mapCurrencyError(dynamic l10n, Object error) {
+    final raw = error.toString();
+    if (raw.contains('base_currency_already_exists')) {
+      return l10n.currencyBaseAlreadyExists;
+    }
+    if (raw.contains('currency_already_exists')) {
+      return l10n.currencyAlreadyExists;
+    }
+    return l10n.errorGenericWithDetail(raw.replaceFirst('Exception: ', ''));
   }
 }

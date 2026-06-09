@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 
 import '../../core/extensions/context_l10n.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/theme/app_form_fields.dart';
+import '../../core/extensions/context_theme.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/auth_header.dart';
@@ -72,6 +74,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
+    final inputStyle = AppFormFields.inputTextStyleOf(context);
 
     return Scaffold(
       body: AuthBackground(
@@ -91,7 +95,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _usernameController,
-                        decoration: _inputDecoration(l10n.authUsernameHint),
+                        style: inputStyle,
+                        decoration: _inputDecoration(context, l10n.authUsernameHint),
                         validator: (v) =>
                             v == null || v.trim().isEmpty ? l10n.authNameRequired : null,
                       ),
@@ -100,8 +105,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _passwordController,
+                        style: inputStyle,
                         obscureText: _obscurePassword,
-                        decoration: _inputDecoration(null).copyWith(
+                        decoration: _inputDecoration(context, null).copyWith(
                           suffixIcon: IconButton(
                             onPressed: () =>
                                 setState(() => _obscurePassword = !_obscurePassword),
@@ -124,8 +130,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _confirmPasswordController,
+                        style: inputStyle,
                         obscureText: _obscureConfirm,
-                        decoration: _inputDecoration(null).copyWith(
+                        decoration: _inputDecoration(context, null).copyWith(
                           suffixIcon: IconButton(
                             onPressed: () =>
                                 setState(() => _obscureConfirm = !_obscureConfirm),
@@ -251,7 +258,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 bottom: 16,
                 child: FloatingActionButton.small(
                   onPressed: () {},
-                  backgroundColor: Colors.white,
+                  backgroundColor: colors.surface,
                   child: const Icon(
                     CupertinoIcons.question,
                     color: AppColors.primaryContainer,
@@ -272,18 +279,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  InputDecoration _inputDecoration(String? hint) {
+  InputDecoration _inputDecoration(BuildContext context, String? hint) {
+    final colors = context.appColors;
     return InputDecoration(
       hintText: hint,
+      hintStyle: AppTextStyles.bodyMedium.copyWith(color: colors.inputHint),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: colors.inputFill,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: colors.inputBorder),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: colors.inputBorder),
       ),
     );
   }

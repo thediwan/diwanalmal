@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
+import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../models/dashboard_models.dart';
 
@@ -17,6 +18,7 @@ class DashboardGoalsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
 
     if (goals.isEmpty) return const SizedBox.shrink();
 
@@ -31,7 +33,7 @@ class DashboardGoalsSection extends StatelessWidget {
                 l10n.dashboardFinancialGoals,
                 style: AppTextStyles.bodyLarge.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimaryLight,
+                  color: colors.textPrimary,
                 ),
               ),
               const Spacer(),
@@ -68,6 +70,8 @@ class _GoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -85,7 +89,7 @@ class _GoalCard extends StatelessWidget {
                 goal.title,
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimaryLight,
+                  color: colors.textPrimary,
                 ),
               ),
             ),
@@ -107,7 +111,7 @@ class _GoalCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: goal.progressPercent / 100,
               minHeight: 10,
-              backgroundColor: const Color(0xFFE5E7EB),
+              backgroundColor: colors.divider,
               color: AppColors.dashboardPrimary,
             ),
           ),

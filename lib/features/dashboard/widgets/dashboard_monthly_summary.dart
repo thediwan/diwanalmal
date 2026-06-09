@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
+import '../../../core/extensions/context_theme.dart';
 import '../../../core/helpers/currency_formatter.dart';
 import '../../../core/theme/app_text_styles.dart';
 
@@ -84,7 +85,7 @@ class _SectionDivider extends StatelessWidget {
     return VerticalDivider(
       width: 1,
       thickness: 1,
-      color: const Color(0xFFE5E7EB),
+      color: context.appColors.divider,
     );
   }
 }
@@ -110,6 +111,8 @@ class _SummaryCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Column(
@@ -118,9 +121,8 @@ class _SummaryCell extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: AppTextStyles.labelOnLight.copyWith(
+            style: AppTextStyles.labelOnSurface(colors).copyWith(
               fontSize: 12,
-              color: const Color(0xFF6B7280),
               fontWeight: FontWeight.w500,
             ),
           ),

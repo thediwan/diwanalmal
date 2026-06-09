@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/extensions/context_l10n.dart';
+import '../../core/extensions/context_theme.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../providers/wallet_provider.dart';
 import 'widgets/wallet_list_card.dart';
@@ -48,7 +49,6 @@ class _WalletsScreenState extends State<WalletsScreen> {
     final l10n = context.l10n;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Consumer<WalletProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading && provider.treasuries.isEmpty) {
@@ -100,7 +100,7 @@ class _WalletsScreenState extends State<WalletsScreen> {
                     child: Center(
                       child: Text(
                         l10n.walletsSearchHint,
-                        style: const TextStyle(color: Color(0xFF6B7280)),
+                        style: TextStyle(color: context.appColors.textMuted),
                       ),
                     ),
                   )

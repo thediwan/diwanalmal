@@ -1,0 +1,32 @@
+---
+alwaysApply: true
+---
+
+Always keep colors centralized in dedicated theme/config files and never hardcode colors directly inside UI components.
+Use a global color system that can be reused across the entire project.
+Support light/dark themes through centralized theme management whenever possible.
+Keep typography, spacing, radius, shadows, and reusable design tokens in separate style files.
+Localization & Translations
+All translations must be stored in dedicated localization files.
+Never hardcode user-facing text directly inside components or pages.
+The project must support multi-language expansion from the beginning.
+Use translation keys with clear naming conventions.
+Keep translations organized by feature/module when appropriate.
+UI & Accessibility
+Ensure all text fields, labels, placeholders, buttons, and inputs have sufficient contrast against their backgrounds.
+Avoid low-contrast text combinations that reduce readability.
+Inputs must remain readable in all states (focused, disabled, error, success).
+Respect accessibility best practices for colors and typography.
+Code Quality
+Reusable logic must be extracted into shared utilities, services, hooks, or helpers.
+Avoid duplicated styles and repeated UI logic.
+Maintain clean folder structure and naming consistency.
+Prefer scalable and maintainable architecture over quick fixes.
+Before Implementing Any Feature
+
+Cursor must:
+
+Analyze existing architecture and follow the current project structure.
+Reuse existing theme, localization, and shared components whenever possible.
+Avoid introducing hardcoded values unless absolutely necessary.
+Ensure new code is production-ready, scalable, and maintainable.

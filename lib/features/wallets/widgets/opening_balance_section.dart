@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/helpers/currency_uniqueness.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
+import '../../../core/extensions/context_theme.dart';
+import '../../../core/theme/app_form_fields.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../models/currency.dart';
 
@@ -34,6 +37,7 @@ class OpeningBalanceSection extends StatelessWidget {
     required this.onCurrencyChanged,
     required this.usedCurrencyCodes,
     this.balanceFieldLabel,
+    this.isLoadingCurrencies = false,
   });
 
   final List<OpeningBalanceRowState> rows;
@@ -43,10 +47,16 @@ class OpeningBalanceSection extends StatelessWidget {
   final void Function(String rowId, String? currencyCode) onCurrencyChanged;
   final Set<String> usedCurrencyCodes;
   final String? balanceFieldLabel;
+  final bool isLoadingCurrencies;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
+    final uniqueCurrencies = uniqueCurrenciesByCode(currencies);
+    final canAddMoreRows =
+        uniqueCurrencies.isNotEmpty &&
+        usedCurrencyCodes.length < uniqueCurrencies.length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -54,48 +64,73 @@ class OpeningBalanceSection extends StatelessWidget {
         Text(
           l10n.walletFormOpeningBalance,
           style: AppTextStyles.label.copyWith(
-            color: AppColors.textSecondaryLight,
+            color: colors.textSecondary,
           ),
         ),
         const SizedBox(height: 10),
-        for (final row in rows) ...[
-          _OpeningBalanceRow(
-            row: row,
-            currencies: currencies,
-            usedCurrencyCodes: usedCurrencyCodes,
-            balanceFieldLabel: balanceFieldLabel,
-            onCurrencyChanged: (code) => onCurrencyChanged(row.id, code),
-            onRemove: rows.length > 1 ? () => onRemoveRow(row.id) : null,
+        if (isLoadingCurrencies)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          )
+        else if (uniqueCurrencies.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              l10n.walletFormNoCurrencies,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: colors.textSecondary,
+              ),
+            ),
+          )
+        else ...[
+          for (final row in rows) ...[
+            _OpeningBalanceRow(
+              key: ValueKey(row.id),
+              row: row,
+              currencies: uniqueCurrencies,
+              usedCurrencyCodes: usedCurrencyCodes,
+              balanceFieldLabel: balanceFieldLabel,
+              onCurrencyChanged: (code) => onCurrencyChanged(row.id, code),
+              onRemove: rows.length > 1 ? () => onRemoveRow(row.id) : null,
+            ),
+            const SizedBox(height: 10),
+          ],
+          OutlinedButton.icon(
+            onPressed: canAddMoreRows ? onAddRow : null,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.dashboardPrimary,
+              side: BorderSide(color: context.appColors.accentSurfaceBorder),
+              backgroundColor: context.appColors.accentSurface,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: const Icon(Icons.add_circle_outline, size: 20),
+            label: Text(
+              l10n.walletFormAddOpeningBalance,
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.dashboardPrimary,
+              ),
+            ),
           ),
-          const SizedBox(height: 10),
         ],
-        OutlinedButton.icon(
-          onPressed: onAddRow,
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.dashboardPrimary,
-            side: const BorderSide(color: Color(0xFFBFDBFE)),
-            backgroundColor: const Color(0xFFF0F5FF),
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          icon: const Icon(Icons.add_circle_outline, size: 20),
-          label: Text(
-            l10n.walletFormAddOpeningBalance,
-            style: AppTextStyles.bodyMedium.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.dashboardPrimary,
-            ),
-          ),
-        ),
       ],
     );
   }
 }
 
-class _OpeningBalanceRow extends StatelessWidget {
+class _OpeningBalanceRow extends StatefulWidget {
   const _OpeningBalanceRow({
+    super.key,
     required this.row,
     required this.currencies,
     required this.usedCurrencyCodes,
@@ -112,89 +147,219 @@ class _OpeningBalanceRow extends StatelessWidget {
   final VoidCallback? onRemove;
 
   @override
+  State<_OpeningBalanceRow> createState() => _OpeningBalanceRowState();
+}
+
+class _OpeningBalanceRowState extends State<_OpeningBalanceRow> {
+  String? _selectedCurrencyCode;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCurrencyCode = _resolveSelectedCode(notifyParent: true);
+  }
+
+  @override
+  void didUpdateWidget(covariant _OpeningBalanceRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final resolved = _resolveSelectedCode(notifyParent: false);
+    if (resolved != _selectedCurrencyCode) {
+      setState(() => _selectedCurrencyCode = resolved);
+      if (resolved != null &&
+          widget.row.currencyCode?.toUpperCase() != resolved) {
+        widget.onCurrencyChanged(resolved);
+      }
+    }
+  }
+
+  String? _firstAvailableCode() {
+    for (final currency in widget.currencies) {
+      final code = currency.code.toUpperCase();
+      final rowCode = _selectedCurrencyCode ?? widget.row.currencyCode?.toUpperCase();
+      final isUsedElsewhere = widget.usedCurrencyCodes.contains(code) &&
+          rowCode != code;
+      if (!isUsedElsewhere) return code;
+    }
+
+    return null;
+  }
+
+  String? _resolveSelectedCode({required bool notifyParent}) {
+    final current = widget.row.currencyCode?.toUpperCase();
+    if (current != null) {
+      final matches = widget.currencies.where(
+        (c) => c.code.toUpperCase() == current,
+      );
+      if (matches.length == 1) return current;
+    }
+
+    final fallback = _firstAvailableCode() ??
+        widget.currencies.firstOrNull?.code.toUpperCase();
+
+    if (fallback != null &&
+        notifyParent &&
+        widget.row.currencyCode?.toUpperCase() != fallback) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        widget.onCurrencyChanged(fallback);
+      });
+    }
+    return fallback;
+  }
+
+  List<DropdownMenuItem<String>> _buildItems() {
+    return widget.currencies.map((currency) {
+      final normalizedCode = currency.code.toUpperCase();
+      final rowCode = _selectedCurrencyCode;
+      final isUsedElsewhere = widget.usedCurrencyCodes.contains(normalizedCode) &&
+          rowCode != normalizedCode;
+
+      return DropdownMenuItem(
+        value: normalizedCode,
+        enabled: !isUsedElsewhere,
+        child: Text(
+          '${currency.name} (${currency.code})',
+          style: AppFormFields.inputTextStyleFor(context.appColors),
+        ),
+      );
+    }).toList();
+  }
+
+  String? _dropdownValue(
+    String? selectedCode,
+    List<DropdownMenuItem<String>> items,
+  ) {
+    if (selectedCode == null || items.isEmpty) return null;
+
+    final exactMatches =
+        items.where((item) => item.value == selectedCode).length;
+    if (exactMatches == 1) return selectedCode;
+
+    for (final item in items) {
+      if (item.enabled && item.value != null) {
+        return item.value;
+      }
+    }
+
+    return items.first.value;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final items = _buildItems();
+    final dropdownValue = _dropdownValue(_selectedCurrencyCode, items);
+
+    if (dropdownValue == null) {
+      return const SizedBox.shrink();
+    }
+
+    if (dropdownValue != _selectedCurrencyCode) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (_selectedCurrencyCode != dropdownValue) {
+          setState(() => _selectedCurrencyCode = dropdownValue);
+          widget.onCurrencyChanged(dropdownValue);
+        }
+      });
+    }
+
+    final colors = context.appColors;
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: colors.surfaceVariant,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: colors.cardBorder),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            flex: 5,
-            child: DropdownButtonFormField<String>(
-              initialValue: row.currencyCode,
-              isExpanded: true,
-              decoration: InputDecoration(
-                labelText: l10n.walletFormCurrency,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: InputDecorator(
+                  decoration: AppFormFields.decoration(
+                    context,
+                    labelText: l10n.walletFormCurrency,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      key: ValueKey(
+                        'currency-${widget.row.id}-$dropdownValue',
+                      ),
+                      value: dropdownValue,
+                      isExpanded: true,
+                      style: AppFormFields.inputTextStyleFor(context.appColors),
+                      dropdownColor: colors.dropdownBackground,
+                      icon: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: colors.textSecondary,
+                      ),
+                      items: items,
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _selectedCurrencyCode = value);
+                        widget.onCurrencyChanged(value);
+                      },
+                    ),
+                  ),
                 ),
-                filled: true,
-                fillColor: Colors.white,
               ),
-              items: currencies.map((currency) {
-                final isUsedElsewhere = usedCurrencyCodes.contains(currency.code) &&
-                    row.currencyCode != currency.code;
-                return DropdownMenuItem(
-                  value: currency.code,
-                  enabled: !isUsedElsewhere,
-                  child: Text('${currency.name} (${currency.code})'),
-                );
-              }).toList(),
-              onChanged: onCurrencyChanged,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            flex: 4,
-            child: TextFormField(
-              controller: row.balanceController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+              if (widget.onRemove != null) ...[
+                const SizedBox(width: 4),
+                IconButton(
+                  onPressed: widget.onRemove,
+                  icon: const Icon(Icons.close, size: 20),
+                  color: colors.textSecondary,
+                  tooltip: l10n.commonDelete,
+                ),
               ],
-              decoration: InputDecoration(
-                labelText: balanceFieldLabel ?? l10n.walletFormOpeningBalance,
-                hintText: '0.00',
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return l10n.walletFormBalanceRequired;
-                }
-                if (double.tryParse(value) == null) {
-                  return l10n.walletFormInvalidNumber;
-                }
-                return null;
-              },
-            ),
+            ],
           ),
-          if (onRemove != null) ...[
-            const SizedBox(width: 4),
-            IconButton(
-              onPressed: onRemove,
-              icon: const Icon(Icons.close, size: 20),
-              color: AppColors.textSecondaryLight,
-              tooltip: l10n.commonDelete,
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: widget.row.balanceController,
+            style: AppFormFields.inputTextStyleFor(context.appColors),
+            keyboardType: const TextInputType.numberWithOptions(
+              decimal: true,
+              signed: true,
             ),
-          ],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+            ],
+            decoration: AppFormFields.decoration(
+              context,
+              labelText:
+                  widget.balanceFieldLabel ?? l10n.walletFormOpeningBalance,
+              hintText: l10n.balanceHintZero,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 12,
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty || value == '-') {
+                return l10n.walletFormBalanceRequired;
+              }
+              if (double.tryParse(value) == null) {
+                return l10n.walletFormInvalidNumber;
+              }
+              return null;
+            },
+          ),
         ],
       ),
     );
   }
+}
+
+extension _FirstOrNull<E> on List<E> {
+  E? get firstOrNull => isEmpty ? null : first;
 }

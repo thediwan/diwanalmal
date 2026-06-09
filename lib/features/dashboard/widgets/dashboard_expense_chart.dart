@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
+import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/app_theme_colors.dart';
 import '../models/dashboard_models.dart';
 
 /// Expense analysis: header row + area spline chart (custom painter).
@@ -26,6 +28,7 @@ class _DashboardExpenseChartState extends State<DashboardExpenseChart> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
     final points = _isDaily ? widget.dailyPoints : widget.weeklyPoints;
 
     return Padding(
@@ -44,15 +47,14 @@ class _DashboardExpenseChartState extends State<DashboardExpenseChart> {
                       l10n.dashboardExpenseAnalysis,
                       style: AppTextStyles.bodyLarge.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimaryLight,
+                        color: colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       l10n.dashboardLast30Days,
-                      style: AppTextStyles.labelOnLight.copyWith(
+                      style: AppTextStyles.captionOnSurface(colors).copyWith(
                         fontSize: 12,
-                        color: const Color(0xFF9CA3AF),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -65,6 +67,7 @@ class _DashboardExpenseChartState extends State<DashboardExpenseChart> {
                 dailyLabel: l10n.dashboardDaily,
                 weeklyLabel: l10n.dashboardWeekly,
                 onChanged: (daily) => setState(() => _isDaily = daily),
+                colors: colors,
               ),
             ],
           ),
@@ -81,9 +84,8 @@ class _DashboardExpenseChartState extends State<DashboardExpenseChart> {
                       .map(
                         (p) => Text(
                           p.label,
-                          style: AppTextStyles.captionOnLight.copyWith(
+                          style: AppTextStyles.captionOnSurface(colors).copyWith(
                             fontSize: 11,
-                            color: const Color(0xFF9CA3AF),
                           ),
                         ),
                       )
@@ -104,12 +106,14 @@ class _PeriodToggle extends StatelessWidget {
     required this.dailyLabel,
     required this.weeklyLabel,
     required this.onChanged,
+    required this.colors,
   });
 
   final bool isDaily;
   final String dailyLabel;
   final String weeklyLabel;
   final ValueChanged<bool> onChanged;
+  final AppThemeColors colors;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +121,7 @@ class _PeriodToggle extends StatelessWidget {
       width: 140,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F4F6),
+        color: colors.surfaceVariant,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
@@ -127,6 +131,7 @@ class _PeriodToggle extends StatelessWidget {
               label: dailyLabel,
               selected: isDaily,
               onTap: () => onChanged(true),
+              colors: colors,
             ),
           ),
           Expanded(
@@ -134,6 +139,7 @@ class _PeriodToggle extends StatelessWidget {
               label: weeklyLabel,
               selected: !isDaily,
               onTap: () => onChanged(false),
+              colors: colors,
             ),
           ),
         ],
@@ -147,16 +153,18 @@ class _ToggleChip extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    required this.colors,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
+  final AppThemeColors colors;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? Colors.white : Colors.transparent,
+      color: selected ? colors.surface : Colors.transparent,
       elevation: selected ? 1 : 0,
       shadowColor: Colors.black26,
       borderRadius: BorderRadius.circular(999),
@@ -169,9 +177,7 @@ class _ToggleChip extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodySmall.copyWith(
-              color: selected
-                  ? AppColors.textPrimaryLight
-                  : const Color(0xFF9CA3AF),
+              color: selected ? colors.textPrimary : colors.textMuted,
               fontSize: 13,
               fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             ),

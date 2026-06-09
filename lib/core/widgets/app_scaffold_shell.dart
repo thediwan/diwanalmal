@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../constants/app_colors.dart';
 import '../extensions/context_l10n.dart';
+import '../extensions/context_theme.dart';
 
 /// Bottom navigation: home, transactions, wallets, settings (design spec).
 class AppScaffoldShell extends StatelessWidget {
@@ -38,15 +39,16 @@ class AppScaffoldShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colors.scaffoldBackground,
       body: SafeArea(
         bottom: false,
         child: child,
       ),
       bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.white,
+        backgroundColor: colors.navBarBackground,
         indicatorColor: AppColors.primaryContainer.withValues(alpha: 0.12),
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) => _onDestinationSelected(context, index),

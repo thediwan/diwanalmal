@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 
 import '../../core/extensions/context_l10n.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/theme/app_form_fields.dart';
+import '../../core/extensions/context_theme.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/auth_form_card.dart';
@@ -69,6 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
+    final inputStyle = AppFormFields.inputTextStyleOf(context);
 
     return Scaffold(
       body: AuthBackground(
@@ -96,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text(
                           l10n.authLoginSubtitle,
                           style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textSecondaryLight,
+                            color: colors.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 22),
@@ -107,20 +111,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 8),
                         TextFormField(
                           controller: _emailController,
+                          style: inputStyle,
                           keyboardType: TextInputType.emailAddress,
                           textDirection: TextDirection.ltr,
                           textAlign: TextAlign.left,
                           decoration: InputDecoration(
                             hintText: l10n.authEmailHint,
                             hintStyle: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.textSecondaryLight,
+                              color: colors.inputHint,
                             ),
-                            prefixIcon: const Icon(
+                            prefixIcon: Icon(
                               CupertinoIcons.person,
-                              color: AppColors.textSecondaryLight,
+                              color: colors.textSecondary,
                             ),
                             filled: true,
-                            fillColor: const Color(0xFFF2F4F6),
+                            fillColor: colors.inputFill,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -155,11 +160,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 8),
                         TextFormField(
                           controller: _passwordController,
+                          style: inputStyle,
                           obscureText: _obscure,
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(
+                            prefixIcon: Icon(
                               CupertinoIcons.lock,
-                              color: AppColors.textSecondaryLight,
+                              color: colors.textSecondary,
                             ),
                             suffixIcon: IconButton(
                               onPressed: () => setState(() => _obscure = !_obscure),
@@ -167,11 +173,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _obscure
                                     ? CupertinoIcons.eye
                                     : CupertinoIcons.eye_slash,
-                                color: AppColors.textSecondaryLight,
+                                color: colors.textSecondary,
                               ),
                             ),
                             filled: true,
-                            fillColor: const Color(0xFFF2F4F6),
+                            fillColor: colors.inputFill,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -201,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: FilledButton(
                             style: FilledButton.styleFrom(
                               backgroundColor: AppColors.primaryContainer,
-                              foregroundColor: Colors.white,
+                              foregroundColor: colors.onPrimary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -237,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondaryLight,
+                        color: colors.textSecondary,
                       ),
                       children: [
                         TextSpan(text: l10n.authNoAccount),

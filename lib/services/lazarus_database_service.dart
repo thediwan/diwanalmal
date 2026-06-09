@@ -4,6 +4,7 @@ import '../database/lazarus_database.dart';
 import '../database/seed/database_seed_service.dart';
 import '../models/currency.dart' as app;
 import '../models/wallet.dart' as app;
+import '../core/helpers/currency_uniqueness.dart';
 import 'hive_service.dart';
 
 /// Bootstraps Lazarus SQLite, migrates legacy Hive data, and seeds demo rows.
@@ -30,12 +31,22 @@ class LazarusDatabaseService {
     final service = LazarusDatabaseService._(db);
 
     await service._migrateHiveIfNeeded(hiveService);
-    final seed = DatabaseSeedService(db);
-    await seed.seedIfEmpty();
-    await seed.ensureDashboardMockupData();
 
     _instance = service;
     return service;
+  }
+
+  /// Seeds demo financial data after the user picks a base currency.
+  Future<void> seedDemoDataAfterBaseCurrency({
+    required String userId,
+    required String baseCurrencyId,
+    required String baseCode,
+  }) {
+    return DatabaseSeedService(database).seedDemoDataAfterBaseCurrencySelection(
+      userId: userId,
+      baseCurrencyId: baseCurrencyId,
+      baseCode: baseCode,
+    );
   }
 
   Future<String?> getActiveUserId() => database.getActiveUserId();
@@ -65,23 +76,33 @@ class LazarusDatabaseService {
             mode: InsertMode.insertOrIgnore,
           );
 
+      final seenCodes = <String>{};
       String? baseId;
+      var baseAssigned = false;
       for (final c in hiveCurrencies) {
+        final code = normalizeCurrencyCode(c.code);
+        if (!seenCodes.add(code)) continue;
+
+        final isBase = c.isBase && !baseAssigned;
+        if (isBase) {
+          baseId = c.id;
+          baseAssigned = true;
+        }
+
         await database.into(database.currencies).insert(
               CurrenciesCompanion.insert(
                 id: c.id,
                 userId: userId,
-                code: c.code,
+                code: code,
                 name: c.name,
                 symbol: c.symbol,
                 rateToBase: c.rateToBase,
-                isBase: Value(c.isBase),
+                isBase: Value(isBase),
                 createdAt: c.createdAt,
                 updatedAt: now,
               ),
               mode: InsertMode.insertOrIgnore,
             );
-        if (c.isBase) baseId = c.id;
       }
 
       if (baseId != null) {

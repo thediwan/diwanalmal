@@ -538,4 +538,145 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get walletFormAccountHasTransactions =>
       'Cannot remove a currency linked to transactions or transfers';
+
+  @override
+  String get walletFormNoCurrencies =>
+      'No currencies found. Add a currency from settings first.';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsCurrencies => 'Currencies';
+
+  @override
+  String settingsBaseCurrency(String code) {
+    return 'Base currency: $code';
+  }
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
+  String get settingsThemeSystem => 'System';
+
+  @override
+  String get settingsAppLock => 'App lock';
+
+  @override
+  String get settingsAppLockSubtitle =>
+      'Requires PIN or biometric to enter again';
+
+  @override
+  String get settingsBackup => 'Backup';
+
+  @override
+  String get settingsBackupSubtitle => 'Available in phase 8';
+
+  @override
+  String get currenciesTitle => 'Currencies';
+
+  @override
+  String get currencyDeleteTitle => 'Delete currency';
+
+  @override
+  String currencyDeleteMessage(String name, String code) {
+    return 'Delete $name ($code)?';
+  }
+
+  @override
+  String currencyExchangeRateBase(String code) {
+    return '$code — exchange rate: 1.0';
+  }
+
+  @override
+  String get currencyFormEditTitle => 'Edit currency';
+
+  @override
+  String get currencyFormNewTitle => 'New currency';
+
+  @override
+  String get currencyFormPresetHint => 'Pick from the list or enter manually';
+
+  @override
+  String get currencyFormCodeLabel => 'Currency code';
+
+  @override
+  String get currencyFormCodeHint => 'TRY';
+
+  @override
+  String get currencyFormInvalidCode => 'Invalid code';
+
+  @override
+  String get currencyFormNameLabel => 'Currency name';
+
+  @override
+  String get currencyFormNameHint => 'Turkish lira';
+
+  @override
+  String get currencyFormSymbolLabel => 'Symbol';
+
+  @override
+  String get currencyFormSymbolHint => '₺';
+
+  @override
+  String get currencyFormSymbolRequired => 'Symbol is required';
+
+  @override
+  String currencyFormRateLabel(String baseCode) {
+    return 'Exchange rate vs $baseCode';
+  }
+
+  @override
+  String get currencyFormRateHint => '0.025';
+
+  @override
+  String currencyFormRateHelper(String code, String baseCode) {
+    return '1 $code = X $baseCode';
+  }
+
+  @override
+  String get currencyFormRateRequired => 'Exchange rate is required';
+
+  @override
+  String get currencyFormPositiveNumber => 'Enter a positive number';
+
+  @override
+  String currencyFormPreview(String code, String approx) {
+    return '100 $code $approx';
+  }
+
+  @override
+  String get currencyFormAdd => 'Add';
+
+  @override
+  String get currencyFormSave => 'Save';
+
+  @override
+  String get dashboardRetry => 'Retry';
+
+  @override
+  String get balanceHintZero => '0.00';
+
+  @override
+  String get onboardingContinue => 'Continue';
+
+  @override
+  String get currencyBaseBadge => 'Base';
+
+  @override
+  String get currencyBaseAlreadyExists =>
+      'A base currency already exists. Only one base currency is allowed.';
+
+  @override
+  String get currencyAlreadyExists => 'Currency already exists';
+
+  @override
+  String get currenciesEmpty => 'No currencies yet.';
 }

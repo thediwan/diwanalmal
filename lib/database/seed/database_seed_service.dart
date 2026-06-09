@@ -2,9 +2,12 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../core/constants/database_constants.dart';
+import '../../core/helpers/currency_uniqueness.dart';
 import '../lazarus_database.dart';
 
 /// Demo data aligned with dashboard and wallets screen mockups.
+///
+/// Runs only after the user selects a base currency — never on cold start.
 class DatabaseSeedService {
   DatabaseSeedService(this._db);
 
@@ -12,11 +15,6 @@ class DatabaseSeedService {
   final _uuid = const Uuid();
 
   static const _mockupMarkerTitle = 'بقالة المجد';
-
-  static const _usdId = 'cur-usd-0001';
-  static const _sypId = 'cur-syp-0001';
-  static const _eurId = 'cur-eur-0001';
-  static const _usdtId = 'cur-usdt-0001';
 
   static const _walCashId = 'wal-cash';
   static const _walBankId = 'wal-bank';
@@ -28,30 +26,37 @@ class DatabaseSeedService {
   static const _goalCarId = 'goal-car-01';
   static const _debtAhmedId = 'debt-ahmed-01';
 
-  static const _rateUsd = 1.0;
-  static const _rateSyp = 0.0000666667;
-  static const _rateEur = 1.0869565;
-  static const _rateUsdt = 1.0;
+  /// Reference value of 1 unit in USD (for cross-rate calculation).
+  static const Map<String, double> _usdReferenceRates = {
+    'USD': 1.0,
+    'SYP': 0.0000666667,
+    'EUR': 1.0869565,
+    'USDT': 1.0,
+  };
 
-  /// Returns true if initial seed ran (no user existed).
-  Future<bool> seedIfEmpty() async {
-    final existing = await _db.getActiveUserId();
-    if (existing != null) return false;
-    await _insertDemoUserShell();
-    await _insertMockupFinancialData(DatabaseConstants.seedUserId);
-    return true;
-  }
+  static const List<String> _demoCurrencyCodes = [
+    'USD',
+    'SYP',
+    'EUR',
+    'USDT',
+  ];
 
-  /// Ensures mockup rows exist for the active SQL user (treasury model).
-  Future<void> ensureDashboardMockupData() async {
-    final existingId = await _db.getActiveUserId();
-    final String userId;
-    if (existingId == null) {
-      await _insertDemoUserShell();
-      userId = DatabaseConstants.seedUserId;
-    } else {
-      userId = existingId;
-    }
+  static const Map<String, ({String name, String symbol})> _currencyMeta = {
+    'USD': (name: 'دولار أمريكي', symbol: r'$'),
+    'SYP': (name: 'الليرة السورية', symbol: 'ل.س'),
+    'EUR': (name: 'اليورو', symbol: '€'),
+    'USDT': (name: 'تيثر', symbol: 'USDT'),
+  };
+
+  /// Inserts demo wallets, transactions, and secondary currencies once.
+  ///
+  /// [baseCurrencyId] is the row created during onboarding (not a preset id).
+  Future<void> seedDemoDataAfterBaseCurrencySelection({
+    required String userId,
+    required String baseCurrencyId,
+    required String baseCode,
+  }) async {
+    final normalizedBase = normalizeCurrencyCode(baseCode);
 
     final hasMockup = await (_db.select(_db.transactions)
           ..where((t) => t.userId.equals(userId))
@@ -59,129 +64,55 @@ class DatabaseSeedService {
           ..limit(1))
         .getSingleOrNull();
 
-    final hasTreasuryAccounts = await (_db.select(_db.walletCurrencyAccounts)
-          ..limit(1))
-        .getSingleOrNull();
+    if (hasMockup != null) return;
 
-    if (hasMockup != null && hasTreasuryAccounts != null) return;
-
-    await _clearDemoFinancialData(userId);
-    await _insertMockupFinancialData(userId);
+    await _insertMockupFinancialData(
+      userId: userId,
+      baseCurrencyId: baseCurrencyId,
+      baseCode: normalizedBase,
+    );
   }
 
-  Future<void> _insertDemoUserShell() async {
-    final now = DateTime.now();
-    await _db.into(_db.appUsers).insert(
-          AppUsersCompanion.insert(
-            id: DatabaseConstants.seedUserId,
-            fullName: 'مستخدم تجريبي',
-            email: const Value('demo@baytalmal.app'),
-            createdAt: now,
-            updatedAt: now,
-          ),
-          mode: InsertMode.insertOrIgnore,
-        );
-    await _db.into(_db.authLocal).insert(
-          AuthLocalCompanion.insert(
-            id: _uuid.v4(),
-            userId: DatabaseConstants.seedUserId,
-            username: 'demo',
-            passwordHash: 'local:demo123',
-            createdAt: now,
-            updatedAt: now,
-          ),
-          mode: InsertMode.insertOrIgnore,
-        );
-    await _db.into(_db.securitySettings).insert(
-          SecuritySettingsCompanion.insert(
-            id: _uuid.v4(),
-            userId: DatabaseConstants.seedUserId,
-            pinEnabled: const Value(true),
-            pinHash: const Value('local:1234'),
-            createdAt: now,
-            updatedAt: now,
-          ),
-          mode: InsertMode.insertOrIgnore,
-        );
-  }
-
-  Future<void> _clearDemoFinancialData(String userId) async {
-    await _db.transaction(() async {
-      await (_db.delete(_db.debtPayments)).go();
-      await (_db.delete(_db.debts)..where((d) => d.userId.equals(userId))).go();
-      await (_db.delete(_db.transactions)..where((t) => t.userId.equals(userId)))
-          .go();
-      await (_db.delete(_db.goals)..where((g) => g.userId.equals(userId))).go();
-      await (_db.delete(_db.walletCurrencyAccounts)).go();
-      await (_db.delete(_db.wallets)..where((w) => w.userId.equals(userId))).go();
-      await (_db.delete(_db.categories)..where((c) => c.userId.equals(userId)))
-          .go();
-      await (_db.delete(_db.currencies)..where((c) => c.userId.equals(userId)))
-          .go();
-      await (_db.delete(_db.userSettings)..where((s) => s.userId.equals(userId)))
-          .go();
-    });
-  }
-
-  Future<void> _insertMockupFinancialData(String userId) async {
+  Future<void> _insertMockupFinancialData({
+    required String userId,
+    required String baseCurrencyId,
+    required String baseCode,
+  }) async {
     final now = DateTime.now();
     final monthStart = DateTime(now.year, now.month);
     final yesterday9am = DateTime(now.year, now.month, now.day - 1, 9);
 
+    String currencyId(String code) {
+      final normalized = normalizeCurrencyCode(code);
+      if (normalized == baseCode) return baseCurrencyId;
+      return 'cur-${normalized.toLowerCase()}-0001';
+    }
+
+    double rateToBase(String code) {
+      final normalized = normalizeCurrencyCode(code);
+      final codeUsd = _usdReferenceRates[normalized] ?? 1.0;
+      final baseUsd = _usdReferenceRates[baseCode] ?? 1.0;
+      return codeUsd / baseUsd;
+    }
+
     await _db.transaction(() async {
-      await _insertCurrency(
-        userId: userId,
-        id: _usdId,
-        code: 'USD',
-        name: 'دولار أمريكي',
-        symbol: r'$',
-        rate: _rateUsd,
-        isBase: true,
-        now: now,
-      );
-      await _insertCurrency(
-        userId: userId,
-        id: _sypId,
-        code: 'SYP',
-        name: 'الليرة السورية',
-        symbol: 'ل.س',
-        rate: _rateSyp,
-        isBase: false,
-        now: now,
-      );
-      await _insertCurrency(
-        userId: userId,
-        id: _eurId,
-        code: 'EUR',
-        name: 'اليورو',
-        symbol: '€',
-        rate: _rateEur,
-        isBase: false,
-        now: now,
-      );
-      await _insertCurrency(
-        userId: userId,
-        id: _usdtId,
-        code: 'USDT',
-        name: 'تيثر',
-        symbol: 'USDT',
-        rate: _rateUsdt,
-        isBase: false,
-        now: now,
-      );
+      for (final code in _demoCurrencyCodes) {
+        final normalized = normalizeCurrencyCode(code);
+        if (normalized == baseCode) continue;
 
-      await _db.into(_db.userSettings).insert(
-            UserSettingsCompanion.insert(
-              id: 'settings-$userId',
-              userId: userId,
-              baseCurrencyId: _usdId,
-              createdAt: now,
-              updatedAt: now,
-            ),
-            mode: InsertMode.insertOrReplace,
-          );
+        final meta = _currencyMeta[normalized]!;
+        await _insertCurrency(
+          userId: userId,
+          id: currencyId(normalized),
+          code: normalized,
+          name: meta.name,
+          symbol: meta.symbol,
+          rate: rateToBase(normalized),
+          isBase: false,
+          now: now,
+        );
+      }
 
-      // محفظة كاش — سوري + دولار
       await _insertTreasury(
         userId: userId,
         id: _walCashId,
@@ -191,12 +122,19 @@ class DatabaseSeedService {
         icon: '💵',
         now: now,
         accounts: [
-          (accountId: 'acc-cash-syp', currencyId: _sypId, opening: 7500000.0),
-          (accountId: 'acc-cash-usd', currencyId: _usdId, opening: 3500.0),
+          (
+            accountId: 'acc-cash-syp',
+            currencyId: currencyId('SYP'),
+            opening: 7500000.0,
+          ),
+          (
+            accountId: 'acc-cash-usd',
+            currencyId: currencyId('USD'),
+            opening: 3500.0,
+          ),
         ],
       );
 
-      // محفظة بنك — دولار + يورو
       await _insertTreasury(
         userId: userId,
         id: _walBankId,
@@ -206,8 +144,16 @@ class DatabaseSeedService {
         icon: '🏦',
         now: now,
         accounts: [
-          (accountId: 'acc-bank-usd', currencyId: _usdId, opening: 6000.0),
-          (accountId: 'acc-bank-eur', currencyId: _eurId, opening: 800.0),
+          (
+            accountId: 'acc-bank-usd',
+            currencyId: currencyId('USD'),
+            opening: 6000.0,
+          ),
+          (
+            accountId: 'acc-bank-eur',
+            currencyId: currencyId('EUR'),
+            opening: 800.0,
+          ),
         ],
       );
 
@@ -220,7 +166,11 @@ class DatabaseSeedService {
         icon: '₿',
         now: now,
         accounts: [
-          (accountId: 'acc-crypto-usdt', currencyId: _usdtId, opening: 1449.0),
+          (
+            accountId: 'acc-crypto-usdt',
+            currencyId: currencyId('USDT'),
+            opening: 1449.0,
+          ),
         ],
       );
 
@@ -233,7 +183,11 @@ class DatabaseSeedService {
         icon: '✈️',
         now: now,
         accounts: [
-          (accountId: 'acc-travel-usd', currencyId: _usdId, opening: 500.0),
+          (
+            accountId: 'acc-travel-usd',
+            currencyId: currencyId('USD'),
+            opening: 500.0,
+          ),
         ],
       );
 
@@ -266,6 +220,9 @@ class DatabaseSeedService {
             mode: InsertMode.insertOrReplace,
           );
 
+      final sypRate = rateToBase('SYP');
+      final usdRate = rateToBase('USD');
+
       await _insertTransaction(
         userId: userId,
         id: 'tx-grocery-01',
@@ -274,9 +231,9 @@ class DatabaseSeedService {
         type: DatabaseConstants.txExpense,
         title: _mockupMarkerTitle,
         amount: 225000,
-        currencyId: _sypId,
-        rate: _rateSyp,
-        baseAmount: 15,
+        currencyId: currencyId('SYP'),
+        rate: sypRate,
+        baseAmount: 225000 * sypRate,
         transactionDate: now.subtract(const Duration(hours: 2)),
         createdAt: now,
       );
@@ -289,9 +246,9 @@ class DatabaseSeedService {
         type: DatabaseConstants.txIncome,
         title: 'راتب الشهر',
         amount: 1500,
-        currencyId: _usdId,
-        rate: _rateUsd,
-        baseAmount: 1500,
+        currencyId: currencyId('USD'),
+        rate: usdRate,
+        baseAmount: 1500 * usdRate,
         transactionDate: yesterday9am,
         createdAt: now,
       );
@@ -304,9 +261,9 @@ class DatabaseSeedService {
         type: DatabaseConstants.txExpense,
         title: 'مصروف متفرق',
         amount: 235,
-        currencyId: _usdId,
-        rate: _rateUsd,
-        baseAmount: 235,
+        currencyId: currencyId('USD'),
+        rate: usdRate,
+        baseAmount: 235 * usdRate,
         transactionDate: monthStart.add(const Duration(days: 5)),
         createdAt: now,
       );
@@ -319,9 +276,9 @@ class DatabaseSeedService {
         type: DatabaseConstants.txExpense,
         title: 'مصروف سفر',
         amount: 750,
-        currencyId: _usdId,
-        rate: _rateUsd,
-        baseAmount: 750,
+        currencyId: currencyId('USD'),
+        rate: usdRate,
+        baseAmount: 750 * usdRate,
         transactionDate: monthStart.add(const Duration(days: 2)),
         createdAt: now,
       );
@@ -340,9 +297,9 @@ class DatabaseSeedService {
           type: DatabaseConstants.txExpense,
           title: 'مصروف',
           amount: entry.base,
-          currencyId: _usdId,
-          rate: _rateUsd,
-          baseAmount: entry.base,
+          currencyId: currencyId('USD'),
+          rate: usdRate,
+          baseAmount: entry.base * usdRate,
           transactionDate: now.subtract(Duration(days: entry.days)),
           createdAt: now,
         );
@@ -355,9 +312,9 @@ class DatabaseSeedService {
               personName: 'أحمد',
               type: DatabaseConstants.debtIOwe,
               amount: 100,
-              currencyId: _usdId,
-              exchangeRate: _rateUsd,
-              baseAmount: 100,
+              currencyId: currencyId('USD'),
+              exchangeRate: usdRate,
+              baseAmount: 100 * usdRate,
               createdAt: now,
               updatedAt: now,
             ),
@@ -369,9 +326,9 @@ class DatabaseSeedService {
               id: _uuid.v4(),
               debtId: _debtAhmedId,
               amount: 50,
-              currencyId: _usdId,
-              exchangeRate: _rateUsd,
-              baseAmount: 50,
+              currencyId: currencyId('USD'),
+              exchangeRate: usdRate,
+              baseAmount: 50 * usdRate,
               paymentDate: now.subtract(const Duration(days: 3)),
               createdAt: now,
             ),
@@ -384,7 +341,7 @@ class DatabaseSeedService {
               title: 'شراء سيارة',
               targetAmount: 15000,
               savedAmount: const Value(3600),
-              currencyId: _usdId,
+              currencyId: currencyId('USD'),
               createdAt: now,
               updatedAt: now,
             ),
@@ -450,7 +407,7 @@ class DatabaseSeedService {
           CurrenciesCompanion.insert(
             id: id,
             userId: userId,
-            code: code,
+            code: normalizeCurrencyCode(code),
             name: name,
             symbol: symbol,
             rateToBase: rate,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../constants/app_colors.dart';
+import 'app_theme_colors.dart';
 
 /// Typography helpers based on design system.
 abstract final class AppTextStyles {
@@ -38,17 +39,57 @@ abstract final class AppTextStyles {
     fontWeight: FontWeight.w500,
   );
 
-  /// Small captions on white backgrounds (dashboard labels, hints).
+  /// Small captions on light/dark surfaces.
+  static TextStyle captionOnSurface(AppThemeColors colors) => bodySmall.copyWith(
+        color: colors.textMuted,
+        fontWeight: FontWeight.w500,
+        fontSize: 12,
+      );
+
+  /// Section labels on surfaces.
+  static TextStyle labelOnSurface(AppThemeColors colors) => label.copyWith(
+        color: colors.textSecondary,
+        fontWeight: FontWeight.w600,
+        fontSize: 13,
+      );
+
+  /// Typed text inside form fields — dark for readability.
+  static TextStyle inputTextStyleFor(AppThemeColors colors) => bodyLarge.copyWith(
+        color: colors.inputText,
+        fontWeight: FontWeight.w600,
+        fontSize: 15,
+      );
+
+  /// Placeholder / hint text inside form fields.
+  static TextStyle inputHint = bodyMedium.copyWith(
+    color: AppColors.textSecondaryLight,
+    fontWeight: FontWeight.w400,
+  );
+
+  /// Floating labels on form fields.
+  static TextStyle inputLabel = label.copyWith(
+    color: AppColors.textPrimaryLight,
+    fontWeight: FontWeight.w600,
+  );
+
+  /// @deprecated Use [captionOnSurface] with theme colors.
   static TextStyle captionOnLight = bodySmall.copyWith(
     color: AppColors.textSecondaryLight,
     fontWeight: FontWeight.w500,
     fontSize: 12,
   );
 
-  /// Section labels on white backgrounds.
+  /// @deprecated Use [labelOnSurface] with theme colors.
   static TextStyle labelOnLight = label.copyWith(
     color: AppColors.textSecondaryLight,
     fontWeight: FontWeight.w600,
     fontSize: 13,
+  );
+
+  /// @deprecated Use [inputTextStyleFor].
+  static TextStyle inputText = bodyLarge.copyWith(
+    color: AppColors.inputTextLight,
+    fontWeight: FontWeight.w600,
+    fontSize: 15,
   );
 }

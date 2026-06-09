@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/extensions/context_theme.dart';
+
 /// Subtle horizontal rule between dashboard sections.
 class DashboardSectionDivider extends StatelessWidget {
   const DashboardSectionDivider({super.key});
@@ -8,10 +10,10 @@ class DashboardSectionDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-      child: const Divider(
+      child: Divider(
         height: 1,
         thickness: 1,
-        color: Color(0xFFE5E7EB),
+        color: context.appColors.divider,
       ),
     );
   }

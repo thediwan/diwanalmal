@@ -1099,6 +1099,258 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'لا يمكن حذف عملة مرتبطة بمعاملات أو تحويلات'**
   String get walletFormAccountHasTransactions;
+
+  /// No description provided for @walletFormNoCurrencies.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد عملات. أضف عملة من الإعدادات أولاً.'**
+  String get walletFormNoCurrencies;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإعدادات'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsCurrencies.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملات'**
+  String get settingsCurrencies;
+
+  /// No description provided for @settingsBaseCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملة الرئيسية: {code}'**
+  String settingsBaseCurrency(String code);
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In ar, this message translates to:
+  /// **'المظهر'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاتح'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In ar, this message translates to:
+  /// **'داكن'**
+  String get settingsThemeDark;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In ar, this message translates to:
+  /// **'تلقائي'**
+  String get settingsThemeSystem;
+
+  /// No description provided for @settingsAppLock.
+  ///
+  /// In ar, this message translates to:
+  /// **'قفل التطبيق'**
+  String get settingsAppLock;
+
+  /// No description provided for @settingsAppLockSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'يتطلب PIN أو البصمة للدخول مجدداً'**
+  String get settingsAppLockSubtitle;
+
+  /// No description provided for @settingsBackup.
+  ///
+  /// In ar, this message translates to:
+  /// **'النسخ الاحتياطي'**
+  String get settingsBackup;
+
+  /// No description provided for @settingsBackupSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'متاح في المرحلة 8'**
+  String get settingsBackupSubtitle;
+
+  /// No description provided for @currenciesTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملات'**
+  String get currenciesTitle;
+
+  /// No description provided for @currencyDeleteTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف العملة'**
+  String get currencyDeleteTitle;
+
+  /// No description provided for @currencyDeleteMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف {name} ({code})؟'**
+  String currencyDeleteMessage(String name, String code);
+
+  /// No description provided for @currencyExchangeRateBase.
+  ///
+  /// In ar, this message translates to:
+  /// **'{code} — سعر الصرف: 1.0'**
+  String currencyExchangeRateBase(String code);
+
+  /// No description provided for @currencyFormEditTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل العملة'**
+  String get currencyFormEditTitle;
+
+  /// No description provided for @currencyFormNewTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'عملة جديدة'**
+  String get currencyFormNewTitle;
+
+  /// No description provided for @currencyFormPresetHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر من القائمة أو أدخل يدوياً'**
+  String get currencyFormPresetHint;
+
+  /// No description provided for @currencyFormCodeLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'رمز العملة'**
+  String get currencyFormCodeLabel;
+
+  /// No description provided for @currencyFormCodeHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'TRY'**
+  String get currencyFormCodeHint;
+
+  /// No description provided for @currencyFormInvalidCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'رمز غير صالح'**
+  String get currencyFormInvalidCode;
+
+  /// No description provided for @currencyFormNameLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم العملة'**
+  String get currencyFormNameLabel;
+
+  /// No description provided for @currencyFormNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ليرة تركية'**
+  String get currencyFormNameHint;
+
+  /// No description provided for @currencyFormSymbolLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرمز'**
+  String get currencyFormSymbolLabel;
+
+  /// No description provided for @currencyFormSymbolHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'₺'**
+  String get currencyFormSymbolHint;
+
+  /// No description provided for @currencyFormSymbolRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرمز مطلوب'**
+  String get currencyFormSymbolRequired;
+
+  /// No description provided for @currencyFormRateLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعر الصرف مقابل {baseCode}'**
+  String currencyFormRateLabel(String baseCode);
+
+  /// No description provided for @currencyFormRateHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'0.025'**
+  String get currencyFormRateHint;
+
+  /// No description provided for @currencyFormRateHelper.
+  ///
+  /// In ar, this message translates to:
+  /// **'1 {code} = X {baseCode}'**
+  String currencyFormRateHelper(String code, String baseCode);
+
+  /// No description provided for @currencyFormRateRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعر الصرف مطلوب'**
+  String get currencyFormRateRequired;
+
+  /// No description provided for @currencyFormPositiveNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل رقماً موجباً'**
+  String get currencyFormPositiveNumber;
+
+  /// No description provided for @currencyFormPreview.
+  ///
+  /// In ar, this message translates to:
+  /// **'100 {code} {approx}'**
+  String currencyFormPreview(String code, String approx);
+
+  /// No description provided for @currencyFormAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة'**
+  String get currencyFormAdd;
+
+  /// No description provided for @currencyFormSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ'**
+  String get currencyFormSave;
+
+  /// No description provided for @dashboardRetry.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة المحاولة'**
+  String get dashboardRetry;
+
+  /// No description provided for @balanceHintZero.
+  ///
+  /// In ar, this message translates to:
+  /// **'0.00'**
+  String get balanceHintZero;
+
+  /// No description provided for @onboardingContinue.
+  ///
+  /// In ar, this message translates to:
+  /// **'متابعة'**
+  String get onboardingContinue;
+
+  /// No description provided for @currencyBaseBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'أساسية'**
+  String get currencyBaseBadge;
+
+  /// No description provided for @currencyBaseAlreadyExists.
+  ///
+  /// In ar, this message translates to:
+  /// **'يوجد عملة أساسية بالفعل. لا يمكن إضافة أكثر من عملة أساسية واحدة.'**
+  String get currencyBaseAlreadyExists;
+
+  /// No description provided for @currencyAlreadyExists.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملة موجودة مسبقاً'**
+  String get currencyAlreadyExists;
+
+  /// No description provided for @currenciesEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد عملات.'**
+  String get currenciesEmpty;
 }
 
 class _AppLocalizationsDelegate

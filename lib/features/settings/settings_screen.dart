@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_constants.dart';
+import '../../core/extensions/context_l10n.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../providers/settings_provider.dart';
 
@@ -12,27 +13,32 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final settings = context.watch<SettingsProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('الإعدادات')),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListView(
         children: [
           ListTile(
             leading: const Icon(Icons.currency_exchange),
-            title: const Text('العملات'),
-            subtitle: Text('العملة الرئيسية: ${settings.baseCurrencyCode}'),
+            title: Text(l10n.settingsCurrencies),
+            subtitle: Text(l10n.settingsBaseCurrency(settings.baseCurrencyCode)),
             trailing: const Icon(Icons.chevron_left),
             onTap: () => context.push('/settings/currencies'),
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.palette_outlined),
-            title: const Text('المظهر'),
-            subtitle: Text(_themeModeLabel(settings.themeMode)),
+            title: Text(l10n.settingsAppearance),
+            subtitle: Text(switch (settings.themeMode) {
+              ThemeMode.light => l10n.settingsThemeLight,
+              ThemeMode.dark => l10n.settingsThemeDark,
+              ThemeMode.system => l10n.settingsThemeSystem,
+            }),
           ),
           RadioListTile<ThemeMode>(
-            title: const Text('فاتح'),
+            title: Text(l10n.settingsThemeLight),
             value: ThemeMode.light,
             groupValue: settings.themeMode,
             onChanged: (v) {
@@ -40,7 +46,7 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           RadioListTile<ThemeMode>(
-            title: const Text('داكن'),
+            title: Text(l10n.settingsThemeDark),
             value: ThemeMode.dark,
             groupValue: settings.themeMode,
             onChanged: (v) {
@@ -48,7 +54,7 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           RadioListTile<ThemeMode>(
-            title: const Text('تلقائي'),
+            title: Text(l10n.settingsThemeSystem),
             value: ThemeMode.system,
             groupValue: settings.themeMode,
             onChanged: (v) {
@@ -58,8 +64,8 @@ class SettingsScreen extends StatelessWidget {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.lock_outline),
-            title: const Text('قفل التطبيق'),
-            subtitle: const Text('يتطلب PIN أو البصمة للدخول مجدداً'),
+            title: Text(l10n.settingsAppLock),
+            subtitle: Text(l10n.settingsAppLockSubtitle),
             onTap: () {
               settings.lockSession();
               context.go('/auth/unlock');
@@ -68,8 +74,8 @@ class SettingsScreen extends StatelessWidget {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.backup_outlined),
-            title: const Text('النسخ الاحتياطي'),
-            subtitle: const Text('متاح في المرحلة 8'),
+            title: Text(l10n.settingsBackup),
+            subtitle: Text(l10n.settingsBackupSubtitle),
             enabled: false,
           ),
           const SizedBox(height: 24),
@@ -84,13 +90,5 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _themeModeLabel(ThemeMode mode) {
-    return switch (mode) {
-      ThemeMode.light => 'فاتح',
-      ThemeMode.dark => 'داكن',
-      ThemeMode.system => 'تلقائي',
-    };
   }
 }

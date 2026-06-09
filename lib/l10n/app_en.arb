@@ -197,5 +197,74 @@
   "walletFormDuplicateCurrency": "Duplicate currency is not allowed in the same wallet",
   "walletsEditWallet": "Edit wallet",
   "walletFormCurrentBalance": "Current balance",
-  "walletFormAccountHasTransactions": "Cannot remove a currency linked to transactions or transfers"
+  "walletFormAccountHasTransactions": "Cannot remove a currency linked to transactions or transfers",
+  "walletFormNoCurrencies": "No currencies found. Add a currency from settings first.",
+  "settingsTitle": "Settings",
+  "settingsCurrencies": "Currencies",
+  "settingsBaseCurrency": "Base currency: {code}",
+  "@settingsBaseCurrency": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "settingsAppearance": "Appearance",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsThemeSystem": "System",
+  "settingsAppLock": "App lock",
+  "settingsAppLockSubtitle": "Requires PIN or biometric to enter again",
+  "settingsBackup": "Backup",
+  "settingsBackupSubtitle": "Available in phase 8",
+  "currenciesTitle": "Currencies",
+  "currencyDeleteTitle": "Delete currency",
+  "currencyDeleteMessage": "Delete {name} ({code})?",
+  "@currencyDeleteMessage": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "code": { "type": "String" }
+    }
+  },
+  "currencyExchangeRateBase": "{code} — exchange rate: 1.0",
+  "@currencyExchangeRateBase": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "currencyFormEditTitle": "Edit currency",
+  "currencyFormNewTitle": "New currency",
+  "currencyFormPresetHint": "Pick from the list or enter manually",
+  "currencyFormCodeLabel": "Currency code",
+  "currencyFormCodeHint": "TRY",
+  "currencyFormInvalidCode": "Invalid code",
+  "currencyFormNameLabel": "Currency name",
+  "currencyFormNameHint": "Turkish lira",
+  "currencyFormSymbolLabel": "Symbol",
+  "currencyFormSymbolHint": "₺",
+  "currencyFormSymbolRequired": "Symbol is required",
+  "currencyFormRateLabel": "Exchange rate vs {baseCode}",
+  "@currencyFormRateLabel": {
+    "placeholders": { "baseCode": { "type": "String" } }
+  },
+  "currencyFormRateHint": "0.025",
+  "currencyFormRateHelper": "1 {code} = X {baseCode}",
+  "@currencyFormRateHelper": {
+    "placeholders": {
+      "code": { "type": "String" },
+      "baseCode": { "type": "String" }
+    }
+  },
+  "currencyFormRateRequired": "Exchange rate is required",
+  "currencyFormPositiveNumber": "Enter a positive number",
+  "currencyFormPreview": "100 {code} {approx}",
+  "@currencyFormPreview": {
+    "placeholders": {
+      "code": { "type": "String" },
+      "approx": { "type": "String" }
+    }
+  },
+  "currencyFormAdd": "Add",
+  "currencyFormSave": "Save",
+  "dashboardRetry": "Retry",
+  "balanceHintZero": "0.00",
+  "onboardingContinue": "Continue",
+  "currencyBaseBadge": "Base",
+  "currencyBaseAlreadyExists": "A base currency already exists. Only one base currency is allowed.",
+  "currencyAlreadyExists": "Currency already exists",
+  "currenciesEmpty": "No currencies yet."
 }

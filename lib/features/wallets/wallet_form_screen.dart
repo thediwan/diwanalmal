@@ -6,7 +6,10 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/treasury_icon_styles.dart';
 import '../../core/extensions/context_l10n.dart';
+import '../../core/extensions/context_theme.dart';
+import '../../core/helpers/currency_uniqueness.dart';
 import '../../core/helpers/uuid_helper.dart';
+import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../models/opening_balance_input.dart';
@@ -36,31 +39,61 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
   String _selectedIconStyle = TreasuryIconStyles.bank;
   bool _isSaving = false;
   bool _isLoadingWallet = false;
+  bool _isLoadingCurrencies = false;
   String? _editingTreasuryId;
   final List<OpeningBalanceRowState> _openingBalanceRows = [];
 
   @override
   void initState() {
     super.initState();
-    if (widget.isEditing) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _ensureWalletLoaded());
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeForm());
   }
 
-  Future<void> _ensureWalletLoaded() async {
+  Future<void> _initializeForm() async {
     if (!mounted) return;
 
-    setState(() => _isLoadingWallet = true);
+    setState(() => _isLoadingCurrencies = true);
 
-    final provider = context.read<WalletProvider>();
-    if (provider.treasuries.isEmpty) {
-      await provider.loadWallets();
+    final currencyProvider = context.read<CurrencyProvider>();
+    if (currencyProvider.currencies.isEmpty) {
+      await currencyProvider.loadCurrencies();
+    }
+
+    if (!mounted) return;
+
+    if (widget.isEditing) {
+      setState(() => _isLoadingWallet = true);
+      final walletProvider = context.read<WalletProvider>();
+      if (walletProvider.treasuries.isEmpty) {
+        await walletProvider.loadWallets();
+      }
+      if (mounted) {
+        _loadWallet();
+        setState(() => _isLoadingWallet = false);
+      }
+    } else {
+      _ensureInitialBalanceRow();
     }
 
     if (mounted) {
-      _loadWallet();
-      setState(() => _isLoadingWallet = false);
+      setState(() => _isLoadingCurrencies = false);
     }
+  }
+
+  void _ensureInitialBalanceRow() {
+    if (_openingBalanceRows.isNotEmpty) return;
+
+    final currencies =
+        uniqueCurrenciesByCode(context.read<CurrencyProvider>().currencies);
+    if (currencies.isEmpty) return;
+
+    _openingBalanceRows.add(
+      OpeningBalanceRowState(
+        id: UuidHelper.generate(),
+        balanceController: TextEditingController(text: '0'),
+        currencyCode: currencies.first.code.toUpperCase(),
+      ),
+    );
   }
 
   void _loadWallet() {
@@ -88,7 +121,7 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
           balanceController: TextEditingController(
             text: _formatBalanceField(account.balance),
           ),
-          currencyCode: account.currencyCode,
+          currencyCode: account.currencyCode.toUpperCase(),
         ),
       );
     }
@@ -104,10 +137,12 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
   }
 
   void _addOpeningBalanceRow() {
-    final currencies = context.read<CurrencyProvider>().currencies;
+    final currencies = uniqueCurrenciesByCode(
+      context.read<CurrencyProvider>().currencies,
+    );
     final usedCodes = _usedCurrencyCodes();
     final available = currencies
-        .where((c) => !usedCodes.contains(c.code))
+        .where((c) => !usedCodes.contains(c.code.toUpperCase()))
         .toList();
 
     setState(() {
@@ -115,7 +150,9 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
         OpeningBalanceRowState(
           id: UuidHelper.generate(),
           balanceController: TextEditingController(text: '0'),
-          currencyCode: available.isNotEmpty ? available.first.code : null,
+          currencyCode: available.isNotEmpty
+              ? available.first.code.toUpperCase()
+              : null,
         ),
       );
     });
@@ -136,13 +173,13 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
       if (row.currencyCode != currencyCode) {
         row.accountId = null;
       }
-      row.currencyCode = currencyCode;
+      row.currencyCode = currencyCode?.toUpperCase();
     });
   }
 
   Set<String> _usedCurrencyCodes() {
     return _openingBalanceRows
-        .map((r) => r.currencyCode)
+        .map((r) => r.currencyCode?.toUpperCase())
         .whereType<String>()
         .toSet();
   }
@@ -294,8 +331,10 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
     final currencies = context.watch<CurrencyProvider>().currencies;
     final isEditing = widget.isEditing;
+    final inputStyle = AppFormFields.inputTextStyleOf(context);
 
     return AuthBackground(
       child: Column(
@@ -324,7 +363,7 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                           : l10n.walletFormAddSubtitle,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondaryLight,
+                        color: colors.textSecondary,
                         height: 1.5,
                       ),
                     ),
@@ -332,14 +371,14 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: colors.surface,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFE5E7EB)),
-                        boxShadow: const [
+                        border: Border.all(color: colors.cardBorder),
+                        boxShadow: [
                           BoxShadow(
-                            color: Color(0x0A000000),
+                            color: colors.cardShadow,
                             blurRadius: 16,
-                            offset: Offset(0, 4),
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
@@ -349,35 +388,21 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                           Text(
                             l10n.walletFormName,
                             style: AppTextStyles.label.copyWith(
-                              color: AppColors.textSecondaryLight,
+                              color: colors.textSecondary,
                             ),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
                             controller: _nameController,
-                            decoration: InputDecoration(
+                            style: inputStyle,
+                            decoration: AppFormFields.decoration(
+                              context,
                               hintText: l10n.walletFormNameHintNew,
                               suffixIcon: const Icon(
                                 Icons.edit_outlined,
                                 color: AppColors.dashboardPrimary,
                                 size: 20,
                               ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFFE5E7EB)),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFFE5E7EB)),
-                              ),
-                              filled: true,
-                              fillColor: Colors.white,
                             ),
                             validator: (value) =>
                                 value == null || value.trim().isEmpty
@@ -388,7 +413,7 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                           Text(
                             l10n.walletFormWalletType,
                             style: AppTextStyles.label.copyWith(
-                              color: AppColors.textSecondaryLight,
+                              color: colors.textSecondary,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -401,6 +426,7 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                           OpeningBalanceSection(
                             rows: _openingBalanceRows,
                             currencies: currencies,
+                            isLoadingCurrencies: _isLoadingCurrencies,
                             onAddRow: _addOpeningBalanceRow,
                             onRemoveRow: _removeOpeningBalanceRow,
                             onCurrencyChanged: _onCurrencyChanged,
@@ -423,7 +449,7 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
               onPressed: _isSaving ? null : _save,
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.dashboardPrimary,
-                foregroundColor: Colors.white,
+                foregroundColor: colors.onPrimary,
                 minimumSize: const Size.fromHeight(54),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28),
@@ -431,12 +457,12 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                 elevation: 0,
               ),
               child: _isSaving
-                  ? const SizedBox(
+                  ? SizedBox(
                       height: 22,
                       width: 22,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: colors.onPrimary,
                       ),
                     )
                   : Row(
@@ -447,7 +473,7 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                               ? l10n.walletFormSave
                               : l10n.walletFormConfirmAdd,
                           style: AppTextStyles.bodyLarge.copyWith(
-                            color: Colors.white,
+                            color: colors.onPrimary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -457,9 +483,9 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                           height: 28,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 1.5),
+                            border: Border.all(color: colors.onPrimary, width: 1.5),
                           ),
-                          child: const Icon(Icons.add, size: 16, color: Colors.white),
+                          child: Icon(Icons.add, size: 16, color: colors.onPrimary),
                         ),
                       ],
                     ),
@@ -488,6 +514,8 @@ class _FormTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 4, 16, 0),
       child: Row(
@@ -495,7 +523,7 @@ class _FormTopBar extends StatelessWidget {
           IconButton(
             onPressed: onClose,
             icon: const Icon(Icons.close, size: 26),
-            color: AppColors.textPrimaryLight,
+            color: colors.textPrimary,
           ),
           Expanded(
             child: Text(
@@ -538,18 +566,20 @@ class _HeroLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Container(
       width: 120,
       height: 120,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0D000000),
+            color: colors.cardShadow,
             blurRadius: 12,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),

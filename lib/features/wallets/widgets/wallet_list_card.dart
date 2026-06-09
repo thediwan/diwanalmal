@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
+import '../../../core/extensions/context_theme.dart';
 import '../../../core/helpers/currency_formatter.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../models/treasury.dart';
@@ -22,16 +23,18 @@ class WalletsGroupedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (treasuries.isEmpty) return const SizedBox.shrink();
 
+    final colors = context.appColors;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-        boxShadow: const [
+        border: Border.all(color: colors.cardBorder),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0D000000),
+            color: colors.cardShadow,
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -64,6 +67,7 @@ class WalletListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
     final isNegative = treasury.isNegative;
     final amountText = _formatUsdAmount(treasury.totalInBase.abs(), isNegative);
     final valueLabel =
@@ -90,7 +94,7 @@ class WalletListItem extends StatelessWidget {
                             treasury.name,
                             style: AppTextStyles.bodyLarge.copyWith(
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimaryLight,
+                              color: colors.textPrimary,
                               fontSize: 15,
                             ),
                           ),
@@ -118,7 +122,7 @@ class WalletListItem extends StatelessWidget {
                       Text(
                         treasury.subtitle!,
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textSecondaryLight,
+                          color: colors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -144,7 +148,7 @@ class WalletListItem extends StatelessWidget {
                   Text(
                     valueLabel,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondaryLight,
+                      color: colors.textSecondary,
                       fontSize: 11,
                     ),
                   ),
@@ -165,7 +169,7 @@ class WalletListItem extends StatelessWidget {
                       fontSize: 11,
                       color: account.balance < 0 || isNegative
                           ? AppColors.expense
-                          : AppColors.textSecondaryLight,
+                          : colors.textSecondary,
                     ),
                   ),
               ],
@@ -205,6 +209,8 @@ class _DashedDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dividerColor = context.appColors.divider;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: LayoutBuilder(
@@ -223,7 +229,7 @@ class _DashedDivider extends StatelessWidget {
                 child: Container(
                   width: dashWidth,
                   height: 1,
-                  color: const Color(0xFFE5E7EB),
+                  color: dividerColor,
                 ),
               );
             }),

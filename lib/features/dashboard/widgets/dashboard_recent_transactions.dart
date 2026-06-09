@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
+import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../models/dashboard_models.dart';
 
@@ -17,6 +18,7 @@ class DashboardRecentTransactions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
 
     if (transactions.isEmpty) return const SizedBox.shrink();
 
@@ -31,7 +33,7 @@ class DashboardRecentTransactions extends StatelessWidget {
                 l10n.dashboardRecentTransactions,
                 style: AppTextStyles.bodyLarge.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimaryLight,
+                  color: colors.textPrimary,
                 ),
               ),
               const Spacer(),
@@ -57,10 +59,10 @@ class DashboardRecentTransactions extends StatelessWidget {
           for (var i = 0; i < transactions.length; i++) ...[
             _TransactionTile(transaction: transactions[i]),
             if (i < transactions.length - 1)
-              const Divider(
+              Divider(
                 height: 1,
                 thickness: 1,
-                color: Color(0xFFE5E7EB),
+                color: colors.divider,
               ),
           ],
         ],
@@ -77,6 +79,7 @@ class _TransactionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tx = transaction;
+    final colors = context.appColors;
     final amountColor = tx.isIncome ? AppColors.success : AppColors.expense;
 
     return Padding(
@@ -102,15 +105,14 @@ class _TransactionTile extends StatelessWidget {
                   tx.title,
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimaryLight,
+                    color: colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   tx.subtitle,
-                  style: AppTextStyles.captionOnLight.copyWith(
+                  style: AppTextStyles.captionOnSurface(colors).copyWith(
                     fontSize: 12,
-                    color: const Color(0xFF9CA3AF),
                   ),
                 ),
               ],
@@ -137,9 +139,8 @@ class _TransactionTile extends StatelessWidget {
                   textDirection: TextDirection.ltr,
                   child: Text(
                     tx.secondaryAmount!,
-                    style: AppTextStyles.captionOnLight.copyWith(
+                    style: AppTextStyles.captionOnSurface(colors).copyWith(
                       fontSize: 12,
-                      color: const Color(0xFF9CA3AF),
                     ),
                   ),
                 ),

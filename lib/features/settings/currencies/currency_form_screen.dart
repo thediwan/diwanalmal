@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../../core/extensions/context_l10n.dart';
 import '../../../core/helpers/currency_formatter.dart';
+import '../../../core/theme/app_form_fields.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../models/currency.dart';
 import '../../../providers/currency_provider.dart';
@@ -127,13 +129,19 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final baseCurrency = context.watch<CurrencyProvider>().baseCurrency;
     final baseCode = baseCurrency?.code ?? 'USD';
     final preview = _previewBaseAmount;
+    final codeDisplay =
+        _codeController.text.isEmpty ? 'XXX' : _codeController.text;
+    final inputStyle = AppFormFields.inputTextStyleOf(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isEditing ? 'تعديل العملة' : 'عملة جديدة'),
+        title: Text(
+          widget.isEditing ? l10n.currencyFormEditTitle : l10n.currencyFormNewTitle,
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -141,7 +149,7 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             if (!widget.isEditing) ...[
-              Text('اختر من القائمة أو أدخل يدوياً', style: AppTextStyles.label),
+              Text(l10n.currencyFormPresetHint, style: AppTextStyles.label),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -161,44 +169,56 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
             ],
             TextFormField(
               controller: _codeController,
-              decoration: const InputDecoration(
-                labelText: 'رمز العملة',
-                hintText: 'TRY',
+              style: inputStyle,
+              decoration: AppFormFields.decoration(
+                context,
+                labelText: l10n.currencyFormCodeLabel,
+                hintText: l10n.currencyFormCodeHint,
               ),
               textCapitalization: TextCapitalization.characters,
               enabled: !widget.isEditing,
               validator: (v) {
-                if (v == null || v.trim().length < 2) return 'رمز غير صالح';
+                if (v == null || v.trim().length < 2) {
+                  return l10n.currencyFormInvalidCode;
+                }
                 return null;
               },
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'اسم العملة',
-                hintText: 'ليرة تركية',
+              style: inputStyle,
+              decoration: AppFormFields.decoration(
+                context,
+                labelText: l10n.currencyFormNameLabel,
+                hintText: l10n.currencyFormNameHint,
               ),
               validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'الاسم مطلوب' : null,
+                  v == null || v.trim().isEmpty ? l10n.authNameRequired : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _symbolController,
-              decoration: const InputDecoration(
-                labelText: 'الرمز',
-                hintText: '₺',
+              style: inputStyle,
+              decoration: AppFormFields.decoration(
+                context,
+                labelText: l10n.currencyFormSymbolLabel,
+                hintText: l10n.currencyFormSymbolHint,
               ),
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'الرمز مطلوب' : null,
+              validator: (v) => v == null || v.trim().isEmpty
+                  ? l10n.currencyFormSymbolRequired
+                  : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _rateController,
-              decoration: InputDecoration(
-                labelText: 'سعر الصرف مقابل $baseCode',
-                hintText: '0.025',
-                helperText: '1 ${_codeController.text.isEmpty ? 'XXX' : _codeController.text} = X $baseCode',
+              style: inputStyle,
+              decoration: AppFormFields.decoration(
+                context,
+                labelText: l10n.currencyFormRateLabel(baseCode),
+                hintText: l10n.currencyFormRateHint,
+              ).copyWith(
+                helperText: l10n.currencyFormRateHelper(codeDisplay, baseCode),
               ),
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
@@ -206,16 +226,21 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
               ],
               onChanged: (_) => setState(() {}),
               validator: (v) {
-                if (v == null || v.isEmpty) return 'سعر الصرف مطلوب';
+                if (v == null || v.isEmpty) return l10n.currencyFormRateRequired;
                 final rate = double.tryParse(v);
-                if (rate == null || rate <= 0) return 'أدخل رقماً موجباً';
+                if (rate == null || rate <= 0) {
+                  return l10n.currencyFormPositiveNumber;
+                }
                 return null;
               },
             ),
             if (preview != null) ...[
               const SizedBox(height: 16),
               Card(
-                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withValues(alpha: 0.3),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
@@ -224,8 +249,14 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          '100 ${_codeController.text.isEmpty ? 'XXX' : _codeController.text} '
-                          '${CurrencyFormatter.approximateBase(100, double.parse(_rateController.text), baseCode)}',
+                          l10n.currencyFormPreview(
+                            codeDisplay,
+                            CurrencyFormatter.approximateBase(
+                              100,
+                              double.parse(_rateController.text),
+                              baseCode,
+                            ),
+                          ),
                           style: AppTextStyles.bodyMedium,
                         ),
                       ),
@@ -243,7 +274,11 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(widget.isEditing ? 'حفظ' : 'إضافة'),
+                  : Text(
+                      widget.isEditing
+                          ? l10n.currencyFormSave
+                          : l10n.currencyFormAdd,
+                    ),
             ),
           ],
         ),

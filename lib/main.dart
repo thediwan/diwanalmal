@@ -15,6 +15,7 @@ import 'providers/wallet_provider.dart';
 import 'router/app_router.dart';
 import 'services/auth_service.dart';
 import 'services/biometric_service.dart';
+import 'services/currency_deduplication_service.dart';
 import 'services/currency_service.dart';
 import 'services/hive_service.dart';
 import 'services/lazarus_database_service.dart';
@@ -40,7 +41,13 @@ Future<void> main() async {
 
   final authService = AuthService(hiveService);
   final biometricService = BiometricService();
-  final currencyService = CurrencyService(lazarusService, hiveService);
+  final deduplicationService = CurrencyDeduplicationService(lazarusService);
+  final currencyService = CurrencyService(
+    lazarusService,
+    hiveService,
+    deduplicationService,
+  );
+  await currencyService.ensureUniqueCurrencies();
   final walletService = WalletService(lazarusService);
   final treasuryService = TreasuryService(lazarusService);
   final walletBalanceService = WalletBalanceService(lazarusService);

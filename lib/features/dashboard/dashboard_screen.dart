@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/extensions/context_l10n.dart';
+import '../../core/extensions/context_theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/currency_provider.dart';
 import '../../providers/wallet_provider.dart';
@@ -75,12 +76,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final l10n = context.l10n;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/transactions/add'),
         elevation: 6,
         backgroundColor: AppColors.dashboardPrimary,
-        foregroundColor: Colors.white,
+        foregroundColor: context.appColors.onPrimary,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, size: 32),
       ),
@@ -109,7 +109,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: _loadDashboard,
-                child: const Text('إعادة المحاولة'),
+                child: Text(l10n.dashboardRetry),
               ),
             ],
           ),

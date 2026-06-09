@@ -536,4 +536,144 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get walletFormAccountHasTransactions =>
       'لا يمكن حذف عملة مرتبطة بمعاملات أو تحويلات';
+
+  @override
+  String get walletFormNoCurrencies =>
+      'لا توجد عملات. أضف عملة من الإعدادات أولاً.';
+
+  @override
+  String get settingsTitle => 'الإعدادات';
+
+  @override
+  String get settingsCurrencies => 'العملات';
+
+  @override
+  String settingsBaseCurrency(String code) {
+    return 'العملة الرئيسية: $code';
+  }
+
+  @override
+  String get settingsAppearance => 'المظهر';
+
+  @override
+  String get settingsThemeLight => 'فاتح';
+
+  @override
+  String get settingsThemeDark => 'داكن';
+
+  @override
+  String get settingsThemeSystem => 'تلقائي';
+
+  @override
+  String get settingsAppLock => 'قفل التطبيق';
+
+  @override
+  String get settingsAppLockSubtitle => 'يتطلب PIN أو البصمة للدخول مجدداً';
+
+  @override
+  String get settingsBackup => 'النسخ الاحتياطي';
+
+  @override
+  String get settingsBackupSubtitle => 'متاح في المرحلة 8';
+
+  @override
+  String get currenciesTitle => 'العملات';
+
+  @override
+  String get currencyDeleteTitle => 'حذف العملة';
+
+  @override
+  String currencyDeleteMessage(String name, String code) {
+    return 'حذف $name ($code)؟';
+  }
+
+  @override
+  String currencyExchangeRateBase(String code) {
+    return '$code — سعر الصرف: 1.0';
+  }
+
+  @override
+  String get currencyFormEditTitle => 'تعديل العملة';
+
+  @override
+  String get currencyFormNewTitle => 'عملة جديدة';
+
+  @override
+  String get currencyFormPresetHint => 'اختر من القائمة أو أدخل يدوياً';
+
+  @override
+  String get currencyFormCodeLabel => 'رمز العملة';
+
+  @override
+  String get currencyFormCodeHint => 'TRY';
+
+  @override
+  String get currencyFormInvalidCode => 'رمز غير صالح';
+
+  @override
+  String get currencyFormNameLabel => 'اسم العملة';
+
+  @override
+  String get currencyFormNameHint => 'ليرة تركية';
+
+  @override
+  String get currencyFormSymbolLabel => 'الرمز';
+
+  @override
+  String get currencyFormSymbolHint => '₺';
+
+  @override
+  String get currencyFormSymbolRequired => 'الرمز مطلوب';
+
+  @override
+  String currencyFormRateLabel(String baseCode) {
+    return 'سعر الصرف مقابل $baseCode';
+  }
+
+  @override
+  String get currencyFormRateHint => '0.025';
+
+  @override
+  String currencyFormRateHelper(String code, String baseCode) {
+    return '1 $code = X $baseCode';
+  }
+
+  @override
+  String get currencyFormRateRequired => 'سعر الصرف مطلوب';
+
+  @override
+  String get currencyFormPositiveNumber => 'أدخل رقماً موجباً';
+
+  @override
+  String currencyFormPreview(String code, String approx) {
+    return '100 $code $approx';
+  }
+
+  @override
+  String get currencyFormAdd => 'إضافة';
+
+  @override
+  String get currencyFormSave => 'حفظ';
+
+  @override
+  String get dashboardRetry => 'إعادة المحاولة';
+
+  @override
+  String get balanceHintZero => '0.00';
+
+  @override
+  String get onboardingContinue => 'متابعة';
+
+  @override
+  String get currencyBaseBadge => 'أساسية';
+
+  @override
+  String get currencyBaseAlreadyExists =>
+      'يوجد عملة أساسية بالفعل. لا يمكن إضافة أكثر من عملة أساسية واحدة.';
+
+  @override
+  String get currencyAlreadyExists => 'العملة موجودة مسبقاً';
+
+  @override
+  String get currenciesEmpty => 'لا توجد عملات.';
 }

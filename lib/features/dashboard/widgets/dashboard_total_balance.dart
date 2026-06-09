@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/extensions/context_theme.dart';
 import '../../../core/helpers/currency_formatter.dart';
 import '../../../core/theme/app_text_styles.dart';
 
@@ -19,15 +20,16 @@ class DashboardTotalBalance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Column(
       children: [
         Text(
           label,
           textAlign: TextAlign.center,
-          style: AppTextStyles.labelOnLight.copyWith(
+          style: AppTextStyles.labelOnSurface(colors).copyWith(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: const Color(0xFF6B7280),
           ),
         ),
         const SizedBox(height: 10),

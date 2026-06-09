@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// White elevated card used on login/start auth screens.
+import '../constants/app_colors.dart';
+import '../extensions/context_theme.dart';
+
+/// Elevated card used on login/start auth screens.
 class AuthFormCard extends StatelessWidget {
   const AuthFormCard({
     super.key,
@@ -13,15 +16,18 @@ class AuthFormCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Container(
       width: double.infinity,
       padding: padding,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: colors.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2563EB).withValues(alpha: 0.08),
+            color: AppColors.primary.withValues(alpha: 0.08),
             blurRadius: 32,
             offset: const Offset(0, 12),
           ),

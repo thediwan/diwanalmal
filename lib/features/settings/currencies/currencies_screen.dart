@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/extensions/context_l10n.dart';
+import '../../../core/extensions/context_theme.dart';
 import '../../../core/helpers/currency_formatter.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -15,13 +17,15 @@ class CurrenciesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('العملات')),
+      appBar: AppBar(title: Text(l10n.currenciesTitle)),
       body: Consumer<CurrencyProvider>(
         builder: (context, provider, _) {
           if (provider.currencies.isEmpty) {
-            return const EmptyState(
-              message: 'لا توجد عملات.',
+            return EmptyState(
+              message: l10n.currenciesEmpty,
               icon: Icons.currency_exchange,
             );
           }
@@ -52,6 +56,8 @@ class _CurrencyTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = context.appColors;
     final base = context.read<CurrencyProvider>().baseCurrency;
 
     return Card(
@@ -59,11 +65,11 @@ class _CurrencyTile extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: currency.isBase
               ? AppColors.primary
-              : Colors.grey.shade200,
+              : colors.surfaceVariant,
           child: Text(
             currency.symbol,
             style: TextStyle(
-              color: currency.isBase ? Colors.white : Colors.black87,
+              color: currency.isBase ? colors.onPrimary : colors.textPrimary,
             ),
           ),
         ),
@@ -75,11 +81,11 @@ class _CurrencyTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.15),
+                  color: AppColors.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'رئيسية',
+                  l10n.currencyBaseBadge,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.primary,
                   ),
@@ -89,7 +95,7 @@ class _CurrencyTile extends StatelessWidget {
           ],
         ),
         subtitle: currency.isBase
-            ? Text('${currency.code} — سعر الصرف: 1.0')
+            ? Text(l10n.currencyExchangeRateBase(currency.code))
             : Text(
                 '${currency.code} — 1 ${currency.code} = '
                 '${CurrencyFormatter.formatWithCode(currency.rateToBase, base?.code ?? '')}',
@@ -109,20 +115,22 @@ class _CurrencyTile extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, Currency currency) async {
+    final l10n = context.l10n;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('حذف العملة'),
-        content: Text('حذف ${currency.name} (${currency.code})؟'),
+        title: Text(l10n.currencyDeleteTitle),
+        content: Text(l10n.currencyDeleteMessage(currency.name, currency.code)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('حذف'),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.expense),
+            child: Text(l10n.commonDelete),
           ),
         ],
       ),

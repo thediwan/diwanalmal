@@ -26,4 +26,32 @@ abstract final class AppColors {
 
   static const Color glassLight = Color(0xCCFFFFFF);
   static const Color glassBorder = Color(0x66FFFFFF);
+
+  // Semantic tokens — light
+  static const Color borderLight = Color(0xFFE5E7EB);
+  static const Color dividerLight = Color(0xFFE5E7EB);
+  static const Color shadowLight = Color(0x0D000000);
+  static const Color surfaceVariantLight = Color(0xFFF9FAFB);
+  static const Color inputFillLight = Color(0xFFF3F4F6);
+  static const Color inputTextLight = Color(0xFF111827);
+  static const Color textMutedLight = Color(0xFF6B7280);
+  static const Color searchFieldLight = Color(0xFFF3F4F6);
+  static const Color accentSurfaceLight = Color(0xFFF0F5FF);
+  static const Color accentSurfaceBorderLight = Color(0xFFBFDBFE);
+  static const Color authGradientTopLight = Color(0xFFF0F5FF);
+  static const Color authGradientBottomLight = Color(0xFFF7F9FB);
+
+  // Semantic tokens — dark
+  static const Color borderDark = Color(0xFF334155);
+  static const Color dividerDark = Color(0xFF334155);
+  static const Color shadowDark = Color(0x40000000);
+  static const Color surfaceVariantDark = Color(0xFF1E293B);
+  static const Color inputFillDark = Color(0xFF0F172A);
+  static const Color inputTextDark = Color(0xFFF8FAFC);
+  static const Color textMutedDark = Color(0xFF64748B);
+  static const Color searchFieldDark = Color(0xFF0F172A);
+  static const Color accentSurfaceDark = Color(0xFF1E3A5F);
+  static const Color accentSurfaceBorderDark = Color(0xFF2563EB);
+  static const Color authGradientTopDark = Color(0xFF0F172A);
+  static const Color authGradientBottomDark = Color(0xFF1E293B);
 }
