@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In ar, this message translates to:
-  /// **'بيت المال'**
+  /// **'ديوان المال'**
   String get appName;
 
   /// No description provided for @appTagline.
@@ -359,7 +359,7 @@ abstract class AppLocalizations {
   /// No description provided for @authCopyright.
   ///
   /// In ar, this message translates to:
-  /// **'© ٢٠٢٤ بيت المال للخدمات المالية. جميع الحقوق محفوظة.'**
+  /// **'© ٢٠٢٤ ديوان المال للخدمات المالية. جميع الحقوق محفوظة.'**
   String get authCopyright;
 
   /// No description provided for @authBiometricFailed.
@@ -515,7 +515,7 @@ abstract class AppLocalizations {
   /// No description provided for @authSecurityWarning.
   ///
   /// In ar, this message translates to:
-  /// **'تحذير: لا تشارك هذا الرمز مع أي شخص. موظفو بيت المال لن يطلبوا منك هذا الرمز أبداً.'**
+  /// **'تحذير: لا تشارك هذا الرمز مع أي شخص. موظفو ديوان المال لن يطلبوا منك هذا الرمز أبداً.'**
   String get authSecurityWarning;
 
   /// No description provided for @authGoToCurrency.

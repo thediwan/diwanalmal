@@ -27,7 +27,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
-  if (!window.Create(L"baytalmal", origin, size)) {
+  if (!window.Create(L"\u062F\u064A\u0648\u0627\u0646 \u0627\u0644\u0645\u0627\u0644", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

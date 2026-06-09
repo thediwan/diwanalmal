@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appName => 'بيت المال';
+  String get appName => 'ديوان المال';
 
   @override
   String get appTagline => 'مستقبلك المالي، بمعايير أخلاقية';
@@ -143,7 +143,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authCopyright =>
-      '© ٢٠٢٤ بيت المال للخدمات المالية. جميع الحقوق محفوظة.';
+      '© ٢٠٢٤ ديوان المال للخدمات المالية. جميع الحقوق محفوظة.';
 
   @override
   String get authBiometricFailed => 'تعذر التحقق بالبصمة، استخدم PIN';
@@ -225,7 +225,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authSecurityWarning =>
-      'تحذير: لا تشارك هذا الرمز مع أي شخص. موظفو بيت المال لن يطلبوا منك هذا الرمز أبداً.';
+      'تحذير: لا تشارك هذا الرمز مع أي شخص. موظفو ديوان المال لن يطلبوا منك هذا الرمز أبداً.';
 
   @override
   String get authGoToCurrency => 'سيتم توجيهك لاختيار العملة الرئيسية';

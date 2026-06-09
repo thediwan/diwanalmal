@@ -1,6 +1,6 @@
 /// Common currency presets shown during onboarding and currency setup.
 abstract final class AppConstants {
-  static const String appName = 'بيت المال';
+  static const String appName = 'ديوان المال';
 
   static const List<Map<String, String>> presetCurrencies = [
     {'code': 'USD', 'name': 'دولار أمريكي', 'symbol': '\$'},

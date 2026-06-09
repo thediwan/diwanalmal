@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Bayt Al-Mal';
+  String get appName => 'Dewan Al-Mal';
 
   @override
   String get appTagline => 'Your financial future, with ethical standards';
@@ -144,7 +144,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authCopyright =>
-      '© 2024 Bayt Al-Mal Financial Services. All rights reserved.';
+      '© 2024 Dewan Al-Mal Financial Services. All rights reserved.';
 
   @override
   String get authBiometricFailed => 'Biometric failed, use PIN';
@@ -225,7 +225,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authSecurityWarning =>
-      'Warning: Never share this code. Bayt Al-Mal staff will never ask for it.';
+      'Warning: Never share this code. Dewan Al-Mal staff will never ask for it.';
 
   @override
   String get authGoToCurrency => 'You will choose your base currency next';
