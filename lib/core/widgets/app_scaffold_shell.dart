@@ -41,7 +41,10 @@ class AppScaffoldShell extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: child,
+      body: SafeArea(
+        bottom: false,
+        child: child,
+      ),
       bottomNavigationBar: NavigationBar(
         backgroundColor: Colors.white,
         indicatorColor: AppColors.primaryContainer.withValues(alpha: 0.12),

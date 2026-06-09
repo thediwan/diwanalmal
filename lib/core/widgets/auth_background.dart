@@ -18,7 +18,7 @@ class AuthBackground extends StatelessWidget {
           colors: [Color(0xFFF0F5FF), Color(0xFFF7F9FB)],
         ),
       ),
-      child: child,
+      child: SafeArea(child: child),
     );
   }
 }
