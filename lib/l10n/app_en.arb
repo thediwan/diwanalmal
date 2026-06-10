@@ -266,5 +266,75 @@
   "currencyBaseBadge": "Base",
   "currencyBaseAlreadyExists": "A base currency already exists. Only one base currency is allowed.",
   "currencyAlreadyExists": "Currency already exists",
-  "currenciesEmpty": "No currencies yet."
+  "currenciesEmpty": "No currencies yet.",
+  "dashboardGoalsEmpty": "No financial goals yet. Start by defining your first goal.",
+  "goalFormTitle": "Add goal",
+  "goalFormHeading": "Your next step",
+  "goalFormSubtitle": "Clearly define the shape of your financial future",
+  "goalFormName": "What is your goal?",
+  "goalFormNameHint": "e.g. buying your dream car",
+  "goalFormNameRequired": "Goal name is required",
+  "goalFormTargetAmount": "Target amount",
+  "goalFormSavedAmount": "Amount already saved",
+  "goalFormAmountRequired": "Amount is required",
+  "goalFormInvalidAmount": "Enter a valid amount",
+  "goalFormSavedExceedsTarget": "Saved amount cannot exceed the target amount",
+  "goalFormTargetDate": "Expected completion date",
+  "goalFormDateHint": "mm/dd/yyyy",
+  "goalFormDateRequired": "Select an expected completion date",
+  "goalFormChooseIcon": "Choose an icon for the goal",
+  "goalFormSelectCurrency": "Select a currency",
+  "goalFormSave": "Save financial goal",
+  "goalPlanTitle": "Suggested plan",
+  "goalPlanIntro": "Based on your goal, we suggest:",
+  "goalPlanMonthlyAmount": "Save {amount} / month",
+  "@goalPlanMonthlyAmount": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "goalPlanReachDate": "You will reach your goal in {date}",
+  "@goalPlanReachDate": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "goalPlanWarningLargeAmount": "The required monthly amount exceeds 50% of your monthly income. Consider extending the timeline or lowering the target.",
+  "goalPlanWarningUnrealisticDate": "The target date may not be realistic based on your income and spending. Try adjusting the date or amount.",
+  "goalPlanAccept": "Accept plan",
+  "goalPlanEdit": "Edit",
+  "goalPlanCompare": "Compare",
+  "goalPlanCompareTitle": "Compare plans",
+  "goalPlanCompareTargetDate": "Based on your target date",
+  "goalPlanCompareComfortable": "Comfortable plan",
+  "goalPlanCompareExtended": "Extended plan",
+  "goalPlanCompareMonthly": "Monthly savings",
+  "goalPlanCompareDate": "Reach date",
+  "goalPlanCompareRecommended": "Best fit",
+  "goalPlanSaveError": "Could not save goal: {error}",
+  "@goalPlanSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "goalEditTitle": "Edit goal",
+  "goalEditHeading": "Your goal progress",
+  "goalEditSubtitle": "Update your financial goal and track your progress",
+  "goalEditProgress": "{percent}% complete",
+  "@goalEditProgress": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "goalEditSavedOfTarget": "Saved {saved} of {target}",
+  "@goalEditSavedOfTarget": {
+    "placeholders": {
+      "saved": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+  "goalEditSave": "Save changes",
+  "goalEditNotFound": "Goal not found",
+  "goalEditSaveError": "Could not save changes: {error}",
+  "@goalEditSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "goalEditDeleteTitle": "Delete goal",
+  "goalEditDeleteMessage": "Are you sure you want to delete this goal? This cannot be undone.",
+  "goalEditDeleteError": "Could not delete goal: {error}",
+  "@goalEditDeleteError": {
+    "placeholders": { "error": { "type": "String" } }
+  }
 }

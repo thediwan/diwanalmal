@@ -160,7 +160,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       debts: data.debts,
                     ),
                     const DashboardSectionDivider(),
-                    DashboardGoalsSection(goals: data.goals),
+                    DashboardGoalsSection(
+                      goals: data.goals,
+                      onAddGoal: () async {
+                        await context.push('/goals/add');
+                        if (mounted) await _loadDashboard();
+                      },
+                      onGoalTap: (goalId) async {
+                        await context.push('/goals/$goalId');
+                        if (mounted) await _loadDashboard();
+                      },
+                    ),
                     const DashboardSectionDivider(),
                     DashboardExpenseChart(
                       dailyPoints: data.dailyChart,

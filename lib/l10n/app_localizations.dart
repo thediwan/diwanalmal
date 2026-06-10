@@ -1351,6 +1351,282 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'لا توجد عملات.'**
   String get currenciesEmpty;
+
+  /// No description provided for @dashboardGoalsEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تُضف أهداف مالية بعد. ابدأ بتحديد هدفك الأول.'**
+  String get dashboardGoalsEmpty;
+
+  /// No description provided for @goalFormTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة هدف'**
+  String get goalFormTitle;
+
+  /// No description provided for @goalFormHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'خطوتك القادمة'**
+  String get goalFormHeading;
+
+  /// No description provided for @goalFormSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدد ملامح مستقبلك المالي بوضوح'**
+  String get goalFormSubtitle;
+
+  /// No description provided for @goalFormName.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما هو هدفك؟'**
+  String get goalFormName;
+
+  /// No description provided for @goalFormNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثلاً: شراء سيارة الأحلام'**
+  String get goalFormNameHint;
+
+  /// No description provided for @goalFormNameRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الهدف مطلوب'**
+  String get goalFormNameRequired;
+
+  /// No description provided for @goalFormTargetAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ المطلوب'**
+  String get goalFormTargetAmount;
+
+  /// No description provided for @goalFormSavedAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ المدخر حالياً'**
+  String get goalFormSavedAmount;
+
+  /// No description provided for @goalFormAmountRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ مطلوب'**
+  String get goalFormAmountRequired;
+
+  /// No description provided for @goalFormInvalidAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل مبلغاً صالحاً'**
+  String get goalFormInvalidAmount;
+
+  /// No description provided for @goalFormSavedExceedsTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ المدخر لا يمكن أن يتجاوز المبلغ المطلوب'**
+  String get goalFormSavedExceedsTarget;
+
+  /// No description provided for @goalFormTargetDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الإنجاز المتوقع'**
+  String get goalFormTargetDate;
+
+  /// No description provided for @goalFormDateHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'mm/dd/yyyy'**
+  String get goalFormDateHint;
+
+  /// No description provided for @goalFormDateRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر تاريخ الإنجاز المتوقع'**
+  String get goalFormDateRequired;
+
+  /// No description provided for @goalFormChooseIcon.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر أيقونة للهدف'**
+  String get goalFormChooseIcon;
+
+  /// No description provided for @goalFormSelectCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر العملة'**
+  String get goalFormSelectCurrency;
+
+  /// No description provided for @goalFormSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ الهدف المالي'**
+  String get goalFormSave;
+
+  /// No description provided for @goalPlanTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة المقترحة'**
+  String get goalPlanTitle;
+
+  /// No description provided for @goalPlanIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'بناءً على هدفك، نقترح عليك:'**
+  String get goalPlanIntro;
+
+  /// No description provided for @goalPlanMonthlyAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'ادخر {amount} / شهرياً'**
+  String goalPlanMonthlyAmount(String amount);
+
+  /// No description provided for @goalPlanReachDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'ستصل لهدفك في {date}'**
+  String goalPlanReachDate(String date);
+
+  /// No description provided for @goalPlanWarningLargeAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ الشهري المطلوب يتجاوز 50% من دخلك الشهري. قد يكون من الأفضل تمديد المدة أو تقليل المبلغ.'**
+  String get goalPlanWarningLargeAmount;
+
+  /// No description provided for @goalPlanWarningUnrealisticDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ المستهدف قد لا يكون واقعياً وفق دخلك ومصروفاتك. جرّب تعديل التاريخ أو المبلغ.'**
+  String get goalPlanWarningUnrealisticDate;
+
+  /// No description provided for @goalPlanAccept.
+  ///
+  /// In ar, this message translates to:
+  /// **'قبول الخطة'**
+  String get goalPlanAccept;
+
+  /// No description provided for @goalPlanEdit.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل'**
+  String get goalPlanEdit;
+
+  /// No description provided for @goalPlanCompare.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقارنة'**
+  String get goalPlanCompare;
+
+  /// No description provided for @goalPlanCompareTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقارنة الخطط'**
+  String get goalPlanCompareTitle;
+
+  /// No description provided for @goalPlanCompareTargetDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسب تاريخك المستهدف'**
+  String get goalPlanCompareTargetDate;
+
+  /// No description provided for @goalPlanCompareComfortable.
+  ///
+  /// In ar, this message translates to:
+  /// **'خطة مريحة'**
+  String get goalPlanCompareComfortable;
+
+  /// No description provided for @goalPlanCompareExtended.
+  ///
+  /// In ar, this message translates to:
+  /// **'خطة ممتدة'**
+  String get goalPlanCompareExtended;
+
+  /// No description provided for @goalPlanCompareMonthly.
+  ///
+  /// In ar, this message translates to:
+  /// **'الادخار الشهري'**
+  String get goalPlanCompareMonthly;
+
+  /// No description provided for @goalPlanCompareDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الوصول'**
+  String get goalPlanCompareDate;
+
+  /// No description provided for @goalPlanCompareRecommended.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأنسب'**
+  String get goalPlanCompareRecommended;
+
+  /// No description provided for @goalPlanSaveError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر حفظ الهدف: {error}'**
+  String goalPlanSaveError(String error);
+
+  /// No description provided for @goalEditTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل الهدف'**
+  String get goalEditTitle;
+
+  /// No description provided for @goalEditHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقدمك نحو الهدف'**
+  String get goalEditHeading;
+
+  /// No description provided for @goalEditSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدّل بيانات هدفك المالي وتابع تقدمك'**
+  String get goalEditSubtitle;
+
+  /// No description provided for @goalEditProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'{percent}% مكتمل'**
+  String goalEditProgress(int percent);
+
+  /// No description provided for @goalEditSavedOfTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **'ادخرت {saved} من {target}'**
+  String goalEditSavedOfTarget(String saved, String target);
+
+  /// No description provided for @goalEditSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ التعديلات'**
+  String get goalEditSave;
+
+  /// No description provided for @goalEditNotFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدف غير موجود'**
+  String get goalEditNotFound;
+
+  /// No description provided for @goalEditSaveError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر حفظ التعديلات: {error}'**
+  String goalEditSaveError(String error);
+
+  /// No description provided for @goalEditDeleteTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الهدف'**
+  String get goalEditDeleteTitle;
+
+  /// No description provided for @goalEditDeleteMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل أنت متأكد من حذف هذا الهدف؟ لا يمكن التراجع.'**
+  String get goalEditDeleteMessage;
+
+  /// No description provided for @goalEditDeleteError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر حذف الهدف: {error}'**
+  String goalEditDeleteError(String error);
 }
 
 class _AppLocalizationsDelegate

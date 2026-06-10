@@ -679,4 +679,163 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currenciesEmpty => 'No currencies yet.';
+
+  @override
+  String get dashboardGoalsEmpty =>
+      'No financial goals yet. Start by defining your first goal.';
+
+  @override
+  String get goalFormTitle => 'Add goal';
+
+  @override
+  String get goalFormHeading => 'Your next step';
+
+  @override
+  String get goalFormSubtitle =>
+      'Clearly define the shape of your financial future';
+
+  @override
+  String get goalFormName => 'What is your goal?';
+
+  @override
+  String get goalFormNameHint => 'e.g. buying your dream car';
+
+  @override
+  String get goalFormNameRequired => 'Goal name is required';
+
+  @override
+  String get goalFormTargetAmount => 'Target amount';
+
+  @override
+  String get goalFormSavedAmount => 'Amount already saved';
+
+  @override
+  String get goalFormAmountRequired => 'Amount is required';
+
+  @override
+  String get goalFormInvalidAmount => 'Enter a valid amount';
+
+  @override
+  String get goalFormSavedExceedsTarget =>
+      'Saved amount cannot exceed the target amount';
+
+  @override
+  String get goalFormTargetDate => 'Expected completion date';
+
+  @override
+  String get goalFormDateHint => 'mm/dd/yyyy';
+
+  @override
+  String get goalFormDateRequired => 'Select an expected completion date';
+
+  @override
+  String get goalFormChooseIcon => 'Choose an icon for the goal';
+
+  @override
+  String get goalFormSelectCurrency => 'Select a currency';
+
+  @override
+  String get goalFormSave => 'Save financial goal';
+
+  @override
+  String get goalPlanTitle => 'Suggested plan';
+
+  @override
+  String get goalPlanIntro => 'Based on your goal, we suggest:';
+
+  @override
+  String goalPlanMonthlyAmount(String amount) {
+    return 'Save $amount / month';
+  }
+
+  @override
+  String goalPlanReachDate(String date) {
+    return 'You will reach your goal in $date';
+  }
+
+  @override
+  String get goalPlanWarningLargeAmount =>
+      'The required monthly amount exceeds 50% of your monthly income. Consider extending the timeline or lowering the target.';
+
+  @override
+  String get goalPlanWarningUnrealisticDate =>
+      'The target date may not be realistic based on your income and spending. Try adjusting the date or amount.';
+
+  @override
+  String get goalPlanAccept => 'Accept plan';
+
+  @override
+  String get goalPlanEdit => 'Edit';
+
+  @override
+  String get goalPlanCompare => 'Compare';
+
+  @override
+  String get goalPlanCompareTitle => 'Compare plans';
+
+  @override
+  String get goalPlanCompareTargetDate => 'Based on your target date';
+
+  @override
+  String get goalPlanCompareComfortable => 'Comfortable plan';
+
+  @override
+  String get goalPlanCompareExtended => 'Extended plan';
+
+  @override
+  String get goalPlanCompareMonthly => 'Monthly savings';
+
+  @override
+  String get goalPlanCompareDate => 'Reach date';
+
+  @override
+  String get goalPlanCompareRecommended => 'Best fit';
+
+  @override
+  String goalPlanSaveError(String error) {
+    return 'Could not save goal: $error';
+  }
+
+  @override
+  String get goalEditTitle => 'Edit goal';
+
+  @override
+  String get goalEditHeading => 'Your goal progress';
+
+  @override
+  String get goalEditSubtitle =>
+      'Update your financial goal and track your progress';
+
+  @override
+  String goalEditProgress(int percent) {
+    return '$percent% complete';
+  }
+
+  @override
+  String goalEditSavedOfTarget(String saved, String target) {
+    return 'Saved $saved of $target';
+  }
+
+  @override
+  String get goalEditSave => 'Save changes';
+
+  @override
+  String get goalEditNotFound => 'Goal not found';
+
+  @override
+  String goalEditSaveError(String error) {
+    return 'Could not save changes: $error';
+  }
+
+  @override
+  String get goalEditDeleteTitle => 'Delete goal';
+
+  @override
+  String get goalEditDeleteMessage =>
+      'Are you sure you want to delete this goal? This cannot be undone.';
+
+  @override
+  String goalEditDeleteError(String error) {
+    return 'Could not delete goal: $error';
+  }
 }

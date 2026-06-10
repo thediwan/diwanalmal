@@ -48,7 +48,7 @@ class LazarusDatabase extends _$LazarusDatabase {
   }
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -117,6 +117,10 @@ class LazarusDatabase extends _$LazarusDatabase {
           if (from < 4) {
             await _dedupeBaseCurrencies();
             await _createBaseCurrencyUniqueIndex();
+          }
+
+          if (from < 5) {
+            await m.addColumn(goals, goals.icon);
           }
         },
       );

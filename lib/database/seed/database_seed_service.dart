@@ -342,6 +342,7 @@ class DatabaseSeedService {
               targetAmount: 15000,
               savedAmount: const Value(3600),
               currencyId: currencyId('USD'),
+              icon: const Value('car'),
               createdAt: now,
               updatedAt: now,
             ),

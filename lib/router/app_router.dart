@@ -20,6 +20,10 @@ import '../features/onboarding/select_base_currency_screen.dart';
 import '../features/settings/currencies/currencies_screen.dart';
 import '../features/settings/currencies/currency_form_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/goals/goal_edit_screen.dart';
+import '../features/goals/goal_form_screen.dart';
+import '../features/goals/goal_plan_screen.dart';
+import '../features/goals/models/goal_draft.dart';
 import '../features/wallets/wallet_form_screen.dart';
 import '../features/wallets/wallets_screen.dart';
 import '../providers/settings_provider.dart';
@@ -113,6 +117,30 @@ class AppRouter {
           GoRoute(
             path: '/',
             builder: (context, state) => const DashboardScreen(),
+          ),
+          GoRoute(
+            path: '/goals/add',
+            builder: (context, state) {
+              final draft = state.extra is GoalDraft ? state.extra as GoalDraft : null;
+              return GoalFormScreen(initialDraft: draft);
+            },
+          ),
+          GoRoute(
+            path: '/goals/plan',
+            builder: (context, state) {
+              final draft = state.extra;
+              if (draft is! GoalDraft) {
+                return const GoalFormScreen();
+              }
+              return GoalPlanScreen(draft: draft);
+            },
+          ),
+          GoRoute(
+            path: '/goals/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return GoalEditScreen(goalId: id);
+            },
           ),
           GoRoute(
             path: '/transactions',

@@ -13,6 +13,8 @@ mixin _$FinanceDaoMixin on DatabaseAccessor<LazarusDatabase> {
   $DebtsTable get debts => attachedDatabase.debts;
   $DebtPaymentsTable get debtPayments => attachedDatabase.debtPayments;
   $GoalsTable get goals => attachedDatabase.goals;
+  $WalletCurrencyAccountsTable get walletCurrencyAccounts =>
+      attachedDatabase.walletCurrencyAccounts;
   FinanceDaoManager get managers => FinanceDaoManager(this);
 }
 
@@ -37,4 +39,7 @@ class FinanceDaoManager {
       $$DebtPaymentsTableTableManager(_db.attachedDatabase, _db.debtPayments);
   $$GoalsTableTableManager get goals =>
       $$GoalsTableTableManager(_db.attachedDatabase, _db.goals);
+  $$WalletCurrencyAccountsTableTableManager get walletCurrencyAccounts =>
+      $$WalletCurrencyAccountsTableTableManager(
+          _db.attachedDatabase, _db.walletCurrencyAccounts);
 }

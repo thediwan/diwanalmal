@@ -676,4 +676,161 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get currenciesEmpty => 'لا توجد عملات.';
+
+  @override
+  String get dashboardGoalsEmpty =>
+      'لم تُضف أهداف مالية بعد. ابدأ بتحديد هدفك الأول.';
+
+  @override
+  String get goalFormTitle => 'إضافة هدف';
+
+  @override
+  String get goalFormHeading => 'خطوتك القادمة';
+
+  @override
+  String get goalFormSubtitle => 'حدد ملامح مستقبلك المالي بوضوح';
+
+  @override
+  String get goalFormName => 'ما هو هدفك؟';
+
+  @override
+  String get goalFormNameHint => 'مثلاً: شراء سيارة الأحلام';
+
+  @override
+  String get goalFormNameRequired => 'اسم الهدف مطلوب';
+
+  @override
+  String get goalFormTargetAmount => 'المبلغ المطلوب';
+
+  @override
+  String get goalFormSavedAmount => 'المبلغ المدخر حالياً';
+
+  @override
+  String get goalFormAmountRequired => 'المبلغ مطلوب';
+
+  @override
+  String get goalFormInvalidAmount => 'أدخل مبلغاً صالحاً';
+
+  @override
+  String get goalFormSavedExceedsTarget =>
+      'المبلغ المدخر لا يمكن أن يتجاوز المبلغ المطلوب';
+
+  @override
+  String get goalFormTargetDate => 'تاريخ الإنجاز المتوقع';
+
+  @override
+  String get goalFormDateHint => 'mm/dd/yyyy';
+
+  @override
+  String get goalFormDateRequired => 'اختر تاريخ الإنجاز المتوقع';
+
+  @override
+  String get goalFormChooseIcon => 'اختر أيقونة للهدف';
+
+  @override
+  String get goalFormSelectCurrency => 'اختر العملة';
+
+  @override
+  String get goalFormSave => 'حفظ الهدف المالي';
+
+  @override
+  String get goalPlanTitle => 'الخطة المقترحة';
+
+  @override
+  String get goalPlanIntro => 'بناءً على هدفك، نقترح عليك:';
+
+  @override
+  String goalPlanMonthlyAmount(String amount) {
+    return 'ادخر $amount / شهرياً';
+  }
+
+  @override
+  String goalPlanReachDate(String date) {
+    return 'ستصل لهدفك في $date';
+  }
+
+  @override
+  String get goalPlanWarningLargeAmount =>
+      'المبلغ الشهري المطلوب يتجاوز 50% من دخلك الشهري. قد يكون من الأفضل تمديد المدة أو تقليل المبلغ.';
+
+  @override
+  String get goalPlanWarningUnrealisticDate =>
+      'التاريخ المستهدف قد لا يكون واقعياً وفق دخلك ومصروفاتك. جرّب تعديل التاريخ أو المبلغ.';
+
+  @override
+  String get goalPlanAccept => 'قبول الخطة';
+
+  @override
+  String get goalPlanEdit => 'تعديل';
+
+  @override
+  String get goalPlanCompare => 'مقارنة';
+
+  @override
+  String get goalPlanCompareTitle => 'مقارنة الخطط';
+
+  @override
+  String get goalPlanCompareTargetDate => 'حسب تاريخك المستهدف';
+
+  @override
+  String get goalPlanCompareComfortable => 'خطة مريحة';
+
+  @override
+  String get goalPlanCompareExtended => 'خطة ممتدة';
+
+  @override
+  String get goalPlanCompareMonthly => 'الادخار الشهري';
+
+  @override
+  String get goalPlanCompareDate => 'تاريخ الوصول';
+
+  @override
+  String get goalPlanCompareRecommended => 'الأنسب';
+
+  @override
+  String goalPlanSaveError(String error) {
+    return 'تعذر حفظ الهدف: $error';
+  }
+
+  @override
+  String get goalEditTitle => 'تعديل الهدف';
+
+  @override
+  String get goalEditHeading => 'تقدمك نحو الهدف';
+
+  @override
+  String get goalEditSubtitle => 'عدّل بيانات هدفك المالي وتابع تقدمك';
+
+  @override
+  String goalEditProgress(int percent) {
+    return '$percent% مكتمل';
+  }
+
+  @override
+  String goalEditSavedOfTarget(String saved, String target) {
+    return 'ادخرت $saved من $target';
+  }
+
+  @override
+  String get goalEditSave => 'حفظ التعديلات';
+
+  @override
+  String get goalEditNotFound => 'الهدف غير موجود';
+
+  @override
+  String goalEditSaveError(String error) {
+    return 'تعذر حفظ التعديلات: $error';
+  }
+
+  @override
+  String get goalEditDeleteTitle => 'حذف الهدف';
+
+  @override
+  String get goalEditDeleteMessage =>
+      'هل أنت متأكد من حذف هذا الهدف؟ لا يمكن التراجع.';
+
+  @override
+  String goalEditDeleteError(String error) {
+    return 'تعذر حذف الهدف: $error';
+  }
 }

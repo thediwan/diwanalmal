@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 import '../core/constants/app_colors.dart';
+import '../core/constants/goal_icon_styles.dart';
 import '../core/constants/database_constants.dart';
 import '../core/helpers/currency_formatter.dart';
 import '../database/daos/finance_dao.dart';
@@ -50,13 +51,14 @@ class DashboardService {
     final goals = goalRows
         .map(
           (g) => DashboardGoal(
+            id: g.id,
             title: g.title,
             progressPercent: g.targetAmount <= 0
                 ? 0
                 : ((g.savedAmount / g.targetAmount) * 100)
                     .round()
                     .clamp(0, 100),
-            icon: CupertinoIcons.car_detailed,
+            icon: GoalIconStyles.iconFor(g.icon),
           ),
         )
         .toList();

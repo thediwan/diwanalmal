@@ -237,6 +237,7 @@ class Goals extends Table {
   RealColumn get targetAmount => real()();
   RealColumn get savedAmount => real().withDefault(const Constant(0))();
   TextColumn get currencyId => text().references(Currencies, #id)();
+  TextColumn get icon => text().nullable()();
   DateTimeColumn get targetDate => dateTime().nullable()();
   TextColumn get notes => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();

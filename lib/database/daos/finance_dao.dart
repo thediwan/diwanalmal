@@ -115,6 +115,99 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
     return (select(db.goals)..where((g) => g.userId.equals(userId))).get();
   }
 
+  /// Persists a new financial goal.
+  Future<void> insertGoal(GoalsCompanion goal) {
+    return into(db.goals).insert(goal);
+  }
+
+  /// Loads one goal for the active user.
+  Future<FinancialGoal?> getGoalById({
+    required String userId,
+    required String goalId,
+  }) {
+    return (select(db.goals)
+          ..where((g) => g.userId.equals(userId))
+          ..where((g) => g.id.equals(goalId)))
+        .getSingleOrNull();
+  }
+
+  /// Updates an existing goal row.
+  Future<bool> updateGoal(FinancialGoal goal) {
+    return update(db.goals).replace(goal);
+  }
+
+  /// Removes a goal permanently.
+  Future<int> deleteGoal({
+    required String userId,
+    required String goalId,
+  }) {
+    return (delete(db.goals)
+          ..where((g) => g.userId.equals(userId))
+          ..where((g) => g.id.equals(goalId)))
+        .go();
+  }
+
+  /// Monthly income total in base currency for a calendar month.
+  Future<double> sumMonthlyIncomeBase({
+    required String userId,
+    required int year,
+    required int month,
+  }) {
+    return sumTransactionsBaseAmount(
+      userId: userId,
+      type: 'income',
+      year: year,
+      month: month,
+    );
+  }
+
+  /// Monthly expense total in base currency for a calendar month.
+  Future<double> sumMonthlyExpenseBase({
+    required String userId,
+    required int year,
+    required int month,
+  }) {
+    return sumTransactionsBaseAmount(
+      userId: userId,
+      type: 'expense',
+      year: year,
+      month: month,
+    );
+  }
+
+  /// Average salary income (base) from salary-category transactions.
+  Future<double> averageSalaryIncomeBase(String userId) async {
+    final t = db.transactions;
+    final c = db.categories;
+    final query = select(t).join([
+      innerJoin(c, c.id.equalsExp(t.categoryId)),
+    ])
+      ..where(t.userId.equals(userId))
+      ..where(t.type.equals('income'))
+      ..where(t.deletedAt.isNull())
+      ..where(c.name.equals('راتب'));
+
+    final rows = await query.get();
+    if (rows.isEmpty) return 0;
+
+    final total = rows.fold<double>(
+      0,
+      (sum, row) => sum + row.readTable(t).baseAmount,
+    );
+    return total / rows.length;
+  }
+
+  /// Whether the user has any non-deleted transactions.
+  Future<bool> hasAnyTransactions(String userId) async {
+    final countExpr = db.transactions.id.count();
+    final row = await (selectOnly(db.transactions)
+          ..addColumns([countExpr])
+          ..where(db.transactions.userId.equals(userId))
+          ..where(db.transactions.deletedAt.isNull()))
+        .getSingleOrNull();
+    return (row?.read(countExpr) ?? 0) > 0;
+  }
+
   /// Recent transactions newest first.
   Future<List<TransactionWithMeta>> getRecentTransactions(
     String userId, {

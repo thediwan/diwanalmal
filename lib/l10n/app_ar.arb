@@ -266,5 +266,75 @@
   "currencyBaseBadge": "أساسية",
   "currencyBaseAlreadyExists": "يوجد عملة أساسية بالفعل. لا يمكن إضافة أكثر من عملة أساسية واحدة.",
   "currencyAlreadyExists": "العملة موجودة مسبقاً",
-  "currenciesEmpty": "لا توجد عملات."
+  "currenciesEmpty": "لا توجد عملات.",
+  "dashboardGoalsEmpty": "لم تُضف أهداف مالية بعد. ابدأ بتحديد هدفك الأول.",
+  "goalFormTitle": "إضافة هدف",
+  "goalFormHeading": "خطوتك القادمة",
+  "goalFormSubtitle": "حدد ملامح مستقبلك المالي بوضوح",
+  "goalFormName": "ما هو هدفك؟",
+  "goalFormNameHint": "مثلاً: شراء سيارة الأحلام",
+  "goalFormNameRequired": "اسم الهدف مطلوب",
+  "goalFormTargetAmount": "المبلغ المطلوب",
+  "goalFormSavedAmount": "المبلغ المدخر حالياً",
+  "goalFormAmountRequired": "المبلغ مطلوب",
+  "goalFormInvalidAmount": "أدخل مبلغاً صالحاً",
+  "goalFormSavedExceedsTarget": "المبلغ المدخر لا يمكن أن يتجاوز المبلغ المطلوب",
+  "goalFormTargetDate": "تاريخ الإنجاز المتوقع",
+  "goalFormDateHint": "mm/dd/yyyy",
+  "goalFormDateRequired": "اختر تاريخ الإنجاز المتوقع",
+  "goalFormChooseIcon": "اختر أيقونة للهدف",
+  "goalFormSelectCurrency": "اختر العملة",
+  "goalFormSave": "حفظ الهدف المالي",
+  "goalPlanTitle": "الخطة المقترحة",
+  "goalPlanIntro": "بناءً على هدفك، نقترح عليك:",
+  "goalPlanMonthlyAmount": "ادخر {amount} / شهرياً",
+  "@goalPlanMonthlyAmount": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "goalPlanReachDate": "ستصل لهدفك في {date}",
+  "@goalPlanReachDate": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "goalPlanWarningLargeAmount": "المبلغ الشهري المطلوب يتجاوز 50% من دخلك الشهري. قد يكون من الأفضل تمديد المدة أو تقليل المبلغ.",
+  "goalPlanWarningUnrealisticDate": "التاريخ المستهدف قد لا يكون واقعياً وفق دخلك ومصروفاتك. جرّب تعديل التاريخ أو المبلغ.",
+  "goalPlanAccept": "قبول الخطة",
+  "goalPlanEdit": "تعديل",
+  "goalPlanCompare": "مقارنة",
+  "goalPlanCompareTitle": "مقارنة الخطط",
+  "goalPlanCompareTargetDate": "حسب تاريخك المستهدف",
+  "goalPlanCompareComfortable": "خطة مريحة",
+  "goalPlanCompareExtended": "خطة ممتدة",
+  "goalPlanCompareMonthly": "الادخار الشهري",
+  "goalPlanCompareDate": "تاريخ الوصول",
+  "goalPlanCompareRecommended": "الأنسب",
+  "goalPlanSaveError": "تعذر حفظ الهدف: {error}",
+  "@goalPlanSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "goalEditTitle": "تعديل الهدف",
+  "goalEditHeading": "تقدمك نحو الهدف",
+  "goalEditSubtitle": "عدّل بيانات هدفك المالي وتابع تقدمك",
+  "goalEditProgress": "{percent}% مكتمل",
+  "@goalEditProgress": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "goalEditSavedOfTarget": "ادخرت {saved} من {target}",
+  "@goalEditSavedOfTarget": {
+    "placeholders": {
+      "saved": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+  "goalEditSave": "حفظ التعديلات",
+  "goalEditNotFound": "الهدف غير موجود",
+  "goalEditSaveError": "تعذر حفظ التعديلات: {error}",
+  "@goalEditSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "goalEditDeleteTitle": "حذف الهدف",
+  "goalEditDeleteMessage": "هل أنت متأكد من حذف هذا الهدف؟ لا يمكن التراجع.",
+  "goalEditDeleteError": "تعذر حذف الهدف: {error}",
+  "@goalEditDeleteError": {
+    "placeholders": { "error": { "type": "String" } }
+  }
 }

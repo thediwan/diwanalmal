@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 /// Phase 1 mock financial goal for dashboard UI.
 class DashboardGoal {
   const DashboardGoal({
+    required this.id,
     required this.title,
     required this.progressPercent,
     required this.icon,
   });
 
+  final String id;
   final String title;
   final int progressPercent;
   final IconData icon;
