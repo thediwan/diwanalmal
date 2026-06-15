@@ -9,6 +9,7 @@ import 'core/constants/app_constants.dart';
 import 'core/theme/app_theme.dart';
 import 'l10n/app_localizations.dart';
 import 'core/widgets/app_lifecycle_observer.dart';
+import 'providers/dashboard_refresh_provider.dart';
 import 'providers/currency_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/wallet_provider.dart';
@@ -67,6 +68,8 @@ Future<void> main() async {
     currencyService,
   );
 
+  final dashboardRefreshProvider = DashboardRefreshProvider();
+
   await Future.wait([
     walletProvider.loadWallets(),
     currencyProvider.loadCurrencies(),
@@ -80,6 +83,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: settingsProvider),
         ChangeNotifierProvider.value(value: currencyProvider),
         ChangeNotifierProvider.value(value: walletProvider),
+        ChangeNotifierProvider.value(value: dashboardRefreshProvider),
       ],
       child: BaytAlmalApp(router: appRouter.router),
     ),

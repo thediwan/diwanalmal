@@ -22,7 +22,10 @@ class AuthBackground extends StatelessWidget {
           colors: [colors.authGradientTop, colors.authGradientBottom],
         ),
       ),
-      child: SafeArea(child: child),
+      child: Material(
+        color: Colors.transparent,
+        child: SafeArea(child: child),
+      ),
     );
   }
 }

@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 import '../core/constants/app_colors.dart';
+import '../core/constants/category_icon_styles.dart';
 import '../core/constants/goal_icon_styles.dart';
 import '../core/constants/database_constants.dart';
 import '../core/helpers/currency_formatter.dart';
@@ -70,6 +70,10 @@ class DashboardService {
       final sign = isIncome ? '+' : '-';
       final showSecondary =
           row.currencyCode.toUpperCase() != baseCode.toUpperCase();
+      final categoryColor = CategoryIconStyles.colorFor(
+        row.categoryColorHex,
+        fallback: isIncome ? AppColors.success : AppColors.debtAccent,
+      );
       return DashboardTransaction(
         title: tx.title,
         subtitle: _formatTransactionSubtitle(
@@ -86,10 +90,8 @@ class DashboardService {
               )
             : null,
         isIncome: isIncome,
-        icon: isIncome
-            ? CupertinoIcons.money_dollar_circle_fill
-            : CupertinoIcons.bag_fill,
-        iconColor: isIncome ? AppColors.success : AppColors.debtAccent,
+        icon: CategoryIconStyles.iconFor(row.categoryIconKey),
+        iconColor: categoryColor,
       );
     }).toList();
 

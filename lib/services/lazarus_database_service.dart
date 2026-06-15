@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../database/lazarus_database.dart';
+import '../database/seed/category_seed_service.dart';
 import '../database/seed/database_seed_service.dart';
 import '../models/currency.dart' as app;
 import '../models/wallet.dart' as app;
@@ -31,6 +32,7 @@ class LazarusDatabaseService {
     final service = LazarusDatabaseService._(db);
 
     await service._migrateHiveIfNeeded(hiveService);
+    await service._ensureDefaultCategoriesForActiveUser();
 
     _instance = service;
     return service;
@@ -46,10 +48,16 @@ class LazarusDatabaseService {
       userId: userId,
       baseCurrencyId: baseCurrencyId,
       baseCode: baseCode,
-    );
+    ).then((_) => CategorySeedService(database).ensureDefaultCategories(userId));
   }
 
   Future<String?> getActiveUserId() => database.getActiveUserId();
+
+  Future<void> _ensureDefaultCategoriesForActiveUser() async {
+    final userId = await getActiveUserId();
+    if (userId == null) return;
+    await CategorySeedService(database).ensureDefaultCategories(userId);
+  }
 
   Future<void> _migrateHiveIfNeeded(HiveService hiveService) async {
     if (await database.getActiveUserId() != null) return;

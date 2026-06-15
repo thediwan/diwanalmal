@@ -14,7 +14,7 @@ import '../features/auth/start_auth_screen.dart';
 import '../features/auth/unlock_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/profile/profile_placeholder_screen.dart';
-import '../features/transactions/transaction_add_placeholder_screen.dart';
+import '../features/transactions/transaction_add_screen.dart';
 import '../features/transactions/transactions_list_placeholder_screen.dart';
 import '../features/onboarding/select_base_currency_screen.dart';
 import '../features/settings/currencies/currencies_screen.dart';
@@ -104,7 +104,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/transactions/add',
-        builder: (context, state) => const TransactionAddPlaceholderScreen(),
+        builder: (context, state) => const TransactionAddScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) {

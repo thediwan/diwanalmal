@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../core/constants/database_constants.dart';
 import '../../core/helpers/currency_uniqueness.dart';
 import '../lazarus_database.dart';
+import 'category_seed_service.dart';
 
 /// Demo data aligned with dashboard and wallets screen mockups.
 ///
@@ -191,34 +192,7 @@ class DatabaseSeedService {
         ],
       );
 
-      await _db.into(_db.categories).insert(
-            CategoriesCompanion.insert(
-              id: _catFoodId,
-              userId: userId,
-              name: 'طعام',
-              type: DatabaseConstants.categoryExpense,
-              icon: const Value('🛒'),
-              color: const Value('#EA580C'),
-              isDefault: const Value(true),
-              createdAt: now,
-              updatedAt: now,
-            ),
-            mode: InsertMode.insertOrReplace,
-          );
-      await _db.into(_db.categories).insert(
-            CategoriesCompanion.insert(
-              id: _catSalaryId,
-              userId: userId,
-              name: 'راتب',
-              type: DatabaseConstants.categoryIncome,
-              icon: const Value('💰'),
-              color: const Value('#16A34A'),
-              isDefault: const Value(true),
-              createdAt: now,
-              updatedAt: now,
-            ),
-            mode: InsertMode.insertOrReplace,
-          );
+      await CategorySeedService(_db).ensureDefaultCategories(userId);
 
       final sypRate = rateToBase('SYP');
       final usdRate = rateToBase('USD');

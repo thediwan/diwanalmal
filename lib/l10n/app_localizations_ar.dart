@@ -384,6 +384,72 @@ class AppLocalizationsAr extends AppLocalizations {
   String get transactionAddComingSoon => 'إضافة المعاملات ستتوفر قريباً';
 
   @override
+  String get transactionFormExpense => 'مصروف';
+
+  @override
+  String get transactionFormIncome => 'دخل';
+
+  @override
+  String get transactionFormAmountLabel => 'مبلغ المعاملة';
+
+  @override
+  String get transactionFormAmountRequired => 'أدخل مبلغاً أكبر من صفر';
+
+  @override
+  String get transactionFormSelectCurrency => 'اختر العملة';
+
+  @override
+  String get transactionFormWallet => 'المحفظة';
+
+  @override
+  String get transactionFormSelectWallet => 'اختر المحفظة';
+
+  @override
+  String get transactionFormNoWalletForCurrency =>
+      'لا توجد محفظة بهذه العملة. أضف رصيداً لهذه العملة في إحدى المحافظ.';
+
+  @override
+  String get transactionFormCategory => 'التصنيف';
+
+  @override
+  String get transactionFormSelectCategory => 'اختر التصنيف';
+
+  @override
+  String get transactionFormMore => 'المزيد';
+
+  @override
+  String get transactionFormCategoriesComingSoon =>
+      'إدارة التصنيفات ستتوفر قريباً';
+
+  @override
+  String get transactionFormNotes => 'ملاحظات';
+
+  @override
+  String get transactionFormNotesHint => 'اكتب وصفاً قصيراً للعملية...';
+
+  @override
+  String get transactionFormDate => 'تاريخ العملية';
+
+  @override
+  String get transactionFormChangeDate => 'تغيير';
+
+  @override
+  String transactionFormTodayDate(String date) {
+    return 'اليوم، $date';
+  }
+
+  @override
+  String get transactionFormSave => 'حفظ العملية';
+
+  @override
+  String get transactionFormSaveSuccess => 'تم حفظ العملية بنجاح';
+
+  @override
+  String transactionFormSaveError(String error) {
+    return 'تعذر حفظ العملية: $error';
+  }
+
+  @override
   String get comingSoon => 'قريباً';
 
   @override

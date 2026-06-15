@@ -208,19 +208,42 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
     return (row?.read(countExpr) ?? 0) > 0;
   }
 
-  /// Recent transactions newest first.
+  /// Active categories filtered by income/expense type.
+  Future<List<Category>> getCategoriesByType({
+    required String userId,
+    required String type,
+  }) {
+    return (select(db.categories)
+          ..where((c) => c.userId.equals(userId))
+          ..where((c) => c.type.equals(type))
+          ..where((c) => c.deletedAt.isNull())
+          ..orderBy([(c) => OrderingTerm.asc(c.name)]))
+        .get();
+  }
+
+  /// Persists a new income or expense transaction.
+  Future<void> insertTransaction(TransactionsCompanion transaction) {
+    return into(db.transactions).insert(transaction);
+  }
+
+  /// Recent transactions newest first (includes category icon metadata).
   Future<List<TransactionWithMeta>> getRecentTransactions(
     String userId, {
     int limit = 10,
   }) {
     final t = db.transactions;
     final c = db.currencies;
+    final cat = db.categories;
     final query = select(t).join([
       innerJoin(c, c.id.equalsExp(t.currencyId)),
+      leftOuterJoin(cat, cat.id.equalsExp(t.categoryId)),
     ])
       ..where(t.userId.equals(userId))
       ..where(t.deletedAt.isNull())
-      ..orderBy([OrderingTerm.desc(t.transactionDate)])
+      ..orderBy([
+        OrderingTerm.desc(t.transactionDate),
+        OrderingTerm.desc(t.createdAt),
+      ])
       ..limit(limit);
 
     return query.get().then(
@@ -229,6 +252,8 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
                 (row) => TransactionWithMeta(
                   transaction: row.readTable(t),
                   currencyCode: row.readTable(c).code,
+                  categoryIconKey: row.readTableOrNull(cat)?.icon,
+                  categoryColorHex: row.readTableOrNull(cat)?.color,
                 ),
               )
               .toList(),
@@ -388,10 +413,14 @@ class TransactionWithMeta {
   const TransactionWithMeta({
     required this.transaction,
     required this.currencyCode,
+    this.categoryIconKey,
+    this.categoryColorHex,
   });
 
   final Transaction transaction;
   final String currencyCode;
+  final String? categoryIconKey;
+  final String? categoryColorHex;
 }
 
 class ChartDayTotal {

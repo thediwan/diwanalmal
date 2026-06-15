@@ -812,6 +812,126 @@ abstract class AppLocalizations {
   /// **'إضافة المعاملات ستتوفر قريباً'**
   String get transactionAddComingSoon;
 
+  /// No description provided for @transactionFormExpense.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصروف'**
+  String get transactionFormExpense;
+
+  /// No description provided for @transactionFormIncome.
+  ///
+  /// In ar, this message translates to:
+  /// **'دخل'**
+  String get transactionFormIncome;
+
+  /// No description provided for @transactionFormAmountLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'مبلغ المعاملة'**
+  String get transactionFormAmountLabel;
+
+  /// No description provided for @transactionFormAmountRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل مبلغاً أكبر من صفر'**
+  String get transactionFormAmountRequired;
+
+  /// No description provided for @transactionFormSelectCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر العملة'**
+  String get transactionFormSelectCurrency;
+
+  /// No description provided for @transactionFormWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحفظة'**
+  String get transactionFormWallet;
+
+  /// No description provided for @transactionFormSelectWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر المحفظة'**
+  String get transactionFormSelectWallet;
+
+  /// No description provided for @transactionFormNoWalletForCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد محفظة بهذه العملة. أضف رصيداً لهذه العملة في إحدى المحافظ.'**
+  String get transactionFormNoWalletForCurrency;
+
+  /// No description provided for @transactionFormCategory.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصنيف'**
+  String get transactionFormCategory;
+
+  /// No description provided for @transactionFormSelectCategory.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر التصنيف'**
+  String get transactionFormSelectCategory;
+
+  /// No description provided for @transactionFormMore.
+  ///
+  /// In ar, this message translates to:
+  /// **'المزيد'**
+  String get transactionFormMore;
+
+  /// No description provided for @transactionFormCategoriesComingSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'إدارة التصنيفات ستتوفر قريباً'**
+  String get transactionFormCategoriesComingSoon;
+
+  /// No description provided for @transactionFormNotes.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملاحظات'**
+  String get transactionFormNotes;
+
+  /// No description provided for @transactionFormNotesHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب وصفاً قصيراً للعملية...'**
+  String get transactionFormNotesHint;
+
+  /// No description provided for @transactionFormDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ العملية'**
+  String get transactionFormDate;
+
+  /// No description provided for @transactionFormChangeDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير'**
+  String get transactionFormChangeDate;
+
+  /// No description provided for @transactionFormTodayDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'اليوم، {date}'**
+  String transactionFormTodayDate(String date);
+
+  /// No description provided for @transactionFormSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ العملية'**
+  String get transactionFormSave;
+
+  /// No description provided for @transactionFormSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ العملية بنجاح'**
+  String get transactionFormSaveSuccess;
+
+  /// No description provided for @transactionFormSaveError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر حفظ العملية: {error}'**
+  String transactionFormSaveError(String error);
+
   /// No description provided for @comingSoon.
   ///
   /// In ar, this message translates to:

@@ -6,6 +6,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../../providers/dashboard_refresh_provider.dart';
 import '../../providers/currency_provider.dart';
 import '../../providers/wallet_provider.dart';
 import '../../services/dashboard_service.dart';
@@ -32,18 +33,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DashboardSnapshot? _snapshot;
   String? _error;
   bool _loading = true;
+  DashboardRefreshProvider? _dashboardRefresh;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDashboard());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _dashboardRefresh = context.read<DashboardRefreshProvider>();
+      _dashboardRefresh!.addListener(_onRefreshRequested);
+      _loadDashboard();
+    });
   }
 
-  Future<void> _loadDashboard() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  @override
+  void dispose() {
+    _dashboardRefresh?.removeListener(_onRefreshRequested);
+    super.dispose();
+  }
+
+  void _onRefreshRequested() {
+    _loadDashboard(silent: true);
+  }
+
+  Future<void> _loadDashboard({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    }
 
     try {
       final walletProvider = context.read<WalletProvider>();
@@ -77,7 +96,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/transactions/add'),
+        onPressed: () async {
+          await context.push('/transactions/add');
+          if (mounted) await _loadDashboard(silent: true);
+        },
         elevation: 6,
         backgroundColor: AppColors.dashboardPrimary,
         foregroundColor: context.appColors.onPrimary,

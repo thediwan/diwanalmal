@@ -385,6 +385,74 @@ class AppLocalizationsEn extends AppLocalizations {
       'Adding transactions will be available soon';
 
   @override
+  String get transactionFormExpense => 'Expense';
+
+  @override
+  String get transactionFormIncome => 'Income';
+
+  @override
+  String get transactionFormAmountLabel => 'Transaction amount';
+
+  @override
+  String get transactionFormAmountRequired =>
+      'Enter an amount greater than zero';
+
+  @override
+  String get transactionFormSelectCurrency => 'Select a currency';
+
+  @override
+  String get transactionFormWallet => 'Wallet';
+
+  @override
+  String get transactionFormSelectWallet => 'Select a wallet';
+
+  @override
+  String get transactionFormNoWalletForCurrency =>
+      'No wallet with this currency. Add a balance in this currency to a wallet first.';
+
+  @override
+  String get transactionFormCategory => 'Category';
+
+  @override
+  String get transactionFormSelectCategory => 'Select a category';
+
+  @override
+  String get transactionFormMore => 'More';
+
+  @override
+  String get transactionFormCategoriesComingSoon =>
+      'Category management coming soon';
+
+  @override
+  String get transactionFormNotes => 'Notes';
+
+  @override
+  String get transactionFormNotesHint =>
+      'Write a short description for this transaction...';
+
+  @override
+  String get transactionFormDate => 'Transaction date';
+
+  @override
+  String get transactionFormChangeDate => 'Change';
+
+  @override
+  String transactionFormTodayDate(String date) {
+    return 'Today, $date';
+  }
+
+  @override
+  String get transactionFormSave => 'Save transaction';
+
+  @override
+  String get transactionFormSaveSuccess => 'Transaction saved successfully';
+
+  @override
+  String transactionFormSaveError(String error) {
+    return 'Could not save transaction: $error';
+  }
+
+  @override
   String get comingSoon => 'Coming soon';
 
   @override
