@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/transaction_icon_styles.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../models/transaction_list_item.dart';
+import 'transaction_icon_badge.dart';
 
 /// Single row in the transactions list — swipe to delete, tap to edit.
 class TransactionListTile extends StatelessWidget {
@@ -35,7 +37,10 @@ class TransactionListTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _IconBadge(item: item),
+              TransactionIconBadge(
+                icon: item.icon,
+                iconColor: item.iconColor,
+              ),
               const SizedBox(width: 12),
               Expanded(child: _TitleBlock(item: item)),
               const SizedBox(width: 8),
@@ -109,29 +114,6 @@ class _SwipeDeleteBackground extends StatelessWidget {
   }
 }
 
-class _IconBadge extends StatelessWidget {
-  const _IconBadge({required this.item});
-
-  final TransactionListItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        color: item.iconColor.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: item.iconColor.withValues(alpha: 0.35),
-          width: 1,
-        ),
-      ),
-      child: Icon(item.icon, color: item.iconColor, size: 24),
-    );
-  }
-}
-
 class _TitleBlock extends StatelessWidget {
   const _TitleBlock({required this.item});
 
@@ -175,15 +157,7 @@ class _AmountBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final amountColor = item.isTransfer
-        ? AppColors.dashboardPrimary
-        : item.isDebt
-            ? (item.kind == TransactionListKind.debtor
-                ? AppColors.success
-                : AppColors.debtAccent)
-            : item.isIncome
-                ? AppColors.success
-                : AppColors.expense;
+    final amountColor = TransactionIconStyles.amountColorForKind(item.kind);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

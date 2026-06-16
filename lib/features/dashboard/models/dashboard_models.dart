@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../transactions/models/transaction_list_item.dart';
+
 /// Phase 1 mock financial goal for dashboard UI.
 class DashboardGoal {
   const DashboardGoal({
@@ -22,7 +24,7 @@ class DashboardTransaction {
     required this.subtitle,
     required this.primaryAmount,
     this.secondaryAmount,
-    required this.isIncome,
+    required this.kind,
     required this.icon,
     required this.iconColor,
   });
@@ -31,18 +33,18 @@ class DashboardTransaction {
   final String subtitle;
   final String primaryAmount;
   final String? secondaryAmount;
-  final bool isIncome;
+  final TransactionListKind kind;
   final IconData icon;
   final Color iconColor;
 }
 
-/// Chart point for expense analysis (normalized 0–1).
+/// Chart point for expense analysis.
 class DashboardChartPoint {
   const DashboardChartPoint({
     required this.label,
-    required this.value,
+    required this.amount,
   });
 
   final String label;
-  final double value;
+  final double amount;
 }

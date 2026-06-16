@@ -152,6 +152,60 @@ abstract class AppLocalizations {
   /// **'حدث خطأ: {detail}'**
   String errorGenericWithDetail(String detail);
 
+  /// No description provided for @feedbackDatabaseError.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدث خطأ في قاعدة البيانات. أعد تشغيل التطبيق بالكامل.'**
+  String get feedbackDatabaseError;
+
+  /// No description provided for @walletFormSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ المحفظة بنجاح'**
+  String get walletFormSaveSuccess;
+
+  /// No description provided for @walletFormDeleteSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف المحفظة بنجاح'**
+  String get walletFormDeleteSuccess;
+
+  /// No description provided for @currencyFormSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ العملة بنجاح'**
+  String get currencyFormSaveSuccess;
+
+  /// No description provided for @currencyDeleteSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف العملة بنجاح'**
+  String get currencyDeleteSuccess;
+
+  /// No description provided for @goalPlanSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ الهدف بنجاح'**
+  String get goalPlanSaveSuccess;
+
+  /// No description provided for @goalEditSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تحديث الهدف بنجاح'**
+  String get goalEditSaveSuccess;
+
+  /// No description provided for @goalEditDeleteSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف الهدف بنجاح'**
+  String get goalEditDeleteSuccess;
+
+  /// No description provided for @onboardingBaseCurrencySuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تعيين العملة الأساسية بنجاح'**
+  String get onboardingBaseCurrencySuccess;
+
   /// No description provided for @authLoginTitle.
   ///
   /// In ar, this message translates to:
@@ -698,6 +752,18 @@ abstract class AppLocalizations {
   /// **'آخر 30 يوم'**
   String get dashboardLast30Days;
 
+  /// No description provided for @dashboardLast7Days.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر 7 أيام'**
+  String get dashboardLast7Days;
+
+  /// No description provided for @dashboardLast4Weeks.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر 4 أسابيع'**
+  String get dashboardLast4Weeks;
+
   /// No description provided for @dashboardDaily.
   ///
   /// In ar, this message translates to:
@@ -709,6 +775,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'أسبوعي'**
   String get dashboardWeekly;
+
+  /// No description provided for @dashboardChartMin.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأقل'**
+  String get dashboardChartMin;
+
+  /// No description provided for @dashboardChartMax.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأعلى'**
+  String get dashboardChartMax;
 
   /// No description provided for @dashboardRecentTransactions.
   ///

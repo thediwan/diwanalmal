@@ -38,6 +38,34 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get feedbackDatabaseError =>
+      'A database error occurred. Please fully restart the app.';
+
+  @override
+  String get walletFormSaveSuccess => 'Wallet saved successfully';
+
+  @override
+  String get walletFormDeleteSuccess => 'Wallet deleted successfully';
+
+  @override
+  String get currencyFormSaveSuccess => 'Currency saved successfully';
+
+  @override
+  String get currencyDeleteSuccess => 'Currency deleted successfully';
+
+  @override
+  String get goalPlanSaveSuccess => 'Goal saved successfully';
+
+  @override
+  String get goalEditSaveSuccess => 'Goal updated successfully';
+
+  @override
+  String get goalEditDeleteSuccess => 'Goal deleted successfully';
+
+  @override
+  String get onboardingBaseCurrencySuccess => 'Base currency set successfully';
+
+  @override
   String get authLoginTitle => 'Sign in';
 
   @override
@@ -327,10 +355,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardLast30Days => 'Last 30 days';
 
   @override
+  String get dashboardLast7Days => 'Last 7 days';
+
+  @override
+  String get dashboardLast4Weeks => 'Last 4 weeks';
+
+  @override
   String get dashboardDaily => 'Daily';
 
   @override
   String get dashboardWeekly => 'Weekly';
+
+  @override
+  String get dashboardChartMin => 'Min';
+
+  @override
+  String get dashboardChartMax => 'Max';
 
   @override
   String get dashboardRecentTransactions => 'Recent transactions';

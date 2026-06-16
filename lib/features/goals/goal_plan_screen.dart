@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/goal_icon_styles.dart';
+import '../../core/extensions/context_feedback.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_formatter.dart';
@@ -69,13 +70,12 @@ class _GoalPlanScreenState extends State<GoalPlanScreen> {
       await GoalService(LazarusDatabaseService.instance)
           .createFromDraft(widget.draft);
       if (!mounted) return;
+      context.showSuccessFeedback(context.l10n.goalPlanSaveSuccess);
       context.pop();
       if (mounted) context.pop('saved');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.goalPlanSaveError(e.toString()))),
-      );
+      context.showOperationError(e);
     } finally {
       if (mounted) setState(() => _accepting = false);
     }

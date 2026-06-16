@@ -21,6 +21,7 @@ import 'models/goal_draft.dart';
 import 'widgets/goal_amount_field.dart';
 import 'widgets/goal_icon_selector.dart';
 import 'widgets/goal_progress_header.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// View and edit an existing financial goal with progress summary.
 class GoalEditScreen extends StatefulWidget {
@@ -139,9 +140,7 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
 
     if (!_formKey.currentState!.validate()) return null;
     if (_targetDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.goalFormDateRequired)),
-      );
+      context.showWarningFeedback(l10n.goalFormDateRequired);
       return null;
     }
 
@@ -153,9 +152,7 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
         .firstOrNull;
 
     if (currency == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.goalFormSelectCurrency)),
-      );
+      context.showWarningFeedback(l10n.goalFormSelectCurrency);
       return null;
     }
 
@@ -163,9 +160,7 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
     final savedAmount = double.tryParse(_savedAmountController.text.trim()) ?? 0;
 
     if (savedAmount > targetAmount) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.goalFormSavedExceedsTarget)),
-      );
+      context.showWarningFeedback(l10n.goalFormSavedExceedsTarget);
       return null;
     }
 
@@ -193,12 +188,13 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
         id: widget.goalId,
         draft: draft,
       );
-      if (mounted) context.pop('updated');
+      if (mounted) {
+        context.showSuccessFeedback(context.l10n.goalEditSaveSuccess);
+        context.pop('updated');
+      }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.goalEditSaveError(e.toString()))),
-        );
+        context.showOperationError(e);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -232,12 +228,13 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
     try {
       await GoalService(LazarusDatabaseService.instance)
           .delete(widget.goalId);
-      if (mounted) context.pop('deleted');
+      if (mounted) {
+        context.showSuccessFeedback(l10n.goalEditDeleteSuccess);
+        context.pop('deleted');
+      }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.goalEditDeleteError(e.toString()))),
-        );
+        context.showOperationError(e);
       }
     }
   }

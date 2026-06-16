@@ -5,6 +5,7 @@ import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_form_fields.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/extensions/context_feedback.dart';
 
 /// Result from [DebtSettlementSheet].
 class DebtSettlementResult {
@@ -63,9 +64,7 @@ class _DebtSettlementSheetState extends State<DebtSettlementSheet> {
     final amount = _parseAmount();
     if (amount == null) return;
     if (amount > widget.remaining + 0.000001) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.transactionDebtSettleExceedsRemaining)),
-      );
+      context.showWarningFeedback(context.l10n.transactionDebtSettleExceedsRemaining);
       return;
     }
 

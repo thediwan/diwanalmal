@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +11,7 @@ import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_formatter.dart';
 import '../../core/helpers/currency_uniqueness.dart';
+import '../../core/helpers/user_facing_error.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
@@ -25,6 +28,7 @@ import '../../services/lazarus_database_service.dart';
 import '../../services/transaction_service.dart';
 import '../../services/transfer_service.dart';
 import 'models/transaction_entry_type.dart';
+import 'widgets/form_feedback_banner.dart';
 import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_currency_pills.dart';
 import 'widgets/transaction_numeric_keypad.dart';
@@ -55,6 +59,10 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   TransactionEntryType _entryType = TransactionEntryType.expense;
   bool _isLoading = true;
   bool _isSaving = false;
+
+  FormFeedbackType? _feedbackType;
+  String? _feedbackMessage;
+  Timer? _feedbackDismissTimer;
 
   String? _selectedCurrencyId;
   String? _selectedWalletId;
@@ -256,6 +264,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   }
 
   void _onEntryTypeChanged(TransactionEntryType type) {
+    _clearFormFeedback();
     setState(() {
       _entryType = type;
       _isExpense = type == TransactionEntryType.expense;
@@ -303,6 +312,47 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
     setState(() => _amountInput.backspace());
   }
 
+  void _clearFormFeedback() {
+    _feedbackDismissTimer?.cancel();
+    if (_feedbackMessage == null && _feedbackType == null) return;
+    setState(() {
+      _feedbackMessage = null;
+      _feedbackType = null;
+    });
+  }
+
+  void _showFormFeedback(
+    FormFeedbackType type,
+    String message, {
+    bool autoDismiss = false,
+  }) {
+    _feedbackDismissTimer?.cancel();
+    setState(() {
+      _feedbackType = type;
+      _feedbackMessage = message;
+    });
+    if (autoDismiss) {
+      _feedbackDismissTimer = Timer(const Duration(seconds: 5), () {
+        if (mounted) _clearFormFeedback();
+      });
+    }
+  }
+
+  void _showFormSuccess(String message) {
+    _showFormFeedback(FormFeedbackType.success, message, autoDismiss: true);
+  }
+
+  void _showFormWarning(String message) {
+    _showFormFeedback(FormFeedbackType.warning, message);
+  }
+
+  void _showFormError(Object error) {
+    _showFormFeedback(
+      FormFeedbackType.error,
+      UserFacingError.message(context.l10n, error),
+    );
+  }
+
   Future<void> _pickDate() async {
     final locale = Localizations.localeOf(context);
     final now = DateTime.now();
@@ -322,9 +372,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   }
 
   void _showMoreCategoriesPlaceholder() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(context.l10n.transactionFormCategoriesComingSoon)),
-    );
+    _showFormWarning(context.l10n.transactionFormCategoriesComingSoon);
   }
 
   Future<void> _pickDueDate() async {
@@ -359,24 +407,18 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
     }
 
     if (_amountInput.value <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormAmountRequired)),
-      );
+      _showFormWarning(l10n.transactionFormAmountRequired);
       return;
     }
 
     final currency = _selectedCurrency;
     if (currency == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSelectCurrency)),
-      );
+      _showFormWarning(l10n.transactionFormSelectCurrency);
       return;
     }
 
     if (_selectedWalletId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSelectWallet)),
-      );
+      _showFormWarning(l10n.transactionFormSelectWallet);
       return;
     }
 
@@ -385,9 +427,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
         .firstOrNull;
 
     if (category == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSelectCategory)),
-      );
+      _showFormWarning(l10n.transactionFormSelectCategory);
       return;
     }
 
@@ -415,14 +455,10 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
       context.read<DashboardRefreshProvider>().notifyRefresh();
       _resetFormAfterSave();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSaveSuccess)),
-      );
+      _showFormSuccess(l10n.transactionFormSaveSuccess);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionFormSaveError(e.toString()))),
-        );
+        _showFormError(e);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -436,45 +472,31 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
     final crossRate = _crossExchangeRateValue;
 
     if (source == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSelectSourceCurrency)),
-      );
+      _showFormWarning(l10n.transactionFormSelectSourceCurrency);
       return;
     }
     if (target == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSelectTargetCurrency)),
-      );
+      _showFormWarning(l10n.transactionFormSelectTargetCurrency);
       return;
     }
     if (amount == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormAmountRequired)),
-      );
+      _showFormWarning(l10n.transactionFormAmountRequired);
       return;
     }
     if (crossRate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormExchangeRateRequired)),
-      );
+      _showFormWarning(l10n.transactionFormExchangeRateRequired);
       return;
     }
     if (_sourceWalletId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSelectSourceWallet)),
-      );
+      _showFormWarning(l10n.transactionFormSelectSourceWallet);
       return;
     }
     if (_targetWalletId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSelectTargetWallet)),
-      );
+      _showFormWarning(l10n.transactionFormSelectTargetWallet);
       return;
     }
     if (source.id == target.id && _sourceWalletId == _targetWalletId) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormTransferSameError)),
-      );
+      _showFormWarning(l10n.transactionFormTransferSameError);
       return;
     }
 
@@ -498,14 +520,10 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
       context.read<DashboardRefreshProvider>().notifyRefresh();
       _resetFormAfterSave();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormTransferSaveSuccess)),
-      );
+      _showFormSuccess(l10n.transactionFormTransferSaveSuccess);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionFormSaveError(e.toString()))),
-        );
+        _showFormError(e);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -515,32 +533,24 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   Future<void> _saveDebt(AppLocalizations l10n) async {
     final person = _personNameController.text.trim();
     if (person.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormPersonNameRequired)),
-      );
+      _showFormWarning(l10n.transactionFormPersonNameRequired);
       return;
     }
 
     final amount = _debtAmountValue;
     if (amount == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormAmountRequired)),
-      );
+      _showFormWarning(l10n.transactionFormAmountRequired);
       return;
     }
 
     final currency = _selectedCurrency;
     if (currency == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSelectCurrency)),
-      );
+      _showFormWarning(l10n.transactionFormSelectCurrency);
       return;
     }
 
     if (_selectedWalletId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSelectWallet)),
-      );
+      _showFormWarning(l10n.transactionFormSelectWallet);
       return;
     }
 
@@ -567,14 +577,10 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
       context.read<DashboardRefreshProvider>().notifyRefresh();
       _resetFormAfterSave();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormDebtSaveSuccess)),
-      );
+      _showFormSuccess(l10n.transactionFormDebtSaveSuccess);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionFormSaveError(e.toString()))),
-        );
+        _showFormError(e);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -610,6 +616,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
 
   @override
   void dispose() {
+    _feedbackDismissTimer?.cancel();
     _notesController.dispose();
     _transferAmountController.dispose();
     _exchangeRateController.dispose();
@@ -904,6 +911,15 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                     ),
                   ),
           ),
+          if (_feedbackMessage != null && _feedbackType != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+              child: FormFeedbackBanner(
+                message: _feedbackMessage!,
+                type: _feedbackType!,
+                onDismiss: _clearFormFeedback,
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
             child: FilledButton(

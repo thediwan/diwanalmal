@@ -15,6 +15,7 @@ import '../../providers/currency_provider.dart';
 import 'models/goal_draft.dart';
 import 'widgets/goal_amount_field.dart';
 import 'widgets/goal_icon_selector.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// Phase 1 — collect goal details before showing the savings plan.
 class GoalFormScreen extends StatefulWidget {
@@ -104,9 +105,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_targetDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.goalFormDateRequired)),
-      );
+      context.showWarningFeedback(context.l10n.goalFormDateRequired);
       return;
     }
 
@@ -118,9 +117,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
         .firstOrNull;
 
     if (currency == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.goalFormSelectCurrency)),
-      );
+      context.showWarningFeedback(context.l10n.goalFormSelectCurrency);
       return;
     }
 
@@ -128,9 +125,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     final savedAmount = double.tryParse(_savedAmountController.text.trim()) ?? 0;
 
     if (savedAmount > targetAmount) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.goalFormSavedExceedsTarget)),
-      );
+      context.showWarningFeedback(context.l10n.goalFormSavedExceedsTarget);
       return;
     }
 

@@ -10,6 +10,7 @@ import '../../providers/dashboard_refresh_provider.dart';
 import '../../providers/currency_provider.dart';
 import '../../providers/wallet_provider.dart';
 import '../../services/dashboard_service.dart';
+import '../../providers/settings_provider.dart';
 import '../../services/lazarus_database_service.dart';
 import 'data/dashboard_currency_balances.dart';
 import 'widgets/dashboard_currency_carousel.dart';
@@ -73,8 +74,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       await walletProvider.loadWallets();
       await currencyProvider.loadCurrencies();
 
+      final settings = context.read<SettingsProvider>();
       final snapshot = await DashboardService(LazarusDatabaseService.instance)
-          .loadSnapshot(l10n, localeName: locale);
+          .loadSnapshot(
+        l10n,
+        localeName: locale,
+        deleteWindowHours: settings.transactionDeleteWindowHours,
+        editWindowDays: settings.transactionEditWindowDays,
+      );
 
       if (!mounted) return;
       setState(() {
@@ -198,6 +205,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     DashboardExpenseChart(
                       dailyPoints: data.dailyChart,
                       weeklyPoints: data.weeklyChart,
+                      currencyCode: data.baseCurrencyCode,
                     ),
                     const DashboardSectionDivider(),
                     DashboardRecentTransactions(

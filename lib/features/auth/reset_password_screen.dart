@@ -10,6 +10,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_form_card.dart';
 import '../../providers/settings_provider.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// Resets account password using the offline recovery security code.
 class ResetPasswordScreen extends StatefulWidget {
@@ -81,7 +82,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   void _showMessage(String text) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+    context.showWarningFeedback(text);
   }
 
   @override

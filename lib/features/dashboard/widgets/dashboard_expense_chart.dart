@@ -3,20 +3,23 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
+import '../../../core/helpers/currency_formatter.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme_colors.dart';
 import '../models/dashboard_models.dart';
 
-/// Expense analysis: header row + area spline chart (custom painter).
+/// Expense analysis: vertical bar chart with daily / weekly toggle.
 class DashboardExpenseChart extends StatefulWidget {
   const DashboardExpenseChart({
     super.key,
     required this.dailyPoints,
     required this.weeklyPoints,
+    required this.currencyCode,
   });
 
   final List<DashboardChartPoint> dailyPoints;
   final List<DashboardChartPoint> weeklyPoints;
+  final String currencyCode;
 
   @override
   State<DashboardExpenseChart> createState() => _DashboardExpenseChartState();
@@ -30,6 +33,8 @@ class _DashboardExpenseChartState extends State<DashboardExpenseChart> {
     final l10n = context.l10n;
     final colors = context.appColors;
     final points = _isDaily ? widget.dailyPoints : widget.weeklyPoints;
+    final periodLabel =
+        _isDaily ? l10n.dashboardLast7Days : l10n.dashboardLast4Weeks;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
@@ -52,7 +57,7 @@ class _DashboardExpenseChartState extends State<DashboardExpenseChart> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      l10n.dashboardLast30Days,
+                      periodLabel,
                       style: AppTextStyles.captionOnSurface(colors).copyWith(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -71,31 +76,231 @@ class _DashboardExpenseChartState extends State<DashboardExpenseChart> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+          _ExpenseBarChart(
+            points: points,
+            currencyCode: widget.currencyCode,
+            colors: colors,
+            maxLabel: l10n.dashboardChartMax,
+            minLabel: l10n.dashboardChartMin,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ExpenseBarChart extends StatelessWidget {
+  const _ExpenseBarChart({
+    required this.points,
+    required this.currencyCode,
+    required this.colors,
+    required this.maxLabel,
+    required this.minLabel,
+  });
+
+  final List<DashboardChartPoint> points;
+  final String currencyCode;
+  final AppThemeColors colors;
+  final String maxLabel;
+  final String minLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    if (points.isEmpty) {
+      return SizedBox(
+        height: 200,
+        child: Center(
+          child: Text(
+            '—',
+            style: AppTextStyles.captionOnSurface(colors),
+          ),
+        ),
+      );
+    }
+
+    final amounts = points.map((p) => p.amount).toList();
+    final maxAmount = amounts.reduce((a, b) => a > b ? a : b);
+    final minAmount = amounts.reduce((a, b) => a < b ? a : b);
+    final maxIndex = amounts.indexOf(maxAmount);
+    final minIndex = amounts.indexOf(minAmount);
+    final scaleMax = maxAmount <= 0 ? 1.0 : maxAmount;
+
+    return SizedBox(
+      height: 248,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
           SizedBox(
-            height: 180,
-            child: CustomPaint(
-              painter: _SplineAreaChartPainter(points: points),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 148),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: points
-                      .map(
-                        (p) => Text(
-                          p.label,
-                          style: AppTextStyles.captionOnSurface(colors).copyWith(
-                            fontSize: 11,
-                          ),
-                        ),
-                      )
-                      .toList(),
+            width: 72,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  maxLabel,
+                  style: AppTextStyles.captionOnSurface(colors).copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 2),
+                Text(
+                  CurrencyFormatter.formatCodeFirst(maxAmount, currencyCode),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.captionOnSurface(colors).copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.expense,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  minLabel,
+                  style: AppTextStyles.captionOnSurface(colors).copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  CurrencyFormatter.formatCodeFirst(minAmount, currencyCode),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.captionOnSurface(colors).copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 36),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: 8,
+                  child: Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: colors.divider.withValues(alpha: 0.6),
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 36,
+                  child: Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: colors.divider.withValues(alpha: 0.6),
+                  ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (var i = 0; i < points.length; i++)
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 8,
+                                  bottom: 4,
+                                ),
+                                child: _ChartBarSlot(
+                                  amount: points[i].amount,
+                                  scaleMax: scaleMax,
+                                  isMax: i == maxIndex &&
+                                      points[i].amount > 0,
+                                  isMin: i == minIndex &&
+                                      points.length > 1,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              points[i].label,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.captionOnSurface(colors)
+                                  .copyWith(
+                                fontSize: 10,
+                                fontWeight: i == maxIndex || i == minIndex
+                                    ? FontWeight.w800
+                                    : FontWeight.w500,
+                                color: i == maxIndex
+                                    ? AppColors.expense
+                                    : i == minIndex
+                                        ? colors.textSecondary
+                                        : colors.textMuted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Single bar column — shares the same [Expanded] slot as its date label below.
+class _ChartBarSlot extends StatelessWidget {
+  const _ChartBarSlot({
+    required this.amount,
+    required this.scaleMax,
+    required this.isMax,
+    required this.isMin,
+  });
+
+  final double amount;
+  final double scaleMax;
+  final bool isMax;
+  final bool isMin;
+
+  @override
+  Widget build(BuildContext context) {
+    final normalized =
+        scaleMax <= 0 ? 0.0 : (amount / scaleMax).clamp(0.0, 1.0);
+
+    final fillColor = isMax
+        ? AppColors.expense
+        : isMin
+            ? AppColors.dashboardPrimary.withValues(alpha: 0.65)
+            : AppColors.dashboardPrimary.withValues(alpha: 0.35);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final barWidth = constraints.maxWidth * 0.55;
+        final barHeight = constraints.maxHeight * normalized;
+
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            width: barWidth,
+            height: barHeight,
+            decoration: BoxDecoration(
+              color: fillColor,
+              borderRadius: BorderRadius.circular(6),
+              border: amount > 0 && barHeight >= 4
+                  ? Border.all(color: fillColor.withValues(alpha: 0.15))
+                  : null,
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -185,96 +390,5 @@ class _ToggleChip extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-/// Spline line with light blue gradient fill under the curve.
-class _SplineAreaChartPainter extends CustomPainter {
-  _SplineAreaChartPainter({required this.points});
-
-  final List<DashboardChartPoint> points;
-
-  Path _buildCurvePath(List<Offset> coords) {
-    final path = Path()..moveTo(coords.first.dx, coords.first.dy);
-    for (var i = 0; i < coords.length - 1; i++) {
-      final current = coords[i];
-      final next = coords[i + 1];
-      final controlX = (current.dx + next.dx) / 2;
-      path.cubicTo(
-        controlX,
-        current.dy,
-        controlX,
-        next.dy,
-        next.dx,
-        next.dy,
-      );
-    }
-    return path;
-  }
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (points.length < 2) return;
-
-    const topPadding = 16.0;
-    const bottomPadding = 32.0;
-    final chartHeight = size.height - topPadding - bottomPadding;
-    final chartWidth = size.width;
-    final baseline = size.height - bottomPadding;
-
-    final coords = <Offset>[];
-    for (var i = 0; i < points.length; i++) {
-      final x = chartWidth * i / (points.length - 1);
-      final y = topPadding + chartHeight * (1 - points[i].value);
-      coords.add(Offset(x, y));
-    }
-
-    final curve = _buildCurvePath(coords);
-    final fillPath = Path.from(curve)
-      ..lineTo(coords.last.dx, baseline)
-      ..lineTo(coords.first.dx, baseline)
-      ..close();
-
-    final fillPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          AppColors.dashboardPrimary.withValues(alpha: 0.25),
-          AppColors.dashboardPrimary.withValues(alpha: 0.02),
-        ],
-      ).createShader(Rect.fromLTWH(0, topPadding, chartWidth, chartHeight));
-
-    canvas.drawPath(fillPath, fillPaint);
-
-    final linePaint = Paint()
-      ..color = AppColors.dashboardPrimary
-      ..strokeWidth = 2.5
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    canvas.drawPath(curve, linePaint);
-
-    final ringPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-    final dotPaint = Paint()
-      ..color = AppColors.dashboardPrimary
-      ..style = PaintingStyle.fill;
-    final dotBorder = Paint()
-      ..color = AppColors.dashboardPrimary
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-
-    for (final point in coords) {
-      canvas.drawCircle(point, 6, ringPaint);
-      canvas.drawCircle(point, 4, dotPaint);
-      canvas.drawCircle(point, 4, dotBorder);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _SplineAreaChartPainter oldDelegate) {
-    return oldDelegate.points != points;
   }
 }

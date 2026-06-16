@@ -11,6 +11,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/auth_header.dart';
 import '../../providers/settings_provider.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// Create account screen.
 class RegisterScreen extends StatefulWidget {
@@ -41,9 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_acceptedTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.authTermsRequired)),
-      );
+      context.showWarningFeedback(context.l10n.authTermsRequired);
       return;
     }
 
@@ -63,9 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       context.go('/auth/setup-lock');
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.errorGenericWithDetail('$e'))),
-        );
+        context.showOperationError(e);
         setState(() => _loading = false);
       }
     }

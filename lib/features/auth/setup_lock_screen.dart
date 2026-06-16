@@ -11,6 +11,7 @@ import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/auth_form_card.dart';
 import '../../core/widgets/pin_keypad.dart';
 import '../../providers/settings_provider.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// PIN and biometric setup after registration.
 class SetupLockScreen extends StatefulWidget {
@@ -54,13 +55,9 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
         _biometricEnabled = true;
         _error = null;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.authFingerprintSuccess)),
-      );
+      context.showSuccessFeedback(context.l10n.authFingerprintSuccess);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.authFingerprintError)),
-      );
+      context.showErrorFeedback(context.l10n.authFingerprintError);
     }
   }
 

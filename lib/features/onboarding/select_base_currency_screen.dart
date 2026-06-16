@@ -9,6 +9,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../providers/currency_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../providers/wallet_provider.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// First-run screen to pick the base currency.
 class SelectBaseCurrencyScreen extends StatefulWidget {
@@ -47,15 +48,12 @@ class _SelectBaseCurrencyScreenState extends State<SelectBaseCurrencyScreen> {
       await settingsProvider.markSetupComplete(preset['code']!);
 
       if (mounted) {
+        context.showSuccessFeedback(context.l10n.onboardingBaseCurrencySuccess);
         context.go('/');
       }
     } catch (e) {
       if (mounted) {
-        final l10n = context.l10n;
-        final message = _mapCurrencyError(l10n, e);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+        context.showOperationError(e, currencyContext: true);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -143,16 +141,5 @@ class _SelectBaseCurrencyScreenState extends State<SelectBaseCurrencyScreen> {
         ),
       ),
     );
-  }
-
-  String _mapCurrencyError(dynamic l10n, Object error) {
-    final raw = error.toString();
-    if (raw.contains('base_currency_already_exists')) {
-      return l10n.currencyBaseAlreadyExists;
-    }
-    if (raw.contains('currency_already_exists')) {
-      return l10n.currencyAlreadyExists;
-    }
-    return l10n.errorGenericWithDetail(raw.replaceFirst('Exception: ', ''));
   }
 }

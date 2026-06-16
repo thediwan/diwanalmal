@@ -1,14 +1,12 @@
 import 'package:intl/intl.dart';
 
-import '../core/constants/app_colors.dart';
-import '../core/constants/category_icon_styles.dart';
-import '../core/constants/goal_icon_styles.dart';
 import '../core/constants/database_constants.dart';
-import '../core/helpers/currency_formatter.dart';
+import '../core/constants/goal_icon_styles.dart';
 import '../database/daos/finance_dao.dart';
 import '../features/dashboard/models/dashboard_models.dart';
 import '../l10n/app_localizations.dart';
 import 'lazarus_database_service.dart';
+import 'transaction_list_service.dart';
 
 /// Loads dashboard UI data from Lazarus SQLite tables.
 class DashboardService {
@@ -22,6 +20,8 @@ class DashboardService {
   Future<DashboardSnapshot> loadSnapshot(
     AppLocalizations l10n, {
     required String localeName,
+    required int deleteWindowHours,
+    required int editWindowDays,
   }) async {
     final userId = await _lazarus.getActiveUserId();
     if (userId == null) {
@@ -63,40 +63,38 @@ class DashboardService {
         )
         .toList();
 
-    final txRows = await _dao.getRecentTransactions(userId, limit: 8);
-    final transactions = txRows.map((row) {
-      final tx = row.transaction;
-      final isIncome = tx.type == DatabaseConstants.txIncome;
-      final sign = isIncome ? '+' : '-';
-      final showSecondary =
-          row.currencyCode.toUpperCase() != baseCode.toUpperCase();
-      final categoryColor = CategoryIconStyles.colorFor(
-        row.categoryColorHex,
-        fallback: isIncome ? AppColors.success : AppColors.debtAccent,
-      );
-      return DashboardTransaction(
-        title: tx.title,
-        subtitle: _formatTransactionSubtitle(
-          tx.transactionDate,
-          localeName,
-          l10n,
-        ),
-        primaryAmount:
-            '${CurrencyFormatter.formatCodeFirst(tx.baseAmount, baseCode)}$sign',
-        secondaryAmount: showSecondary
-            ? CurrencyFormatter.formatCodeFirst(
-                tx.amount,
-                row.currencyCode,
-              )
-            : null,
-        isIncome: isIncome,
-        icon: CategoryIconStyles.iconFor(row.categoryIconKey),
-        iconColor: categoryColor,
-      );
-    }).toList();
+    final recentPage = await TransactionListService(_lazarus).fetchPage(
+      filter: const ActivityFeedFilter(),
+      page: 0,
+      baseCurrencyCode: baseCode,
+      l10n: l10n,
+      localeName: localeName,
+      deleteWindowHours: deleteWindowHours,
+      editWindowDays: editWindowDays,
+    );
 
-    final dailyTotals = await _dao.getDailyExpenseTotals(userId, days: 30);
-    final chartPoints = _buildChartPoints(dailyTotals, localeName);
+    final transactions = recentPage.items
+        .take(8)
+        .map(
+          (item) => DashboardTransaction(
+            title: item.title,
+            subtitle: _formatTransactionSubtitle(
+              item.transactionDate,
+              localeName,
+              l10n,
+            ),
+            primaryAmount: item.primaryAmount,
+            secondaryAmount: item.secondaryAmount,
+            kind: item.kind,
+            icon: item.icon,
+            iconColor: item.iconColor,
+          ),
+        )
+        .toList();
+
+    final dailyTotals = await _dao.getDailyExpenseTotals(userId, days: 35);
+    final dailyChart = _buildDailyChartPoints(dailyTotals, localeName);
+    final weeklyChart = _buildWeeklyChartPoints(dailyTotals, localeName);
 
     return DashboardSnapshot(
       monthlyIncome: income,
@@ -104,8 +102,9 @@ class DashboardService {
       debts: debts,
       goals: goals,
       transactions: transactions,
-      dailyChart: chartPoints,
-      weeklyChart: chartPoints,
+      dailyChart: dailyChart,
+      weeklyChart: weeklyChart,
+      baseCurrencyCode: baseCode,
     );
   }
 
@@ -128,47 +127,62 @@ class DashboardService {
     return DateFormat.yMMMd(localeName).add_jm().format(date);
   }
 
-  List<DashboardChartPoint> _buildChartPoints(
+  /// Last 7 calendar days including today (zeros for days without spending).
+  List<DashboardChartPoint> _buildDailyChartPoints(
     List<ChartDayTotal> totals,
     String localeName,
   ) {
-    if (totals.isEmpty) {
-      return const [
-        DashboardChartPoint(label: '—', value: 0.2),
-        DashboardChartPoint(label: '—', value: 0.2),
-      ];
+    final today = _dayOnly(DateTime.now());
+    final byDay = {for (final row in totals) _dayOnly(row.date): row.totalBase};
+
+    return List.generate(7, (index) {
+      final day = today.subtract(Duration(days: 6 - index));
+      return DashboardChartPoint(
+        label: DateFormat.Md(localeName).format(day),
+        amount: byDay[day] ?? 0,
+      );
+    });
+  }
+
+  /// Last 4 ISO weeks (Mon–Sun buckets) including the current week.
+  List<DashboardChartPoint> _buildWeeklyChartPoints(
+    List<ChartDayTotal> totals,
+    String localeName,
+  ) {
+    final today = _dayOnly(DateTime.now());
+    final currentWeekStart = _weekStart(today);
+
+    final weekTotals = List<double>.filled(4, 0);
+    for (final row in totals) {
+      final day = _dayOnly(row.date);
+      final weekStart = _weekStart(day);
+      final diffWeeks = currentWeekStart.difference(weekStart).inDays ~/ 7;
+      if (diffWeeks >= 0 && diffWeeks < 4) {
+        weekTotals[3 - diffWeeks] += row.totalBase;
+      }
     }
 
-    final maxVal =
-        totals.map((e) => e.totalBase).reduce((a, b) => a > b ? a : b);
-    final denom = maxVal > 0 ? maxVal : 1;
+    return List.generate(4, (index) {
+      final weekStart = currentWeekStart.subtract(Duration(days: (3 - index) * 7));
+      final weekEnd = weekStart.add(const Duration(days: 6));
+      final label = index == 3
+          ? DateFormat.Md(localeName).format(weekStart)
+          : '${DateFormat.Md(localeName).format(weekStart)}–${DateFormat.Md(localeName).format(weekEnd)}';
 
-    if (totals.length <= 4) {
-      return totals
-          .map(
-            (e) => DashboardChartPoint(
-              label: DateFormat.Md(localeName).format(e.date),
-              value: (e.totalBase / denom).clamp(0.05, 1.0),
-            ),
-          )
-          .toList();
-    }
+      return DashboardChartPoint(
+        label: label,
+        amount: weekTotals[index],
+      );
+    });
+  }
 
-    final step = (totals.length / 4).ceil();
-    final picked = <ChartDayTotal>[];
-    for (var i = 0; i < totals.length; i += step) {
-      picked.add(totals[i]);
-    }
-    if (picked.last != totals.last) picked.add(totals.last);
+  DateTime _dayOnly(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
 
-    return picked
-        .map(
-          (e) => DashboardChartPoint(
-            label: DateFormat.Md(localeName).format(e.date),
-            value: (e.totalBase / denom).clamp(0.05, 1.0),
-          ),
-        )
-        .toList();
+  DateTime _weekStart(DateTime date) {
+    final day = _dayOnly(date);
+    return day.subtract(Duration(days: day.weekday - DateTime.monday));
   }
 
   Future<String> _resolveBaseCurrencyCode(String userId) async {
@@ -196,6 +210,7 @@ class DashboardSnapshot {
     required this.transactions,
     required this.dailyChart,
     required this.weeklyChart,
+    required this.baseCurrencyCode,
   });
 
   final double monthlyIncome;
@@ -205,6 +220,7 @@ class DashboardSnapshot {
   final List<DashboardTransaction> transactions;
   final List<DashboardChartPoint> dailyChart;
   final List<DashboardChartPoint> weeklyChart;
+  final String baseCurrencyCode;
 
   factory DashboardSnapshot.empty() {
     return const DashboardSnapshot(
@@ -215,6 +231,7 @@ class DashboardSnapshot {
       transactions: [],
       dailyChart: [],
       weeklyChart: [],
+      baseCurrencyCode: 'USD',
     );
   }
 }

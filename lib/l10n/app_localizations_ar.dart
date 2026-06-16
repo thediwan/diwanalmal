@@ -38,6 +38,34 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get feedbackDatabaseError =>
+      'حدث خطأ في قاعدة البيانات. أعد تشغيل التطبيق بالكامل.';
+
+  @override
+  String get walletFormSaveSuccess => 'تم حفظ المحفظة بنجاح';
+
+  @override
+  String get walletFormDeleteSuccess => 'تم حذف المحفظة بنجاح';
+
+  @override
+  String get currencyFormSaveSuccess => 'تم حفظ العملة بنجاح';
+
+  @override
+  String get currencyDeleteSuccess => 'تم حذف العملة بنجاح';
+
+  @override
+  String get goalPlanSaveSuccess => 'تم حفظ الهدف بنجاح';
+
+  @override
+  String get goalEditSaveSuccess => 'تم تحديث الهدف بنجاح';
+
+  @override
+  String get goalEditDeleteSuccess => 'تم حذف الهدف بنجاح';
+
+  @override
+  String get onboardingBaseCurrencySuccess => 'تم تعيين العملة الأساسية بنجاح';
+
+  @override
   String get authLoginTitle => 'تسجيل الدخول';
 
   @override
@@ -327,10 +355,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dashboardLast30Days => 'آخر 30 يوم';
 
   @override
+  String get dashboardLast7Days => 'آخر 7 أيام';
+
+  @override
+  String get dashboardLast4Weeks => 'آخر 4 أسابيع';
+
+  @override
   String get dashboardDaily => 'يومي';
 
   @override
   String get dashboardWeekly => 'أسبوعي';
+
+  @override
+  String get dashboardChartMin => 'الأقل';
+
+  @override
+  String get dashboardChartMax => 'الأعلى';
 
   @override
   String get dashboardRecentTransactions => 'المعاملات الأخيرة';

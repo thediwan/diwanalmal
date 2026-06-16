@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +11,7 @@ import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_formatter.dart';
 import '../../core/helpers/currency_uniqueness.dart';
+import '../../core/helpers/user_facing_error.dart';
 import '../../core/theme/app_theme_colors.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -28,10 +31,12 @@ import '../../services/transaction_service.dart';
 import '../../services/transfer_service.dart';
 import 'models/transaction_list_item.dart';
 import 'widgets/debt_settlement_sheet.dart';
+import 'widgets/form_feedback_banner.dart';
 import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_currency_pills.dart';
 import 'widgets/transaction_numeric_keypad.dart';
 import 'widgets/transaction_wallet_carousel.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// Edit an existing income, expense, or currency transfer (type is read-only).
 class TransactionEditScreen extends StatefulWidget {
@@ -55,10 +60,16 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
   final _exchangeRateController = TextEditingController();
   final _personNameController = TextEditingController();
   final _debtAmountController = TextEditingController();
+  final _scrollController = ScrollController();
 
   bool _isLoading = true;
   bool _isSaving = false;
   bool _canEdit = false;
+
+  FormFeedbackType? _feedbackType;
+  String? _feedbackMessage;
+  Timer? _feedbackDismissTimer;
+
   DateTime _createdAt = DateTime.now();
   DateTime _transactionDate = DateTime.now();
   DateTime? _dueDate;
@@ -243,6 +254,54 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
     setState(() => _debtDetail = detail);
   }
 
+  void _clearFormFeedback() {
+    _feedbackDismissTimer?.cancel();
+    if (_feedbackMessage == null && _feedbackType == null) return;
+    setState(() {
+      _feedbackMessage = null;
+      _feedbackType = null;
+    });
+  }
+
+  void _showFormFeedback(
+    FormFeedbackType type,
+    String message, {
+    bool autoDismiss = false,
+  }) {
+    _feedbackDismissTimer?.cancel();
+    setState(() {
+      _feedbackType = type;
+      _feedbackMessage = message;
+    });
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    }
+    if (autoDismiss) {
+      _feedbackDismissTimer = Timer(const Duration(seconds: 5), () {
+        if (mounted) _clearFormFeedback();
+      });
+    }
+  }
+
+  void _showFormSuccess(String message) {
+    _showFormFeedback(FormFeedbackType.success, message, autoDismiss: true);
+  }
+
+  void _showFormWarning(String message) {
+    _showFormFeedback(FormFeedbackType.warning, message);
+  }
+
+  void _showFormError(Object error) {
+    _showFormFeedback(
+      FormFeedbackType.error,
+      UserFacingError.message(context.l10n, error),
+    );
+  }
+
   Future<void> _openSettlementSheet() async {
     final detail = _debtDetail;
     if (detail == null || detail.isFullyPaid) return;
@@ -289,14 +348,10 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       context.read<DashboardRefreshProvider>().notifyRefresh();
       await _reloadDebtDetail();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionDebtSettleSuccess)),
-      );
+      _showFormSuccess(l10n.transactionDebtSettleSuccess);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionFormSaveError(e.toString()))),
-        );
+        _showFormError(e);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -320,9 +375,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
   Future<void> _save() async {
     final l10n = context.l10n;
     if (!_canEdit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionEditExpired)),
-      );
+      _showFormWarning(l10n.transactionEditExpired);
       return;
     }
 
@@ -330,40 +383,28 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       final amount = _parsePositiveDouble(_transferAmountController.text);
       final crossRate = _parsePositiveDouble(_exchangeRateController.text);
       if (amount == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionFormAmountRequired)),
-        );
+        _showFormWarning(l10n.transactionFormAmountRequired);
         return;
       }
       if (crossRate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionFormExchangeRateRequired)),
-        );
+        _showFormWarning(l10n.transactionFormExchangeRateRequired);
         return;
       }
     } else if (_isDebtKind) {
       if (_personNameController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionFormPersonNameRequired)),
-        );
+        _showFormWarning(l10n.transactionFormPersonNameRequired);
         return;
       }
       if (_parsePositiveDouble(_debtAmountController.text) == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionFormAmountRequired)),
-        );
+        _showFormWarning(l10n.transactionFormAmountRequired);
         return;
       }
       if (_walletId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionFormSelectWallet)),
-        );
+        _showFormWarning(l10n.transactionFormSelectWallet);
         return;
       }
     } else if (_amountInput.value <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormAmountRequired)),
-      );
+      _showFormWarning(l10n.transactionFormAmountRequired);
       return;
     }
 
@@ -437,15 +478,11 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       if (!mounted) return;
       await context.read<WalletProvider>().loadWallets();
       context.read<DashboardRefreshProvider>().notifyRefresh();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionEditSaveSuccess)),
-      );
+      context.showSuccessFeedback(l10n.transactionEditSaveSuccess);
       context.pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionFormSaveError(e.toString()))),
-        );
+        _showFormError(e);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -454,6 +491,8 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
 
   @override
   void dispose() {
+    _feedbackDismissTimer?.cancel();
+    _scrollController.dispose();
     _notesController.dispose();
     _transferAmountController.dispose();
     _exchangeRateController.dispose();
@@ -511,6 +550,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
+              controller: _scrollController,
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -541,6 +581,14 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                       ],
                     ),
                   ),
+                  if (_feedbackMessage != null && _feedbackType != null) ...[
+                    const SizedBox(height: 12),
+                    FormFeedbackBanner(
+                      message: _feedbackMessage!,
+                      type: _feedbackType!,
+                      onDismiss: _clearFormFeedback,
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   if (widget.kind == TransactionListKind.transfer) ...[
                     Text(

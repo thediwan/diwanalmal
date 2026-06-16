@@ -10,6 +10,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../models/currency.dart';
 import '../../../providers/currency_provider.dart';
+import '../../../core/extensions/context_feedback.dart';
 
 /// Lists all currencies with exchange rates to base.
 class CurrenciesScreen extends StatelessWidget {
@@ -140,11 +141,12 @@ class _CurrencyTile extends StatelessWidget {
 
     try {
       await context.read<CurrencyProvider>().deleteCurrency(currency.id);
+      if (context.mounted) {
+        context.showSuccessFeedback(context.l10n.currencyDeleteSuccess);
+      }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-        );
+        context.showOperationError(e);
       }
     }
   }

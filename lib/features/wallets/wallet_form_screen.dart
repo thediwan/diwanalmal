@@ -17,6 +17,7 @@ import '../../providers/currency_provider.dart';
 import '../../providers/wallet_provider.dart';
 import 'widgets/opening_balance_section.dart';
 import 'widgets/wallet_type_selector.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// Form to create or edit a wallet (add flow matches client mockup).
 class WalletFormScreen extends StatefulWidget {
@@ -188,9 +189,7 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
     final l10n = context.l10n;
 
     if (_openingBalanceRows.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.walletFormOpeningBalanceRequired)),
-      );
+      context.showWarningFeedback(l10n.walletFormOpeningBalanceRequired);
       return null;
     }
 
@@ -199,33 +198,25 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
 
     for (final row in _openingBalanceRows) {
       if (row.currencyCode == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.walletFormSelectCurrency)),
-        );
+        context.showWarningFeedback(l10n.walletFormSelectCurrency);
         return null;
       }
 
       final code = row.currencyCode!.toUpperCase();
       if (seenCodes.contains(code)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.walletFormDuplicateCurrency)),
-        );
+        context.showWarningFeedback(l10n.walletFormDuplicateCurrency);
         return null;
       }
 
       final raw = row.balanceController.text.trim();
       if (raw.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.walletFormBalanceRequired)),
-        );
+        context.showWarningFeedback(l10n.walletFormBalanceRequired);
         return null;
       }
 
       final balance = double.tryParse(raw);
       if (balance == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.walletFormInvalidNumber)),
-        );
+        context.showWarningFeedback(l10n.walletFormInvalidNumber);
         return null;
       }
 
@@ -274,17 +265,13 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
         );
       }
 
-      if (mounted) context.pop();
+      if (mounted) {
+        context.showSuccessFeedback(l10n.walletFormSaveSuccess);
+        context.pop();
+      }
     } catch (e) {
       if (mounted) {
-        final message = e.toString().contains('duplicate_currency')
-            ? l10n.walletFormDuplicateCurrency
-            : e.toString().contains('account_has_transactions')
-                ? l10n.walletFormAccountHasTransactions
-                : l10n.walletFormError(e.toString());
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+        context.showOperationError(e, walletContext: true);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -316,7 +303,10 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
     if (confirmed != true || _editingTreasuryId == null || !mounted) return;
 
     await context.read<WalletProvider>().deleteWallet(_editingTreasuryId!);
-    if (mounted) context.pop();
+    if (mounted) {
+      context.showSuccessFeedback(l10n.walletFormDeleteSuccess);
+      context.pop();
+    }
   }
 
   @override

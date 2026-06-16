@@ -11,6 +11,7 @@ import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/auth_form_card.dart';
 import '../../core/widgets/auth_header.dart';
 import '../../providers/settings_provider.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// Biometric start screen before login.
 class StartAuthScreen extends StatefulWidget {
@@ -50,9 +51,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
         context.go('/onboarding');
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.authBiometricFailed)),
-      );
+      context.showErrorFeedback(context.l10n.authBiometricFailed);
     }
   }
 

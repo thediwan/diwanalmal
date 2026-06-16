@@ -24,6 +24,7 @@ import '../../services/transfer_service.dart';
 import 'models/transaction_list_item.dart';
 import 'widgets/transaction_list_filter_sheet.dart';
 import 'widgets/transaction_list_tile.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// Paginated transactions list with tabs, filters, search, and grouped dates.
 class TransactionsListScreen extends StatefulWidget {
@@ -167,11 +168,7 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.transactionsListLoadError(e.toString())),
-        ),
-      );
+      context.showOperationError(e);
     }
   }
 
@@ -194,11 +191,7 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoadingMore = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.transactionsListLoadError(e.toString())),
-        ),
-      );
+      context.showOperationError(e);
     }
   }
 
@@ -232,9 +225,7 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
     final settings = context.read<SettingsProvider>();
 
     if (!item.canDelete) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionDeleteExpired)),
-      );
+      context.showWarningFeedback(l10n.transactionDeleteExpired);
       return false;
     }
 
@@ -281,15 +272,11 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
       context.read<DashboardRefreshProvider>().notifyRefresh();
       await _reload();
       if (!mounted) return false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionDeleteSuccess)),
-      );
+      context.showSuccessFeedback(l10n.transactionDeleteSuccess);
       return true;
     } catch (e) {
       if (!mounted) return false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.transactionFormSaveError(e.toString()))),
-      );
+      context.showOperationError(e);
       return false;
     }
   }

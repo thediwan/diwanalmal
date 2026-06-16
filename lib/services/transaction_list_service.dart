@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../core/constants/app_colors.dart';
-import '../core/constants/transaction_policy.dart';
-import '../core/constants/category_icon_styles.dart';
 import '../core/constants/database_constants.dart';
+import '../core/constants/transaction_policy.dart';
+import '../core/constants/transaction_icon_styles.dart';
 import '../core/helpers/currency_formatter.dart';
 import '../database/daos/finance_dao.dart';
 import '../features/transactions/models/transaction_list_item.dart';
@@ -169,6 +167,8 @@ class TransactionListService {
         l10n: l10n,
       );
 
+      final iconStyle = TransactionIconStyles.forDebt(isDebtor: isDebtor);
+
       return TransactionListItem(
         id: tx.id,
         kind: isDebtor
@@ -184,8 +184,8 @@ class TransactionListService {
         transactionDate: tx.transactionDate,
         createdAt: createdAt,
         notes: tx.notes,
-        icon: isDebtor ? Icons.person_outline : Icons.person_off_outlined,
-        iconColor: isDebtor ? AppColors.success : AppColors.debtAccent,
+        icon: iconStyle.icon,
+        iconColor: iconStyle.color,
         isIncome: isDebtor,
         isTransfer: false,
         isDebt: true,
@@ -204,9 +204,10 @@ class TransactionListService {
     final sign = isIncome ? '+' : '-';
     final showSecondary =
         row.currencyCode.toUpperCase() != baseCurrencyCode.toUpperCase();
-    final categoryColor = CategoryIconStyles.colorFor(
-      row.categoryColorHex,
-      fallback: isIncome ? AppColors.success : AppColors.debtAccent,
+    final categoryStyle = TransactionIconStyles.forCategory(
+      iconKey: row.categoryIconKey,
+      colorHex: row.categoryColorHex,
+      isIncome: isIncome,
     );
 
     return TransactionListItem(
@@ -229,8 +230,8 @@ class TransactionListService {
       transactionDate: tx.transactionDate,
       createdAt: createdAt,
       notes: tx.notes,
-      icon: CategoryIconStyles.iconFor(row.categoryIconKey),
-      iconColor: categoryColor,
+      icon: categoryStyle.icon,
+      iconColor: categoryStyle.color,
       isIncome: isIncome,
       isTransfer: false,
       canEdit: TransactionPolicy.canEdit(
@@ -264,6 +265,8 @@ class TransactionListService {
     final createdAt = tr.createdAt;
     final targetAmount = tr.toAmount ?? tr.amount;
 
+    final transferStyle = TransactionIconStyles.forTransfer();
+
     return TransactionListItem(
       id: tr.id,
       kind: TransactionListKind.transfer,
@@ -287,8 +290,8 @@ class TransactionListService {
       transactionDate: tr.transactionDate,
       createdAt: createdAt,
       notes: tr.notes,
-      icon: Icons.swap_horiz_rounded,
-      iconColor: AppColors.dashboardPrimary,
+      icon: transferStyle.icon,
+      iconColor: transferStyle.color,
       isIncome: false,
       isTransfer: true,
       canEdit: TransactionPolicy.canEdit(

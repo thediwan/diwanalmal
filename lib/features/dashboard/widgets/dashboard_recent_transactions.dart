@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/transaction_icon_styles.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../transactions/widgets/transaction_icon_badge.dart';
 import '../models/dashboard_models.dart';
 
 /// Recent transactions — title right, more link left (RTL mockup).
@@ -81,25 +83,16 @@ class _TransactionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final tx = transaction;
     final colors = context.appColors;
-    final amountColor = tx.isIncome ? AppColors.success : AppColors.expense;
+    final amountColor = TransactionIconStyles.amountColorForKind(tx.kind);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: tx.iconColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: tx.iconColor.withValues(alpha: 0.35),
-                width: 1,
-              ),
-            ),
-            child: Icon(tx.icon, color: tx.iconColor, size: 24),
+          TransactionIconBadge(
+            icon: tx.icon,
+            iconColor: tx.iconColor,
           ),
           const SizedBox(width: 12),
           Expanded(

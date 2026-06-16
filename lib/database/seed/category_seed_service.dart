@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../core/constants/database_constants.dart';
+import '../../core/constants/seed_constants.dart';
 import '../lazarus_database.dart';
 
 /// Seeds default income/expense categories on first app setup.
@@ -11,6 +12,7 @@ class CategorySeedService {
 
   /// Inserts default categories; existing rows with the same id are kept.
   Future<void> ensureDefaultCategories(String userId) async {
+    if (!SeedConstants.enabled) return;
     final now = DateTime.now();
     final rows = _defaultRows(userId: userId, now: now);
 

@@ -10,6 +10,7 @@ import '../../../core/theme/app_form_fields.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../models/currency.dart';
 import '../../../providers/currency_provider.dart';
+import '../../../core/extensions/context_feedback.dart';
 
 /// Form to add or edit a non-base currency with exchange rate.
 class CurrencyFormScreen extends StatefulWidget {
@@ -83,6 +84,7 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final l10n = context.l10n;
     setState(() => _isSaving = true);
 
     try {
@@ -106,12 +108,13 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
         );
       }
 
-      if (mounted) context.pop();
+      if (mounted) {
+        context.showSuccessFeedback(l10n.currencyFormSaveSuccess);
+        context.pop();
+      }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-        );
+        context.showOperationError(e, currencyContext: true);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

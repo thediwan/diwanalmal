@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../core/constants/seed_constants.dart';
 import '../database/lazarus_database.dart';
 import '../database/seed/category_seed_service.dart';
 import '../database/seed/database_seed_service.dart';
@@ -8,7 +9,7 @@ import '../models/wallet.dart' as app;
 import '../core/helpers/currency_uniqueness.dart';
 import 'hive_service.dart';
 
-/// Bootstraps Lazarus SQLite, migrates legacy Hive data, and seeds demo rows.
+/// Bootstraps Lazarus SQLite and migrates legacy Hive data.
 class LazarusDatabaseService {
   LazarusDatabaseService._(this.database);
 
@@ -24,7 +25,7 @@ class LazarusDatabaseService {
     return inst;
   }
 
-  /// Opens DB, migrates Hive once, seeds when empty.
+  /// Opens DB and migrates Hive once when needed.
   static Future<LazarusDatabaseService> initialize(HiveService hiveService) async {
     if (_instance != null) return _instance!;
 
@@ -32,7 +33,9 @@ class LazarusDatabaseService {
     final service = LazarusDatabaseService._(db);
 
     await service._migrateHiveIfNeeded(hiveService);
-    await service._ensureDefaultCategoriesForActiveUser();
+    if (SeedConstants.enabled) {
+      await service._ensureDefaultCategoriesForActiveUser();
+    }
 
     _instance = service;
     return service;
@@ -43,12 +46,15 @@ class LazarusDatabaseService {
     required String userId,
     required String baseCurrencyId,
     required String baseCode,
-  }) {
-    return DatabaseSeedService(database).seedDemoDataAfterBaseCurrencySelection(
+  }) async {
+    if (!SeedConstants.enabled) return;
+
+    await DatabaseSeedService(database).seedDemoDataAfterBaseCurrencySelection(
       userId: userId,
       baseCurrencyId: baseCurrencyId,
       baseCode: baseCode,
-    ).then((_) => CategorySeedService(database).ensureDefaultCategories(userId));
+    );
+    await CategorySeedService(database).ensureDefaultCategories(userId);
   }
 
   Future<String?> getActiveUserId() => database.getActiveUserId();

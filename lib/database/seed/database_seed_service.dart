@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../core/constants/seed_constants.dart';
 import '../../core/constants/database_constants.dart';
 import '../../core/helpers/currency_uniqueness.dart';
 import '../lazarus_database.dart';
@@ -57,6 +58,8 @@ class DatabaseSeedService {
     required String baseCurrencyId,
     required String baseCode,
   }) async {
+    if (!SeedConstants.enabled) return;
+
     final normalizedBase = normalizeCurrencyCode(baseCode);
 
     final hasMockup = await (_db.select(_db.transactions)

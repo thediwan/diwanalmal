@@ -12,6 +12,7 @@ import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/auth_form_card.dart';
 import '../../core/widgets/auth_header.dart';
 import '../../providers/settings_provider.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// Email/password sign in screen.
 class LoginScreen extends StatefulWidget {
@@ -44,9 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text;
 
     if (!settings.validateLogin(username, password)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.authInvalidCredentials)),
-      );
+      context.showErrorFeedback(context.l10n.authInvalidCredentials);
       return;
     }
 

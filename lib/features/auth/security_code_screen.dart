@@ -10,6 +10,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_form_card.dart';
 import '../../core/widgets/split_auth_background.dart';
 import '../../providers/settings_provider.dart';
+import '../../core/extensions/context_feedback.dart';
 
 /// Shows recovery security code after PIN and biometric setup.
 class SecurityCodeScreen extends StatelessWidget {
@@ -185,9 +186,7 @@ class SecurityCodeScreen extends StatelessWidget {
                           Clipboard.setData(
                             ClipboardData(text: securityCode),
                           );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.authCodeCopied)),
-                          );
+                          context.showSuccessFeedback(l10n.authCodeCopied);
                         },
                         icon: const Icon(
                           CupertinoIcons.doc_on_doc,
