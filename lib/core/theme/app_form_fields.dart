@@ -16,6 +16,20 @@ abstract final class AppFormFields {
     return AppTextStyles.inputTextStyleFor(colors);
   }
 
+  /// Section label above a field group (category, type, etc.).
+  static TextStyle sectionLabelStyleOf(BuildContext context) {
+    return AppTextStyles.labelOnSurface(context.appColors);
+  }
+
+  static TextStyle sectionLabelStyleFor(AppThemeColors colors) {
+    return AppTextStyles.labelOnSurface(colors);
+  }
+
+  /// Text style for dropdown menu items.
+  static TextStyle dropdownItemStyleOf(BuildContext context) {
+    return AppTextStyles.dropdownItemFor(context.appColors);
+  }
+
   static InputDecoration decoration(
     BuildContext context, {
     String? labelText,
@@ -55,6 +69,72 @@ abstract final class AppFormFields {
       ),
       filled: true,
       fillColor: fillColor ?? colors.inputFill,
+    );
+  }
+
+  /// Borderless variant used inside bottom sheets (matches date picker rows).
+  static InputDecoration dropdownDecoration(
+    BuildContext context, {
+    Color? fillColor,
+  }) {
+    final colors = context.appColors;
+    return decoration(
+      context,
+      fillColor: fillColor ?? colors.inputFill,
+    ).copyWith(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: AppColors.dashboardPrimary,
+          width: 1.5,
+        ),
+      ),
+    );
+  }
+
+  /// Themed [DropdownButtonFormField] with unified typography.
+  static Widget dropdown<T>({
+    required BuildContext context,
+    required T? value,
+    required List<DropdownMenuItem<T>> items,
+    required ValueChanged<T?>? onChanged,
+    Color? fillColor,
+  }) {
+    final colors = context.appColors;
+
+    return DropdownButtonFormField<T>(
+      key: ValueKey<T?>(value),
+      initialValue: value,
+      items: items,
+      onChanged: onChanged,
+      isExpanded: true,
+      style: inputTextStyleOf(context),
+      dropdownColor: colors.surface,
+      iconEnabledColor: colors.textSecondary,
+      decoration: dropdownDecoration(context, fillColor: fillColor),
+    );
+  }
+
+  /// Builds a [DropdownMenuItem] with app typography.
+  static DropdownMenuItem<T> dropdownItem<T>({
+    required BuildContext context,
+    required T value,
+    required String label,
+  }) {
+    return DropdownMenuItem<T>(
+      value: value,
+      child: Text(
+        label,
+        style: dropdownItemStyleOf(context),
+      ),
     );
   }
 }

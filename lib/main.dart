@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'core/constants/app_constants.dart';
+import 'core/theme/app_typography.dart';
 import 'core/theme/app_theme.dart';
 import 'l10n/app_localizations.dart';
 import 'core/widgets/app_lifecycle_observer.dart';
@@ -30,10 +31,7 @@ Future<void> main() async {
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   // Preload fonts so auth screens do not hang on first paint (emulator/offline).
-  await GoogleFonts.pendingFonts([
-    GoogleFonts.almarai(fontWeight: FontWeight.w700),
-    GoogleFonts.cairo(),
-  ]);
+  await GoogleFonts.pendingFonts(AppTypography.preloadStyles);
 
   final hiveService = HiveService();
   await hiveService.init();

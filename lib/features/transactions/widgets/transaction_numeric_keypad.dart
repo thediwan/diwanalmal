@@ -130,4 +130,9 @@ class TransactionAmountInput {
   void reset() {
     _minorUnits = 0;
   }
+
+  /// Sets amount from an existing record (edit screen).
+  void setValue(double amount) {
+    _minorUnits = (amount * 100).round();
+  }
 }

@@ -283,6 +283,7 @@ class DatabaseSeedService {
             DebtsCompanion.insert(
               id: _debtAhmedId,
               userId: userId,
+              walletId: _walBankId,
               personName: 'أحمد',
               type: DatabaseConstants.debtIOwe,
               amount: 100,
@@ -412,7 +413,7 @@ class DatabaseSeedService {
           TransactionsCompanion.insert(
             id: id,
             userId: userId,
-            walletId: walletId,
+            walletId: Value(walletId),
             categoryId: Value(categoryId),
             type: type,
             title: title,

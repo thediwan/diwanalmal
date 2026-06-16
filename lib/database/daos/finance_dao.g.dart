@@ -8,9 +8,9 @@ mixin _$FinanceDaoMixin on DatabaseAccessor<LazarusDatabase> {
   $WalletsTable get wallets => attachedDatabase.wallets;
   $CategoriesTable get categories => attachedDatabase.categories;
   $CurrenciesTable get currencies => attachedDatabase.currencies;
+  $DebtsTable get debts => attachedDatabase.debts;
   $TransactionsTable get transactions => attachedDatabase.transactions;
   $TransfersTable get transfers => attachedDatabase.transfers;
-  $DebtsTable get debts => attachedDatabase.debts;
   $DebtPaymentsTable get debtPayments => attachedDatabase.debtPayments;
   $GoalsTable get goals => attachedDatabase.goals;
   $WalletCurrencyAccountsTable get walletCurrencyAccounts =>
@@ -29,12 +29,12 @@ class FinanceDaoManager {
       $$CategoriesTableTableManager(_db.attachedDatabase, _db.categories);
   $$CurrenciesTableTableManager get currencies =>
       $$CurrenciesTableTableManager(_db.attachedDatabase, _db.currencies);
+  $$DebtsTableTableManager get debts =>
+      $$DebtsTableTableManager(_db.attachedDatabase, _db.debts);
   $$TransactionsTableTableManager get transactions =>
       $$TransactionsTableTableManager(_db.attachedDatabase, _db.transactions);
   $$TransfersTableTableManager get transfers =>
       $$TransfersTableTableManager(_db.attachedDatabase, _db.transfers);
-  $$DebtsTableTableManager get debts =>
-      $$DebtsTableTableManager(_db.attachedDatabase, _db.debts);
   $$DebtPaymentsTableTableManager get debtPayments =>
       $$DebtPaymentsTableTableManager(_db.attachedDatabase, _db.debtPayments);
   $$GoalsTableTableManager get goals =>

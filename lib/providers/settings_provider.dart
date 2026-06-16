@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/constants/transaction_policy.dart';
 import '../models/app_settings.dart';
 import '../services/auth_service.dart';
 import '../services/biometric_service.dart';
@@ -42,6 +43,16 @@ class SettingsProvider extends ChangeNotifier {
   bool get isSecuritySetupComplete => _settings.isSecuritySetupComplete;
   bool get biometricEnabled => _settings.biometricEnabled;
   String get securityCode => _settings.securityCode;
+
+  int get transactionDeleteWindowHours {
+    final hours = _settings.transactionDeleteWindowHours;
+    return hours > 0 ? hours : TransactionPolicyDefaults.deleteWindowHours;
+  }
+
+  int get transactionEditWindowDays {
+    final days = _settings.transactionEditWindowDays;
+    return days > 0 ? days : TransactionPolicyDefaults.editWindowDays;
+  }
 
   /// Best available code for the security screen (memory, then Hive).
   String get displaySecurityCode =>

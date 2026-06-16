@@ -3,6 +3,18 @@ abstract final class DatabaseConstants {
   static const String txIncome = 'income';
   static const String txExpense = 'expense';
 
+  /// Receivable — someone owes the user (stored in [Transactions] + [Debts]).
+  static const String txDebtor = 'debtor';
+
+  /// Payable — the user owes someone (stored in [Transactions] + [Debts]).
+  static const String txCreditor = 'creditor';
+
+  /// Cross-currency wallet transfer (stored in [Transfers] table).
+  static const String txCurrencyTransfer = 'currency_transfer';
+
+  static bool isDebtLedgerType(String type) =>
+      type == txDebtor || type == txCreditor;
+
   static const String categoryIncome = 'income';
   static const String categoryExpense = 'expense';
 

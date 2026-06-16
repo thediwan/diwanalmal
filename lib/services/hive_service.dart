@@ -37,6 +37,9 @@ class HiveService {
 
     if (!_settingsBox!.containsKey(settingsKey)) {
       await _settingsBox!.put(settingsKey, AppSettings.initial());
+    } else {
+      // Re-persist so legacy blobs gain policy int fields on disk.
+      await saveSettings(getSettings());
     }
   }
 

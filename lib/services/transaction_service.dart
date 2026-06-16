@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../core/constants/database_constants.dart';
+import '../core/constants/transaction_policy.dart';
 import '../core/helpers/currency_formatter.dart';
 import '../core/helpers/uuid_helper.dart';
 import '../database/lazarus_database.dart';
@@ -29,7 +30,28 @@ class CreateTransactionInput {
   final DateTime transactionDate;
 }
 
-/// Persists income and expense transactions.
+/// Input for updating an income or expense transaction.
+class UpdateTransactionInput {
+  const UpdateTransactionInput({
+    required this.id,
+    required this.walletId,
+    required this.categoryId,
+    required this.amount,
+    required this.currency,
+    this.notes,
+    required this.transactionDate,
+  });
+
+  final String id;
+  final String walletId;
+  final String categoryId;
+  final double amount;
+  final Currency currency;
+  final String? notes;
+  final DateTime transactionDate;
+}
+
+/// Persists and mutates income and expense transactions.
 class TransactionService {
   TransactionService(this._lazarus);
 
@@ -58,7 +80,7 @@ class TransactionService {
       TransactionsCompanion.insert(
         id: UuidHelper.generate(),
         userId: userId,
-        walletId: input.walletId,
+        walletId: Value(input.walletId),
         categoryId: Value(input.category.id),
         type: input.type,
         title: input.category.name,
@@ -72,6 +94,74 @@ class TransactionService {
         updatedAt: now,
       ),
     );
+  }
+
+  /// Updates a transaction when still within the edit window.
+  Future<void> update({
+    required UpdateTransactionInput input,
+    required int editWindowDays,
+  }) async {
+    final existing = await _db.financeDao.getTransactionById(input.id);
+    if (existing == null) {
+      throw StateError('Transaction not found');
+    }
+
+    if (!TransactionPolicy.canEdit(
+      createdAt: existing.transaction.createdAt,
+      editWindowDays: editWindowDays,
+    )) {
+      throw StateError('Transaction edit window expired');
+    }
+
+    if (input.amount <= 0) {
+      throw ArgumentError('Amount must be greater than zero');
+    }
+
+    final baseAmount = CurrencyFormatter.toBaseAmount(
+      input.amount,
+      input.currency.rateToBase,
+    );
+    final categoryName =
+        await _db.financeDao.getCategoryName(input.categoryId);
+
+    await _db.financeDao.updateTransactionRecord(
+      TransactionsCompanion(
+        id: Value(input.id),
+        walletId: Value(input.walletId),
+        categoryId: Value(input.categoryId),
+        title: Value(categoryName ?? existing.transaction.title),
+        amount: Value(input.amount),
+        currencyId: Value(input.currency.id),
+        exchangeRate: Value(input.currency.rateToBase),
+        baseAmount: Value(baseAmount),
+        notes: Value(input.notes?.trim().isEmpty ?? true ? null : input.notes!.trim()),
+        transactionDate: Value(input.transactionDate),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  /// Soft-deletes a transaction when still within the delete window.
+  Future<void> delete({
+    required String id,
+    required int deleteWindowHours,
+  }) async {
+    final existing = await _db.financeDao.getTransactionById(id);
+    if (existing == null) {
+      throw StateError('Transaction not found');
+    }
+
+    if (!TransactionPolicy.canDelete(
+      createdAt: existing.transaction.createdAt,
+      deleteWindowHours: deleteWindowHours,
+    )) {
+      throw StateError('Transaction delete window expired');
+    }
+
+    final deleted = await _db.financeDao.softDeleteTransaction(id);
+    if (!deleted) {
+      throw StateError('Could not delete transaction');
+    }
   }
 
   /// Validates transaction type string.

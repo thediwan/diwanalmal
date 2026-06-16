@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../lazarus_database.dart';
 import '../tables/schema_tables.dart';
+import '../../core/helpers/activity_feed_search.dart';
 
 part 'finance_dao.g.dart';
 
@@ -226,6 +227,191 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
     return into(db.transactions).insert(transaction);
   }
 
+  /// Persists a new debt master record.
+  Future<void> insertDebt(DebtsCompanion debt) {
+    return into(db.debts).insert(debt);
+  }
+
+  /// Updates an existing debt master record.
+  Future<bool> updateDebtRecord(DebtsCompanion companion) async {
+    final count = await (update(db.debts)
+          ..where((d) => d.id.equals(companion.id.value)))
+        .write(companion);
+    return count > 0;
+  }
+
+  /// Loads a debt row by id.
+  Future<Debt?> getDebtById(String debtId) {
+    return (select(db.debts)
+          ..where((d) => d.id.equals(debtId))
+          ..where((d) => d.deletedAt.isNull()))
+        .getSingleOrNull();
+  }
+
+  /// Sum of payment amounts in the debt's currency (not base).
+  Future<double> sumDebtPaymentsAmount(String debtId) async {
+    final expr = db.debtPayments.amount.sum();
+    final row = await (selectOnly(db.debtPayments)
+          ..addColumns([expr])
+          ..where(db.debtPayments.debtId.equals(debtId)))
+        .getSingleOrNull();
+    return row?.read(expr) ?? 0;
+  }
+
+  /// Payment history for one debt, newest first.
+  Future<List<DebtPayment>> getDebtPayments(String debtId) {
+    return (select(db.debtPayments)
+          ..where((p) => p.debtId.equals(debtId))
+          ..orderBy([(p) => OrderingTerm.desc(p.paymentDate)]))
+        .get();
+  }
+
+  /// Persists a partial or full debt settlement payment.
+  Future<void> insertDebtPayment(DebtPaymentsCompanion payment) {
+    return into(db.debtPayments).insert(payment);
+  }
+
+  /// Full debt context for the ledger transaction row.
+  Future<DebtLedgerDetail?> getDebtDetailByLedgerTransactionId(
+    String transactionId,
+  ) async {
+    final row = await getTransactionById(transactionId);
+    if (row == null) return null;
+
+    final debtId = row.transaction.debtId;
+    if (debtId == null) return null;
+
+    final debt = await getDebtById(debtId);
+    if (debt == null) return null;
+
+    final wallet = await (select(db.wallets)
+          ..where((w) => w.id.equals(debt.walletId)))
+        .getSingleOrNull();
+
+    final paidAmount = await sumDebtPaymentsAmount(debtId);
+    final payments = await getDebtPayments(debtId);
+
+    return DebtLedgerDetail(
+      ledgerTransaction: row.transaction,
+      debt: debt,
+      currencyCode: row.currencyCode,
+      walletName: wallet?.name ?? row.walletName,
+      paidAmount: paidAmount,
+      payments: payments,
+    );
+  }
+
+  /// Persists a wallet currency transfer.
+  Future<void> insertTransfer(TransfersCompanion transfer) {
+    return into(db.transfers).insert(transfer);
+  }
+
+  /// Single transaction with wallet and category metadata.
+  Future<TransactionWithWalletMeta?> getTransactionById(String id) {
+    final t = db.transactions;
+    final c = db.currencies;
+    final cat = db.categories;
+    final w = db.wallets;
+    final d = db.debts;
+    final query = select(t).join([
+      innerJoin(c, c.id.equalsExp(t.currencyId)),
+      leftOuterJoin(cat, cat.id.equalsExp(t.categoryId)),
+      leftOuterJoin(w, w.id.equalsExp(t.walletId)),
+      leftOuterJoin(d, d.id.equalsExp(t.debtId)),
+    ])
+      ..where(t.id.equals(id))
+      ..where(t.deletedAt.isNull());
+
+    return query.getSingleOrNull().then(
+          (row) => row == null
+              ? null
+              : TransactionWithWalletMeta(
+                  transaction: row.readTable(t),
+                  currencyCode: row.readTable(c).code,
+                  categoryIconKey: row.readTableOrNull(cat)?.icon,
+                  categoryColorHex: row.readTableOrNull(cat)?.color,
+                  walletName: row.readTableOrNull(w)?.name ?? '',
+                  dueDate: row.readTableOrNull(d)?.dueDate,
+                  debtIsPaid: row.readTableOrNull(d)?.isPaid,
+                ),
+        );
+  }
+
+  /// Category display name by id.
+  Future<String?> getCategoryName(String id) {
+    return (select(db.categories)..where((c) => c.id.equals(id)))
+        .getSingleOrNull()
+        .then((row) => row?.name);
+  }
+
+  /// Single transfer with wallet and currency metadata.
+  Future<TransferWithMeta?> getTransferById(String id) {
+    final tr = db.transfers;
+    final fromC = db.currencies.createAlias('from_currency');
+    final toC = db.currencies.createAlias('to_currency');
+    final fromW = db.wallets.createAlias('from_wallet');
+    final toW = db.wallets.createAlias('to_wallet');
+    final query = select(tr).join([
+      innerJoin(fromC, fromC.id.equalsExp(tr.currencyId)),
+      leftOuterJoin(toC, toC.id.equalsExp(tr.toCurrencyId)),
+      innerJoin(fromW, fromW.id.equalsExp(tr.fromWalletId)),
+      innerJoin(toW, toW.id.equalsExp(tr.toWalletId)),
+    ])
+      ..where(tr.id.equals(id))
+      ..where(tr.deletedAt.isNull());
+
+    return query.getSingleOrNull().then(
+          (row) => row == null
+              ? null
+              : TransferWithMeta(
+                  transfer: row.readTable(tr),
+                  currencyCode: row.readTable(fromC).code,
+                  toCurrencyCode: row.readTableOrNull(toC)?.code ??
+                      row.readTable(fromC).code,
+                  fromWalletName: row.readTable(fromW).name,
+                  toWalletName: row.readTable(toW).name,
+                ),
+        );
+  }
+
+  /// Soft-deletes a transaction.
+  Future<bool> softDeleteTransaction(String id) async {
+    final now = DateTime.now();
+    final count = await (update(db.transactions)..where((t) => t.id.equals(id)))
+        .write(TransactionsCompanion(
+      deletedAt: Value(now),
+      updatedAt: Value(now),
+    ));
+    return count > 0;
+  }
+
+  /// Soft-deletes a transfer.
+  Future<bool> softDeleteTransfer(String id) async {
+    final now = DateTime.now();
+    final count = await (update(db.transfers)..where((t) => t.id.equals(id)))
+        .write(TransfersCompanion(
+      deletedAt: Value(now),
+      updatedAt: Value(now),
+    ));
+    return count > 0;
+  }
+
+  /// Updates an existing transaction.
+  Future<bool> updateTransactionRecord(TransactionsCompanion companion) async {
+    final count = await (update(db.transactions)
+          ..where((t) => t.id.equals(companion.id.value)))
+        .write(companion);
+    return count > 0;
+  }
+
+  /// Updates an existing transfer.
+  Future<bool> updateTransferRecord(TransfersCompanion companion) async {
+    final count = await (update(db.transfers)
+          ..where((t) => t.id.equals(companion.id.value)))
+        .write(companion);
+    return count > 0;
+  }
+
   /// Recent transactions newest first (includes category icon metadata).
   Future<List<TransactionWithMeta>> getRecentTransactions(
     String userId, {
@@ -254,6 +440,173 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
                   currencyCode: row.readTable(c).code,
                   categoryIconKey: row.readTableOrNull(cat)?.icon,
                   categoryColorHex: row.readTableOrNull(cat)?.color,
+                ),
+              )
+              .toList(),
+        );
+  }
+
+  /// Filtered income/expense rows for the transactions list (newest first).
+  Future<List<TransactionWithWalletMeta>> getFilteredTransactions({
+    required String userId,
+    required ActivityFeedFilter filter,
+    required int limit,
+    int offset = 0,
+  }) {
+    final t = db.transactions;
+    final c = db.currencies;
+    final cat = db.categories;
+    final w = db.wallets;
+    final d = db.debts;
+    final range = filter.resolvedDateRange;
+    final keyword = filter.keyword?.trim();
+
+    final query = select(t).join([
+      innerJoin(c, c.id.equalsExp(t.currencyId)),
+      leftOuterJoin(cat, cat.id.equalsExp(t.categoryId)),
+      leftOuterJoin(w, w.id.equalsExp(t.walletId)),
+      leftOuterJoin(d, d.id.equalsExp(t.debtId)),
+    ])
+      ..where(t.userId.equals(userId))
+      ..where(t.deletedAt.isNull());
+
+    if (filter.tab == ActivityFeedTab.expense) {
+      query.where(t.type.equals('expense'));
+    } else if (filter.tab == ActivityFeedTab.income) {
+      query.where(t.type.equals('income'));
+    } else if (filter.tab == ActivityFeedTab.debt) {
+      query.where(
+        t.type.equals('debtor') | t.type.equals('creditor'),
+      );
+    } else if (filter.tab == ActivityFeedTab.all &&
+        filter.advancedTypeFilter == ActivityFeedTab.expense) {
+      query.where(t.type.equals('expense'));
+    } else if (filter.tab == ActivityFeedTab.all &&
+        filter.advancedTypeFilter == ActivityFeedTab.income) {
+      query.where(t.type.equals('income'));
+    } else if (filter.tab == ActivityFeedTab.all &&
+        filter.advancedTypeFilter == ActivityFeedTab.debt) {
+      query.where(
+        t.type.equals('debtor') | t.type.equals('creditor'),
+      );
+    }
+
+    if (filter.walletId != null && filter.walletId!.isNotEmpty) {
+      query.where(t.walletId.equals(filter.walletId!));
+    }
+
+    if (filter.categoryId != null && filter.categoryId!.isNotEmpty) {
+      query.where(t.categoryId.equals(filter.categoryId!));
+    }
+
+    if (range != null) {
+      query
+        ..where(t.transactionDate.isBiggerOrEqualValue(range.start))
+        ..where(t.transactionDate.isSmallerThanValue(range.end));
+    }
+
+    if (keyword != null && keyword.isNotEmpty) {
+      query.where(
+        ActivityFeedSearch.transactionKeywordMatch(
+          t: t,
+          w: w,
+          c: c,
+          cat: cat,
+          keyword: keyword,
+        ),
+      );
+    }
+
+    query
+      ..orderBy([
+        OrderingTerm.desc(t.transactionDate),
+        OrderingTerm.desc(t.createdAt),
+      ])
+      ..limit(limit, offset: offset);
+
+    return query.get().then(
+          (rows) => rows
+              .map(
+                (row) => TransactionWithWalletMeta(
+                  transaction: row.readTable(t),
+                  currencyCode: row.readTable(c).code,
+                  categoryIconKey: row.readTableOrNull(cat)?.icon,
+                  categoryColorHex: row.readTableOrNull(cat)?.color,
+                  walletName: row.readTableOrNull(w)?.name ?? '',
+                  dueDate: row.readTableOrNull(d)?.dueDate,
+                  debtIsPaid: row.readTableOrNull(d)?.isPaid,
+                ),
+              )
+              .toList(),
+        );
+  }
+
+  /// Filtered wallet transfers for the transactions list (newest first).
+  Future<List<TransferWithMeta>> getFilteredTransfers({
+    required String userId,
+    required ActivityFeedFilter filter,
+    required int limit,
+    int offset = 0,
+  }) {
+    final tr = db.transfers;
+    final c = db.currencies;
+    final toC = db.currencies.createAlias('to_currency');
+    final fromW = db.wallets.createAlias('from_wallet');
+    final toW = db.wallets.createAlias('to_wallet');
+    final range = filter.resolvedDateRange;
+    final keyword = filter.keyword?.trim();
+
+    final query = select(tr).join([
+      innerJoin(c, c.id.equalsExp(tr.currencyId)),
+      leftOuterJoin(toC, toC.id.equalsExp(tr.toCurrencyId)),
+      leftOuterJoin(fromW, fromW.id.equalsExp(tr.fromWalletId)),
+      leftOuterJoin(toW, toW.id.equalsExp(tr.toWalletId)),
+    ])
+      ..where(tr.userId.equals(userId))
+      ..where(tr.deletedAt.isNull());
+
+    if (filter.walletId != null && filter.walletId!.isNotEmpty) {
+      query.where(
+        tr.fromWalletId.equals(filter.walletId!) |
+            tr.toWalletId.equals(filter.walletId!),
+      );
+    }
+
+    if (range != null) {
+      query
+        ..where(tr.transactionDate.isBiggerOrEqualValue(range.start))
+        ..where(tr.transactionDate.isSmallerThanValue(range.end));
+    }
+
+    if (keyword != null && keyword.isNotEmpty) {
+      query.where(
+        ActivityFeedSearch.transferKeywordMatch(
+          tr: tr,
+          fromW: fromW,
+          toW: toW,
+          c: c,
+          keyword: keyword,
+        ),
+      );
+    }
+
+    query
+      ..orderBy([
+        OrderingTerm.desc(tr.transactionDate),
+        OrderingTerm.desc(tr.createdAt),
+      ])
+      ..limit(limit, offset: offset);
+
+    return query.get().then(
+          (rows) => rows
+              .map(
+                (row) => TransferWithMeta(
+                  transfer: row.readTable(tr),
+                  currencyCode: row.readTable(c).code,
+                  toCurrencyCode:
+                      row.readTableOrNull(toC)?.code ?? row.readTable(c).code,
+                  fromWalletName: row.readTableOrNull(fromW)?.name ?? '',
+                  toWalletName: row.readTableOrNull(toW)?.name ?? '',
                 ),
               )
               .toList(),
@@ -345,14 +698,17 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
 
     final transfersIn = await (select(db.transfers)
           ..where((t) => t.toWalletId.equals(walletId))
-          ..where((t) => t.currencyId.equals(currencyId))
           ..where((t) => t.deletedAt.isNull()))
         .get();
     for (final tr in transfersIn) {
+      final creditCurrencyId = tr.toCurrencyId ?? tr.currencyId;
+      if (creditCurrencyId != currencyId) continue;
+      final creditAmount = tr.toAmount ?? tr.amount;
+      final creditRate = tr.toExchangeRate ?? tr.exchangeRate;
       balance += _amountInWalletCurrency(
-        amount: tr.amount,
-        txCurrencyId: tr.currencyId,
-        txRate: tr.exchangeRate,
+        amount: creditAmount,
+        txCurrencyId: creditCurrencyId,
+        txRate: creditRate,
         walletCurrency: currency,
       );
     }
@@ -409,6 +765,93 @@ class WalletAccountWithCurrency {
   final double currencyRateToBase;
 }
 
+/// Tab filter for the unified transactions list feed.
+enum ActivityFeedTab { all, expense, income, transfer, debt }
+
+/// Date range resolved from chip and/or custom filter sheet values.
+class ActivityFeedDateRange {
+  const ActivityFeedDateRange({required this.start, required this.end});
+
+  final DateTime start;
+  final DateTime end;
+}
+
+/// Query parameters for paginated activity feed.
+class ActivityFeedFilter {
+  const ActivityFeedFilter({
+    this.tab = ActivityFeedTab.all,
+    this.walletId,
+    this.categoryId,
+    this.advancedTypeFilter,
+    this.dateFrom,
+    this.dateTo,
+    this.thisMonthOnly = false,
+    this.keyword,
+  });
+
+  final ActivityFeedTab tab;
+  final String? walletId;
+  final String? categoryId;
+  /// Optional type from the filter sheet (applies when [tab] is [ActivityFeedTab.all]).
+  final ActivityFeedTab? advancedTypeFilter;
+  final DateTime? dateFrom;
+  final DateTime? dateTo;
+  final bool thisMonthOnly;
+  final String? keyword;
+
+  /// Effective calendar range: custom sheet dates override the month chip.
+  ActivityFeedDateRange? get resolvedDateRange {
+    if (dateFrom != null || dateTo != null) {
+      final start = dateFrom != null
+          ? DateTime(dateFrom!.year, dateFrom!.month, dateFrom!.day)
+          : DateTime(1970);
+      final endExclusive = dateTo != null
+          ? DateTime(dateTo!.year, dateTo!.month, dateTo!.day + 1)
+          : DateTime(2100);
+      return ActivityFeedDateRange(start: start, end: endExclusive);
+    }
+
+    if (!thisMonthOnly) return null;
+
+    final now = DateTime.now();
+    return ActivityFeedDateRange(
+      start: DateTime(now.year, now.month),
+      end: DateTime(now.year, now.month + 1),
+    );
+  }
+
+  ActivityFeedFilter copyWith({
+    ActivityFeedTab? tab,
+    String? walletId,
+    bool clearWalletId = false,
+    String? categoryId,
+    bool clearCategoryId = false,
+    ActivityFeedTab? advancedTypeFilter,
+    bool clearAdvancedTypeFilter = false,
+    DateTime? dateFrom,
+    bool clearDateFrom = false,
+    DateTime? dateTo,
+    bool clearDateTo = false,
+    bool? thisMonthOnly,
+    String? keyword,
+    bool clearKeyword = false,
+  }) {
+    return ActivityFeedFilter(
+      tab: tab ?? this.tab,
+      walletId: clearWalletId ? null : (walletId ?? this.walletId),
+      categoryId:
+          clearCategoryId ? null : (categoryId ?? this.categoryId),
+      advancedTypeFilter: clearAdvancedTypeFilter
+          ? null
+          : (advancedTypeFilter ?? this.advancedTypeFilter),
+      dateFrom: clearDateFrom ? null : (dateFrom ?? this.dateFrom),
+      dateTo: clearDateTo ? null : (dateTo ?? this.dateTo),
+      thisMonthOnly: thisMonthOnly ?? this.thisMonthOnly,
+      keyword: clearKeyword ? null : (keyword ?? this.keyword),
+    );
+  }
+}
+
 class TransactionWithMeta {
   const TransactionWithMeta({
     required this.transaction,
@@ -423,9 +866,67 @@ class TransactionWithMeta {
   final String? categoryColorHex;
 }
 
+class TransactionWithWalletMeta extends TransactionWithMeta {
+  const TransactionWithWalletMeta({
+    required super.transaction,
+    required super.currencyCode,
+    super.categoryIconKey,
+    super.categoryColorHex,
+    required this.walletName,
+    this.dueDate,
+    this.debtIsPaid,
+  });
+
+  final String walletName;
+  final DateTime? dueDate;
+  final bool? debtIsPaid;
+}
+
+class TransferWithMeta {
+  const TransferWithMeta({
+    required this.transfer,
+    required this.currencyCode,
+    required this.toCurrencyCode,
+    required this.fromWalletName,
+    required this.toWalletName,
+  });
+
+  final Transfer transfer;
+  final String currencyCode;
+  final String toCurrencyCode;
+  final String fromWalletName;
+  final String toWalletName;
+}
+
 class ChartDayTotal {
   const ChartDayTotal({required this.date, required this.totalBase});
 
   final DateTime date;
   final double totalBase;
+}
+
+/// Debt ledger row with payment progress for detail / settlement UI.
+class DebtLedgerDetail {
+  const DebtLedgerDetail({
+    required this.ledgerTransaction,
+    required this.debt,
+    required this.currencyCode,
+    required this.walletName,
+    required this.paidAmount,
+    required this.payments,
+  });
+
+  final Transaction ledgerTransaction;
+  final Debt debt;
+  final String currencyCode;
+  final String walletName;
+  final double paidAmount;
+  final List<DebtPayment> payments;
+
+  double get remaining {
+    final left = debt.amount - paidAmount;
+    return left < 0 ? 0 : left;
+  }
+
+  bool get isFullyPaid => debt.isPaid || remaining <= 0.000001;
 }

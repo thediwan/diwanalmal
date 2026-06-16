@@ -44,11 +44,25 @@ class LazarusDatabase extends _$LazarusDatabase {
 
     final dir = await getApplicationDocumentsDirectory();
     final file = File(p.join(dir.path, 'lazarus.db'));
-    return LazarusDatabase(NativeDatabase.createInBackground(file));
+    final db = LazarusDatabase(NativeDatabase.createInBackground(file));
+
+    // Wait until the background isolate finishes Drift migrations, then re-run
+    // idempotent column repairs (covers DBs that reached v9 without wallet_id).
+    await db.customSelect('SELECT 1').get();
+    await db.ensureLegacySchemaRepairs();
+
+    return db;
+  }
+
+  /// Idempotent repairs for columns added after initial installs.
+  Future<void> ensureLegacySchemaRepairs() async {
+    await _ensureTransferCrossCurrencyColumns();
+    await _ensureTransactionDebtColumns();
+    await _ensureDebtsWalletColumn();
   }
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -56,6 +70,9 @@ class LazarusDatabase extends _$LazarusDatabase {
           await m.createAll();
           await _createCurrencyUniqueIndex();
           await _createBaseCurrencyUniqueIndex();
+        },
+        beforeOpen: (details) async {
+          await ensureLegacySchemaRepairs();
         },
         onUpgrade: (Migrator m, int from, int to) async {
           if (from < 2) {
@@ -122,8 +139,163 @@ class LazarusDatabase extends _$LazarusDatabase {
           if (from < 5) {
             await m.addColumn(goals, goals.icon);
           }
+
+          if (from < 6) {
+            await m.addColumn(transfers, transfers.toCurrencyId);
+            await m.addColumn(transfers, transfers.toAmount);
+            await m.addColumn(transfers, transfers.toExchangeRate);
+            await customStatement('''
+              UPDATE transfers
+              SET to_currency_id = currency_id,
+                  to_amount = amount,
+                  to_exchange_rate = exchange_rate
+              WHERE to_currency_id IS NULL
+            ''');
+          }
+
+          if (from < 7) {
+            await _ensureTransferCrossCurrencyColumns();
+          }
+
+          if (from < 8) {
+            await _ensureTransactionDebtColumns();
+          }
+
+          if (from < 9) {
+            await _ensureDebtsWalletColumn();
+          }
+
+          if (from < 10) {
+            await _ensureDebtsWalletColumn();
+            await _ensureTransactionDebtColumns();
+          }
         },
       );
+
+  /// Adds [debt_id] and nullable [wallet_id] on [transactions] when missing.
+  Future<void> _ensureTransactionDebtColumns() async {
+    final rows = await customSelect('PRAGMA table_info(transactions)').get();
+    final columnNames = rows
+        .map((row) => row.read<String>('name'))
+        .toSet();
+
+    if (!columnNames.contains('debt_id')) {
+      await customStatement(
+        'ALTER TABLE transactions ADD COLUMN debt_id TEXT REFERENCES debts(id)',
+      );
+    }
+
+    var walletNotNull = false;
+    for (final row in rows) {
+      if (row.read<String>('name') == 'wallet_id') {
+        walletNotNull = row.read<int>('notnull') == 1;
+        break;
+      }
+    }
+
+    if (walletNotNull) {
+      await customStatement('''
+        CREATE TABLE transactions_new (
+          id TEXT NOT NULL PRIMARY KEY,
+          user_id TEXT NOT NULL REFERENCES app_users(id),
+          wallet_id TEXT REFERENCES wallets(id),
+          category_id TEXT REFERENCES categories(id),
+          debt_id TEXT REFERENCES debts(id),
+          type TEXT NOT NULL,
+          title TEXT NOT NULL,
+          amount REAL NOT NULL,
+          currency_id TEXT NOT NULL REFERENCES currencies(id),
+          exchange_rate REAL NOT NULL,
+          base_amount REAL NOT NULL,
+          notes TEXT,
+          transaction_date INTEGER NOT NULL,
+          attachment_count INTEGER NOT NULL DEFAULT 0,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER NOT NULL,
+          deleted_at INTEGER
+        )
+      ''');
+
+      await customStatement('''
+        INSERT INTO transactions_new (
+          id, user_id, wallet_id, category_id, debt_id, type, title, amount,
+          currency_id, exchange_rate, base_amount, notes, transaction_date,
+          attachment_count, created_at, updated_at, deleted_at
+        )
+        SELECT
+          id, user_id, wallet_id, category_id, debt_id, type, title, amount,
+          currency_id, exchange_rate, base_amount, notes, transaction_date,
+          attachment_count, created_at, updated_at, deleted_at
+        FROM transactions
+      ''');
+
+      await customStatement('DROP TABLE transactions');
+      await customStatement(
+        'ALTER TABLE transactions_new RENAME TO transactions',
+      );
+    }
+  }
+
+  /// Adds [wallet_id] on [debts] when missing (legacy DB repair).
+  Future<void> _ensureDebtsWalletColumn() async {
+    final rows = await customSelect('PRAGMA table_info(debts)').get();
+    if (rows.isEmpty) return;
+
+    final columnNames = rows
+        .map((row) => row.read<String>('name'))
+        .toSet();
+
+    if (!columnNames.contains('wallet_id')) {
+      await customStatement(
+        'ALTER TABLE debts ADD COLUMN wallet_id TEXT REFERENCES wallets(id)',
+      );
+    }
+
+    await customStatement('''
+      UPDATE debts
+      SET wallet_id = (
+        SELECT w.id
+        FROM wallets w
+        WHERE w.user_id = debts.user_id
+          AND w.deleted_at IS NULL
+        ORDER BY w.created_at ASC
+        LIMIT 1
+      )
+      WHERE wallet_id IS NULL
+    ''');
+  }
+
+  /// Adds cross-currency columns to [transfers] when missing (legacy DB repair).
+  Future<void> _ensureTransferCrossCurrencyColumns() async {
+    final rows = await customSelect('PRAGMA table_info(transfers)').get();
+    final columnNames = rows
+        .map((row) => row.read<String>('name'))
+        .toSet();
+
+    if (!columnNames.contains('to_currency_id')) {
+      await customStatement(
+        'ALTER TABLE transfers ADD COLUMN to_currency_id TEXT REFERENCES currencies(id)',
+      );
+    }
+    if (!columnNames.contains('to_amount')) {
+      await customStatement(
+        'ALTER TABLE transfers ADD COLUMN to_amount REAL',
+      );
+    }
+    if (!columnNames.contains('to_exchange_rate')) {
+      await customStatement(
+        'ALTER TABLE transfers ADD COLUMN to_exchange_rate REAL',
+      );
+    }
+
+    await customStatement('''
+      UPDATE transfers
+      SET to_currency_id = currency_id,
+          to_amount = amount,
+          to_exchange_rate = exchange_rate
+      WHERE to_currency_id IS NULL
+    ''');
+  }
 
   /// Active currencies must be unique per user (applied after deduplication).
   Future<void> ensureCurrencyUniqueIndex() async {

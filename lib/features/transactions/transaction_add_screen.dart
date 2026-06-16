@@ -7,6 +7,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/database_constants.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
+import '../../core/helpers/currency_formatter.dart';
 import '../../core/helpers/currency_uniqueness.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -19,17 +20,22 @@ import '../../providers/currency_provider.dart';
 import '../../providers/dashboard_refresh_provider.dart';
 import '../../providers/wallet_provider.dart';
 import '../../services/category_service.dart';
+import '../../services/debt_service.dart';
 import '../../services/lazarus_database_service.dart';
 import '../../services/transaction_service.dart';
+import '../../services/transfer_service.dart';
+import 'models/transaction_entry_type.dart';
 import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_currency_pills.dart';
 import 'widgets/transaction_numeric_keypad.dart';
 import 'widgets/transaction_type_toggle.dart';
 import 'widgets/transaction_wallet_carousel.dart';
 
-/// Add income or expense transaction — matches client mockup.
+/// Add income, expense, transfer, or debt ledger entry.
 class TransactionAddScreen extends StatefulWidget {
-  const TransactionAddScreen({super.key});
+  const TransactionAddScreen({super.key, this.initialEntryType});
+
+  final TransactionEntryType? initialEntryType;
 
   @override
   State<TransactionAddScreen> createState() => _TransactionAddScreenState();
@@ -40,15 +46,25 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
 
   final _amountInput = TransactionAmountInput();
   final _notesController = TextEditingController();
+  final _transferAmountController = TextEditingController();
+  final _exchangeRateController = TextEditingController();
+  final _personNameController = TextEditingController();
+  final _debtAmountController = TextEditingController();
 
   bool _isExpense = true;
+  TransactionEntryType _entryType = TransactionEntryType.expense;
   bool _isLoading = true;
   bool _isSaving = false;
 
   String? _selectedCurrencyId;
   String? _selectedWalletId;
   String? _selectedCategoryId;
+  String? _sourceCurrencyId;
+  String? _targetCurrencyId;
+  String? _sourceWalletId;
+  String? _targetWalletId;
   DateTime _transactionDate = DateTime.now();
+  DateTime? _dueDate;
 
   List<TransactionCategory> _expenseCategories = [];
   List<TransactionCategory> _incomeCategories = [];
@@ -85,14 +101,106 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
       _expenseCategories = expense;
       _incomeCategories = income;
       _selectedCurrencyId = baseId;
+      _sourceCurrencyId = baseId;
+      if (widget.initialEntryType != null) {
+        _entryType = widget.initialEntryType!;
+        _isExpense = _entryType == TransactionEntryType.expense;
+      }
+      _targetCurrencyId = currencies
+              .where((c) => c.id != baseId)
+              .firstOrNull
+              ?.id ??
+          baseId;
       _isLoading = false;
     });
 
     _syncWalletAndCategoryDefaults();
+    _syncExchangeRateFromCurrencies();
   }
 
   List<TransactionCategory> get _activeCategories =>
-      _isExpense ? _expenseCategories : _incomeCategories;
+      _entryType == TransactionEntryType.income
+          ? _incomeCategories
+          : _expenseCategories;
+
+  bool get _isTransferMode =>
+      _entryType == TransactionEntryType.currencyTransfer;
+
+  bool get _isDebtMode =>
+      _entryType == TransactionEntryType.debtor ||
+      _entryType == TransactionEntryType.creditor;
+
+  double? get _debtAmountValue =>
+      _parsePositiveDouble(_debtAmountController.text);
+
+  List<Treasury> _eligibleWalletsFor(String? currencyId) {
+    final currency = _currencies.where((c) => c.id == currencyId).firstOrNull;
+    if (currency == null) return [];
+
+    return context.read<WalletProvider>().treasuries.where((treasury) {
+      return treasury.accounts.any(
+        (a) => a.currencyCode.toUpperCase() == currency.code.toUpperCase(),
+      );
+    }).toList();
+  }
+
+  List<Treasury> get _eligibleWallets =>
+      _eligibleWalletsFor(_selectedCurrencyId);
+
+  List<Treasury> get _eligibleSourceWallets =>
+      _eligibleWalletsFor(_sourceCurrencyId);
+
+  List<Treasury> get _eligibleTargetWallets =>
+      _eligibleWalletsFor(_targetCurrencyId);
+
+  void _syncExchangeRateFromCurrencies() {
+    final source = _sourceCurrency;
+    final target = _targetCurrency;
+    if (source == null || target == null) return;
+
+    final rate = TransferService.defaultCrossRate(
+      source: source,
+      target: target,
+    );
+    _exchangeRateController.text = _formatRate(rate);
+  }
+
+  String _formatRate(double rate) {
+    if (rate == rate.roundToDouble()) {
+      return rate.toStringAsFixed(0);
+    }
+    return rate.toStringAsFixed(4).replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
+  }
+
+  double? _parsePositiveDouble(String raw) {
+    final normalized = raw.trim().replaceAll(',', '.');
+    if (normalized.isEmpty) return null;
+    final value = double.tryParse(normalized);
+    if (value == null || value <= 0) return null;
+    return value;
+  }
+
+  double? get _transferAmountValue =>
+      _parsePositiveDouble(_transferAmountController.text);
+
+  double? get _crossExchangeRateValue =>
+      _parsePositiveDouble(_exchangeRateController.text);
+
+  double? get _transferConvertedPreview {
+    final source = _sourceCurrency;
+    final target = _targetCurrency;
+    final amount = _transferAmountValue;
+    final rate = _crossExchangeRateValue;
+    if (source == null || target == null || amount == null || rate == null) {
+      return null;
+    }
+    return TransferService.resolveTargetAmount(
+      sourceAmount: amount,
+      source: source,
+      target: target,
+      crossExchangeRate: rate,
+    );
+  }
 
   List<Currency> get _currencies =>
       uniqueCurrenciesByCode(context.read<CurrencyProvider>().currencies);
@@ -101,18 +209,39 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
       .where((c) => c.id == _selectedCurrencyId)
       .firstOrNull;
 
-  List<Treasury> get _eligibleWallets {
-    final code = _selectedCurrency?.code;
-    if (code == null) return [];
+  Currency? get _sourceCurrency => _currencies
+      .where((c) => c.id == _sourceCurrencyId)
+      .firstOrNull;
 
-    return context.read<WalletProvider>().treasuries.where((treasury) {
-      return treasury.accounts.any(
-        (a) => a.currencyCode.toUpperCase() == code.toUpperCase(),
-      );
-    }).toList();
-  }
+  Currency? get _targetCurrency => _currencies
+      .where((c) => c.id == _targetCurrencyId)
+      .firstOrNull;
 
   void _syncWalletAndCategoryDefaults() {
+    if (_isDebtMode) {
+      final wallets = _eligibleWallets;
+      setState(() {
+        if (wallets.every((w) => w.id != _selectedWalletId)) {
+          _selectedWalletId = wallets.firstOrNull?.id;
+        }
+      });
+      return;
+    }
+
+    if (_isTransferMode) {
+      final sourceWallets = _eligibleSourceWallets;
+      final targetWallets = _eligibleTargetWallets;
+      setState(() {
+        if (sourceWallets.every((w) => w.id != _sourceWalletId)) {
+          _sourceWalletId = sourceWallets.firstOrNull?.id;
+        }
+        if (targetWallets.every((w) => w.id != _targetWalletId)) {
+          _targetWalletId = targetWallets.firstOrNull?.id;
+        }
+      });
+      return;
+    }
+
     final wallets = _eligibleWallets;
     final categories = _activeCategories;
 
@@ -126,12 +255,36 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
     });
   }
 
-  void _onTypeChanged(bool isExpense) {
+  void _onEntryTypeChanged(TransactionEntryType type) {
     setState(() {
-      _isExpense = isExpense;
-      _selectedCategoryId = null;
+      _entryType = type;
+      _isExpense = type == TransactionEntryType.expense;
+      if (type != TransactionEntryType.currencyTransfer) {
+        _selectedCategoryId = null;
+      }
+    });
+    if (type == TransactionEntryType.currencyTransfer) {
+      _syncExchangeRateFromCurrencies();
+    }
+    _syncWalletAndCategoryDefaults();
+  }
+
+  void _onSourceCurrencySelected(String id) {
+    setState(() {
+      _sourceCurrencyId = id;
+      _sourceWalletId = null;
     });
     _syncWalletAndCategoryDefaults();
+    _syncExchangeRateFromCurrencies();
+  }
+
+  void _onTargetCurrencySelected(String id) {
+    setState(() {
+      _targetCurrencyId = id;
+      _targetWalletId = null;
+    });
+    _syncWalletAndCategoryDefaults();
+    _syncExchangeRateFromCurrencies();
   }
 
   void _onCurrencySelected(String currencyId) {
@@ -174,8 +327,36 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
     );
   }
 
+  Future<void> _pickDueDate() async {
+    final locale = Localizations.localeOf(context);
+    final now = DateTime.now();
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _dueDate ?? now,
+      firstDate: now,
+      lastDate: DateTime(now.year + 10),
+      locale: locale,
+      helpText: context.l10n.transactionFormDueDate,
+    );
+
+    if (picked != null && mounted) {
+      setState(() => _dueDate = picked);
+    }
+  }
+
   Future<void> _save() async {
     final l10n = context.l10n;
+
+    if (_isDebtMode) {
+      await _saveDebt(l10n);
+      return;
+    }
+
+    if (_isTransferMode) {
+      await _saveTransfer(l10n);
+      return;
+    }
 
     if (_amountInput.value <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -248,10 +429,167 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
     }
   }
 
+  Future<void> _saveTransfer(AppLocalizations l10n) async {
+    final source = _sourceCurrency;
+    final target = _targetCurrency;
+    final amount = _transferAmountValue;
+    final crossRate = _crossExchangeRateValue;
+
+    if (source == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormSelectSourceCurrency)),
+      );
+      return;
+    }
+    if (target == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormSelectTargetCurrency)),
+      );
+      return;
+    }
+    if (amount == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormAmountRequired)),
+      );
+      return;
+    }
+    if (crossRate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormExchangeRateRequired)),
+      );
+      return;
+    }
+    if (_sourceWalletId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormSelectSourceWallet)),
+      );
+      return;
+    }
+    if (_targetWalletId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormSelectTargetWallet)),
+      );
+      return;
+    }
+    if (source.id == target.id && _sourceWalletId == _targetWalletId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormTransferSameError)),
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+    try {
+      await TransferService(LazarusDatabaseService.instance).createCurrencyTransfer(
+        CreateCurrencyTransferInput(
+          fromWalletId: _sourceWalletId!,
+          toWalletId: _targetWalletId!,
+          sourceCurrency: source,
+          targetCurrency: target,
+          sourceAmount: amount,
+          crossExchangeRate: crossRate,
+          notes: _notesController.text,
+          transactionDate: _transactionDate,
+        ),
+      );
+
+      if (!mounted) return;
+      await context.read<WalletProvider>().loadWallets();
+      context.read<DashboardRefreshProvider>().notifyRefresh();
+      _resetFormAfterSave();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormTransferSaveSuccess)),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.transactionFormSaveError(e.toString()))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _saveDebt(AppLocalizations l10n) async {
+    final person = _personNameController.text.trim();
+    if (person.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormPersonNameRequired)),
+      );
+      return;
+    }
+
+    final amount = _debtAmountValue;
+    if (amount == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormAmountRequired)),
+      );
+      return;
+    }
+
+    final currency = _selectedCurrency;
+    if (currency == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormSelectCurrency)),
+      );
+      return;
+    }
+
+    if (_selectedWalletId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormSelectWallet)),
+      );
+      return;
+    }
+
+    final txType = _entryType == TransactionEntryType.debtor
+        ? DatabaseConstants.txDebtor
+        : DatabaseConstants.txCreditor;
+
+    setState(() => _isSaving = true);
+    try {
+      await DebtService(LazarusDatabaseService.instance).create(
+        CreateDebtEntryInput(
+          type: txType,
+          walletId: _selectedWalletId!,
+          personName: person,
+          amount: amount,
+          currency: currency,
+          dueDate: _dueDate,
+          notes: _notesController.text,
+          transactionDate: _transactionDate,
+        ),
+      );
+
+      if (!mounted) return;
+      context.read<DashboardRefreshProvider>().notifyRefresh();
+      _resetFormAfterSave();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.transactionFormDebtSaveSuccess)),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.transactionFormSaveError(e.toString()))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
   void _resetFormAfterSave() {
     _amountInput.reset();
+    _transferAmountController.clear();
+    _personNameController.clear();
+    _debtAmountController.clear();
     _notesController.clear();
+    _dueDate = null;
     _transactionDate = DateTime.now();
+    _syncExchangeRateFromCurrencies();
     setState(() {});
   }
 
@@ -273,6 +611,10 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   @override
   void dispose() {
     _notesController.dispose();
+    _transferAmountController.dispose();
+    _exchangeRateController.dispose();
+    _personNameController.dispose();
+    _debtAmountController.dispose();
     super.dispose();
   }
 
@@ -302,70 +644,241 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TransactionTypeToggle(
-                          isExpense: _isExpense,
+                          selected: _entryType,
                           expenseLabel: l10n.transactionFormExpense,
                           incomeLabel: l10n.transactionFormIncome,
-                          onChanged: _onTypeChanged,
+                          transferLabel: l10n.transactionFormCurrencyTransfer,
+                          debtorLabel: l10n.transactionFormDebtor,
+                          creditorLabel: l10n.transactionFormCreditor,
+                          onChanged: _onEntryTypeChanged,
                         ),
                         const SizedBox(height: 20),
-                        Text(
-                          l10n.transactionFormAmountLabel,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: colors.textSecondary,
+                        if (_isDebtMode) ...[
+                          Text(
+                            l10n.transactionFormPersonName,
+                            style: AppFormFields.sectionLabelStyleOf(context),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _amountInput.display,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.headingLarge.copyWith(
-                            color: AppColors.dashboardPrimary,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 42,
-                            height: 1.1,
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _personNameController,
+                            textCapitalization: TextCapitalization.words,
+                            style: AppFormFields.inputTextStyleOf(context),
+                            decoration: AppFormFields.decoration(
+                              context,
+                              hintText: l10n.transactionFormPersonNameHint,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 14),
-                        TransactionCurrencyPills(
-                          currencies: uniqueCurrencies,
-                          selectedCurrencyId: _selectedCurrencyId,
-                          onSelected: _onCurrencySelected,
-                        ),
-                        const SizedBox(height: 16),
-                        TransactionNumericKeypad(
-                          onDigit: _onDigit,
-                          onBackspace: _onBackspace,
-                        ),
-                        const SizedBox(height: 22),
-                        _SectionHeader(
-                          title: l10n.transactionFormWallet,
-                          icon: Icons.account_balance_wallet_outlined,
-                        ),
-                        const SizedBox(height: 10),
-                        TransactionWalletCarousel(
-                          treasuries: _eligibleWallets,
-                          currencyCode: _selectedCurrency?.code ?? '',
-                          selectedWalletId: _selectedWalletId,
-                          onSelected: (id) =>
-                              setState(() => _selectedWalletId = id),
-                          emptyLabel: l10n.transactionFormNoWalletForCurrency,
-                        ),
-                        const SizedBox(height: 22),
-                        _SectionHeader(
-                          title: l10n.transactionFormCategory,
-                          icon: Icons.category_outlined,
-                        ),
-                        const SizedBox(height: 10),
-                        TransactionCategoryGrid(
-                          categories: _activeCategories,
-                          selectedCategoryId: _selectedCategoryId,
-                          onSelected: (category) => setState(
-                            () => _selectedCategoryId = category.id,
+                          const SizedBox(height: 20),
+                          Text(
+                            l10n.transactionFormAmountLabel,
+                            style: AppFormFields.sectionLabelStyleOf(context),
                           ),
-                          moreLabel: l10n.transactionFormMore,
-                          onMoreTap: _showMoreCategoriesPlaceholder,
-                        ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _debtAmountController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            style: AppFormFields.inputTextStyleOf(context),
+                            decoration: AppFormFields.decoration(
+                              context,
+                              hintText: l10n.transactionFormAmountHint,
+                            ).copyWith(
+                              suffixText: _selectedCurrency?.code,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          TransactionCurrencyPills(
+                            currencies: uniqueCurrencies,
+                            selectedCurrencyId: _selectedCurrencyId,
+                            onSelected: _onCurrencySelected,
+                          ),
+                          const SizedBox(height: 10),
+                          TransactionWalletCarousel(
+                            treasuries: _eligibleWallets,
+                            currencyCode: _selectedCurrency?.code ?? '',
+                            selectedWalletId: _selectedWalletId,
+                            onSelected: (id) =>
+                                setState(() => _selectedWalletId = id),
+                            emptyLabel: l10n.transactionFormNoWalletForCurrency,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            l10n.transactionFormDebtLedgerHint,
+                            style: AppTextStyles.captionOnSurface(colors),
+                          ),
+                          const SizedBox(height: 20),
+                          _SectionHeader(
+                            title: l10n.transactionFormDueDate,
+                            icon: Icons.event_outlined,
+                          ),
+                          const SizedBox(height: 10),
+                          _DateBar(
+                            dateLabel: _dueDate != null
+                                ? DateFormat.yMMMMd(locale).format(_dueDate!)
+                                : l10n.transactionFormDueDateOptional,
+                            changeLabel: _dueDate == null
+                                ? l10n.transactionFormChangeDate
+                                : l10n.transactionFormClearDueDate,
+                            onChange: _dueDate == null
+                                ? _pickDueDate
+                                : () => setState(() => _dueDate = null),
+                          ),
+                        ] else if (_isTransferMode) ...[
+                          Text(
+                            l10n.transactionFormAmountLabel,
+                            style: AppFormFields.sectionLabelStyleOf(context),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _transferAmountController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            style: AppFormFields.inputTextStyleOf(context),
+                            decoration: AppFormFields.decoration(
+                              context,
+                              hintText: l10n.transactionFormAmountHint,
+                            ).copyWith(
+                              suffixText: _sourceCurrency?.code,
+                            ),
+                            onChanged: (_) => setState(() {}),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            l10n.transactionFormSourceCurrency,
+                            style: AppFormFields.sectionLabelStyleOf(context),
+                          ),
+                          const SizedBox(height: 8),
+                          TransactionCurrencyPills(
+                            currencies: uniqueCurrencies,
+                            selectedCurrencyId: _sourceCurrencyId,
+                            onSelected: _onSourceCurrencySelected,
+                          ),
+                          const SizedBox(height: 10),
+                          TransactionWalletCarousel(
+                            treasuries: _eligibleSourceWallets,
+                            currencyCode: _sourceCurrency?.code ?? '',
+                            selectedWalletId: _sourceWalletId,
+                            onSelected: (id) =>
+                                setState(() => _sourceWalletId = id),
+                            emptyLabel: l10n.transactionFormNoWalletForCurrency,
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            l10n.transactionFormTargetCurrency,
+                            style: AppFormFields.sectionLabelStyleOf(context),
+                          ),
+                          const SizedBox(height: 8),
+                          TransactionCurrencyPills(
+                            currencies: uniqueCurrencies,
+                            selectedCurrencyId: _targetCurrencyId,
+                            onSelected: _onTargetCurrencySelected,
+                          ),
+                          const SizedBox(height: 10),
+                          TransactionWalletCarousel(
+                            treasuries: _eligibleTargetWallets,
+                            currencyCode: _targetCurrency?.code ?? '',
+                            selectedWalletId: _targetWalletId,
+                            onSelected: (id) =>
+                                setState(() => _targetWalletId = id),
+                            emptyLabel: l10n.transactionFormNoWalletForCurrency,
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            l10n.transactionFormExchangeRate,
+                            style: AppFormFields.sectionLabelStyleOf(context),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _exchangeRateController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            style: AppFormFields.inputTextStyleOf(context),
+                            decoration: AppFormFields.decoration(
+                              context,
+                              hintText: l10n.transactionFormExchangeRateHint(
+                                _sourceCurrency?.code ?? '—',
+                                _targetCurrency?.code ?? '—',
+                              ),
+                            ),
+                            onChanged: (_) => setState(() {}),
+                          ),
+                          if (_transferConvertedPreview != null &&
+                              _targetCurrency != null) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              l10n.transactionFormConvertedAmount(
+                                CurrencyFormatter.formatCodeFirst(
+                                  _transferConvertedPreview!,
+                                  _targetCurrency!.code,
+                                ),
+                              ),
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.captionOnSurface(colors),
+                            ),
+                          ],
+                        ] else ...[
+                          Text(
+                            l10n.transactionFormAmountLabel,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _amountInput.display,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.headingLarge.copyWith(
+                              color: AppColors.dashboardPrimary,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 42,
+                              height: 1.1,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          TransactionCurrencyPills(
+                            currencies: uniqueCurrencies,
+                            selectedCurrencyId: _selectedCurrencyId,
+                            onSelected: _onCurrencySelected,
+                          ),
+                          const SizedBox(height: 16),
+                          TransactionNumericKeypad(
+                            onDigit: _onDigit,
+                            onBackspace: _onBackspace,
+                          ),
+                          const SizedBox(height: 22),
+                          _SectionHeader(
+                            title: l10n.transactionFormWallet,
+                            icon: Icons.account_balance_wallet_outlined,
+                          ),
+                          const SizedBox(height: 10),
+                          TransactionWalletCarousel(
+                            treasuries: _eligibleWallets,
+                            currencyCode: _selectedCurrency?.code ?? '',
+                            selectedWalletId: _selectedWalletId,
+                            onSelected: (id) =>
+                                setState(() => _selectedWalletId = id),
+                            emptyLabel: l10n.transactionFormNoWalletForCurrency,
+                          ),
+                          const SizedBox(height: 22),
+                          _SectionHeader(
+                            title: l10n.transactionFormCategory,
+                            icon: Icons.category_outlined,
+                          ),
+                          const SizedBox(height: 10),
+                          TransactionCategoryGrid(
+                            categories: _activeCategories,
+                            selectedCategoryId: _selectedCategoryId,
+                            onSelected: (category) => setState(
+                              () => _selectedCategoryId = category.id,
+                            ),
+                            moreLabel: l10n.transactionFormMore,
+                            onMoreTap: _showMoreCategoriesPlaceholder,
+                          ),
+                        ],
                         const SizedBox(height: 22),
                         _SectionHeader(
                           title: l10n.transactionFormNotes,

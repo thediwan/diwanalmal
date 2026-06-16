@@ -130,12 +130,13 @@ class Categories extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-/// Income and expense operations.
+/// Income, expense, and debt ledger operations.
 class Transactions extends Table {
   TextColumn get id => text()();
   TextColumn get userId => text().references(AppUsers, #id)();
-  TextColumn get walletId => text().references(Wallets, #id)();
+  TextColumn get walletId => text().nullable().references(Wallets, #id)();
   TextColumn get categoryId => text().nullable().references(Categories, #id)();
+  TextColumn get debtId => text().nullable().references(Debts, #id)();
   TextColumn get type => text()();
   TextColumn get title => text().withLength(min: 1, max: 255)();
   RealColumn get amount => real()();
@@ -164,6 +165,10 @@ class Transfers extends Table {
   TextColumn get currencyId => text().references(Currencies, #id)();
   RealColumn get exchangeRate => real()();
   RealColumn get baseAmount => real()();
+  TextColumn get toCurrencyId =>
+      text().nullable().references(Currencies, #id)();
+  RealColumn get toAmount => real().nullable()();
+  RealColumn get toExchangeRate => real().nullable()();
   TextColumn get notes => text().nullable()();
   DateTimeColumn get transactionDate => dateTime()();
   DateTimeColumn get createdAt => dateTime()();
@@ -178,6 +183,7 @@ class Transfers extends Table {
 class Debts extends Table {
   TextColumn get id => text()();
   TextColumn get userId => text().references(AppUsers, #id)();
+  TextColumn get walletId => text().references(Wallets, #id)();
   TextColumn get personName => text().withLength(min: 1, max: 255)();
   TextColumn get type => text()();
   RealColumn get amount => real()();

@@ -391,6 +391,174 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionFormIncome => 'Income';
 
   @override
+  String get transactionFormCurrencyTransfer => 'Currency transfer';
+
+  @override
+  String get transactionFormDebtor => 'Receivable';
+
+  @override
+  String get transactionFormCreditor => 'Payable';
+
+  @override
+  String get transactionFormPersonName => 'Person name';
+
+  @override
+  String get transactionFormPersonNameHint => 'Enter the person\'s name';
+
+  @override
+  String get transactionFormPersonNameRequired => 'Enter a person name';
+
+  @override
+  String get transactionFormDueDate => 'Due date';
+
+  @override
+  String get transactionFormDueDateOptional => 'Optional — tap to set';
+
+  @override
+  String get transactionFormClearDueDate => 'Clear due date';
+
+  @override
+  String get transactionFormDebtLedgerHint =>
+      'Debt entries do not affect wallet balances until you pay or receive.';
+
+  @override
+  String get transactionFormDebtSaveSuccess => 'Debt entry saved successfully';
+
+  @override
+  String get transactionDebtTotal => 'Total';
+
+  @override
+  String get transactionDebtPaid => 'Paid';
+
+  @override
+  String get transactionDebtRemaining => 'Remaining';
+
+  @override
+  String get transactionDebtPaymentHistory => 'Payment history';
+
+  @override
+  String get transactionDebtNoPayments => 'No payments yet';
+
+  @override
+  String get transactionDebtReceive => 'Receive';
+
+  @override
+  String get transactionDebtPay => 'Pay';
+
+  @override
+  String get transactionDebtSettleTitle => 'Settlement amount';
+
+  @override
+  String get transactionDebtSettleHint => 'Enter amount to pay or receive';
+
+  @override
+  String get transactionDebtSettleConfirm => 'Confirm';
+
+  @override
+  String get transactionDebtSettleSuccess => 'Settlement recorded successfully';
+
+  @override
+  String get transactionDebtSettleExceedsRemaining =>
+      'Amount exceeds the remaining balance';
+
+  @override
+  String get transactionDebtFullyPaid => 'Fully settled';
+
+  @override
+  String transactionDebtSettlementTitleReceive(String person) {
+    return 'Receive — $person';
+  }
+
+  @override
+  String transactionDebtSettlementTitlePay(String person) {
+    return 'Pay — $person';
+  }
+
+  @override
+  String get transactionFormSourceCurrency => 'Source currency';
+
+  @override
+  String get transactionFormTargetCurrency => 'Target currency';
+
+  @override
+  String get transactionFormSourceWallet => 'Source wallet';
+
+  @override
+  String get transactionFormTargetWallet => 'Target wallet';
+
+  @override
+  String transactionFormConvertedAmount(String amount) {
+    return 'Converted amount: $amount';
+  }
+
+  @override
+  String get transactionFormTransferSaveSuccess =>
+      'Transfer saved successfully';
+
+  @override
+  String get transactionFormSelectSourceCurrency => 'Select source currency';
+
+  @override
+  String get transactionFormSelectTargetCurrency => 'Select target currency';
+
+  @override
+  String get transactionFormSelectSourceWallet => 'Select source wallet';
+
+  @override
+  String get transactionFormSelectTargetWallet => 'Select target wallet';
+
+  @override
+  String get transactionFormTransferSameError =>
+      'Source and target currency or wallet must differ';
+
+  @override
+  String get transactionFormExchangeRate => 'Exchange rate';
+
+  @override
+  String transactionFormExchangeRateHint(String source, String target) {
+    return '1 $source = ? $target';
+  }
+
+  @override
+  String get transactionFormExchangeRateRequired =>
+      'Enter an exchange rate greater than zero';
+
+  @override
+  String get transactionFormAmountHint => '0.00';
+
+  @override
+  String get transactionEditTitle => 'Edit transaction';
+
+  @override
+  String get transactionEditTypeLabel => 'Transaction type';
+
+  @override
+  String get transactionEditSave => 'Save changes';
+
+  @override
+  String get transactionEditSaveSuccess => 'Changes saved successfully';
+
+  @override
+  String get transactionEditExpired => 'Edit window has expired';
+
+  @override
+  String get transactionDeleteExpired => 'Delete window has expired';
+
+  @override
+  String get transactionDeleteConfirm => 'Delete this transaction?';
+
+  @override
+  String get transactionDeleteSuccess => 'Transaction deleted';
+
+  @override
+  String get transactionDelete => 'Delete';
+
+  @override
+  String transactionsListTransferCurrencyTitle(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
   String get transactionFormAmountLabel => 'Transaction amount';
 
   @override
@@ -451,6 +619,126 @@ class AppLocalizationsEn extends AppLocalizations {
   String transactionFormSaveError(String error) {
     return 'Could not save transaction: $error';
   }
+
+  @override
+  String get transactionsListTitle => 'Transactions';
+
+  @override
+  String get transactionsListTabAll => 'All';
+
+  @override
+  String get transactionsListTabExpenses => 'Expenses';
+
+  @override
+  String get transactionsListTabIncomes => 'Income';
+
+  @override
+  String get transactionsListTabTransfers => 'Transfers';
+
+  @override
+  String get transactionsListTabDebts => 'Debts';
+
+  @override
+  String get transactionsListDebtReceivable => 'Receivable';
+
+  @override
+  String get transactionsListDebtPayable => 'Payable';
+
+  @override
+  String transactionsListDueDate(String date) {
+    return 'Due $date';
+  }
+
+  @override
+  String get transactionsListDebtPaid => 'Paid';
+
+  @override
+  String get transactionsListFilter => 'Filter';
+
+  @override
+  String get transactionsListThisMonth => 'This month';
+
+  @override
+  String get transactionsListAllWallets => 'All wallets';
+
+  @override
+  String get transactionsListSearchHint => 'Search transactions...';
+
+  @override
+  String get transactionsListEmpty =>
+      'No transactions yet.\nStart by recording an expense or income.';
+
+  @override
+  String get transactionsListUnknownWallet => 'Unknown wallet';
+
+  @override
+  String transactionsListLoadError(String error) {
+    return 'Could not load transactions: $error';
+  }
+
+  @override
+  String get transactionsListNoData => 'No data found';
+
+  @override
+  String get transactionsListLoadMore => 'Load more';
+
+  @override
+  String get transactionsListThisMonthHint =>
+      'Showing this month only — turn off \"This month\" to see all';
+
+  @override
+  String get transactionsListAdd => 'Add transaction';
+
+  @override
+  String transactionsListTransferTitle(String from, String to) {
+    return 'Transfer from $from to $to';
+  }
+
+  @override
+  String get transactionsListNotesTitle => 'Notes';
+
+  @override
+  String get transactionsListNoNotes => 'No notes';
+
+  @override
+  String get transactionsListFilterTitle => 'Filter transactions';
+
+  @override
+  String get transactionsListFilterDateFrom => 'From date';
+
+  @override
+  String get transactionsListFilterDateTo => 'To date';
+
+  @override
+  String get transactionsListFilterCategory => 'Category';
+
+  @override
+  String get transactionsListFilterType => 'Transaction type';
+
+  @override
+  String get transactionsListFilterAllCategories => 'All categories';
+
+  @override
+  String get transactionsListFilterAllTypes => 'All types';
+
+  @override
+  String get transactionsListFilterApply => 'Apply';
+
+  @override
+  String get transactionsListFilterReset => 'Reset';
+
+  @override
+  String transactionsListDateToday(String date) {
+    return 'Today, $date';
+  }
+
+  @override
+  String transactionsListDateYesterday(String date) {
+    return 'Yesterday, $date';
+  }
+
+  @override
+  String get transactionsListSelectWallet => 'Select wallet';
 
   @override
   String get comingSoon => 'Coming soon';

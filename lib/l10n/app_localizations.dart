@@ -824,6 +824,312 @@ abstract class AppLocalizations {
   /// **'دخل'**
   String get transactionFormIncome;
 
+  /// No description provided for @transactionFormCurrencyTransfer.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحويل بين عملات'**
+  String get transactionFormCurrencyTransfer;
+
+  /// No description provided for @transactionFormDebtor.
+  ///
+  /// In ar, this message translates to:
+  /// **'مدين (لي عليه)'**
+  String get transactionFormDebtor;
+
+  /// No description provided for @transactionFormCreditor.
+  ///
+  /// In ar, this message translates to:
+  /// **'دائن (علي)'**
+  String get transactionFormCreditor;
+
+  /// No description provided for @transactionFormPersonName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الشخص'**
+  String get transactionFormPersonName;
+
+  /// No description provided for @transactionFormPersonNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل اسم الشخص'**
+  String get transactionFormPersonNameHint;
+
+  /// No description provided for @transactionFormPersonNameRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل اسم الشخص'**
+  String get transactionFormPersonNameRequired;
+
+  /// No description provided for @transactionFormDueDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الاستحقاق'**
+  String get transactionFormDueDate;
+
+  /// No description provided for @transactionFormDueDateOptional.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختياري — اضغط للتحديد'**
+  String get transactionFormDueDateOptional;
+
+  /// No description provided for @transactionFormClearDueDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسح تاريخ الاستحقاق'**
+  String get transactionFormClearDueDate;
+
+  /// No description provided for @transactionFormDebtLedgerHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيد الذمة لا يؤثر على رصيد المحفظة حتى الدفع أو التحصيل.'**
+  String get transactionFormDebtLedgerHint;
+
+  /// No description provided for @transactionFormDebtSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ قيد الذمة بنجاح'**
+  String get transactionFormDebtSaveSuccess;
+
+  /// No description provided for @transactionDebtTotal.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإجمالي'**
+  String get transactionDebtTotal;
+
+  /// No description provided for @transactionDebtPaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'المدفوع'**
+  String get transactionDebtPaid;
+
+  /// No description provided for @transactionDebtRemaining.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتبقي'**
+  String get transactionDebtRemaining;
+
+  /// No description provided for @transactionDebtPaymentHistory.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجل الدفعات'**
+  String get transactionDebtPaymentHistory;
+
+  /// No description provided for @transactionDebtNoPayments.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد دفعات بعد'**
+  String get transactionDebtNoPayments;
+
+  /// No description provided for @transactionDebtReceive.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحصيل'**
+  String get transactionDebtReceive;
+
+  /// No description provided for @transactionDebtPay.
+  ///
+  /// In ar, this message translates to:
+  /// **'دفع'**
+  String get transactionDebtPay;
+
+  /// No description provided for @transactionDebtSettleTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'مبلغ التسديد'**
+  String get transactionDebtSettleTitle;
+
+  /// No description provided for @transactionDebtSettleHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل المبلغ للدفع أو التحصيل'**
+  String get transactionDebtSettleHint;
+
+  /// No description provided for @transactionDebtSettleConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد'**
+  String get transactionDebtSettleConfirm;
+
+  /// No description provided for @transactionDebtSettleSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تسجيل الدفعة بنجاح'**
+  String get transactionDebtSettleSuccess;
+
+  /// No description provided for @transactionDebtSettleExceedsRemaining.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ أكبر من المتبقي'**
+  String get transactionDebtSettleExceedsRemaining;
+
+  /// No description provided for @transactionDebtFullyPaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسدّد بالكامل'**
+  String get transactionDebtFullyPaid;
+
+  /// No description provided for @transactionDebtSettlementTitleReceive.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحصيل — {person}'**
+  String transactionDebtSettlementTitleReceive(String person);
+
+  /// No description provided for @transactionDebtSettlementTitlePay.
+  ///
+  /// In ar, this message translates to:
+  /// **'دفع — {person}'**
+  String transactionDebtSettlementTitlePay(String person);
+
+  /// No description provided for @transactionFormSourceCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملة المصدر'**
+  String get transactionFormSourceCurrency;
+
+  /// No description provided for @transactionFormTargetCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملة الهدف'**
+  String get transactionFormTargetCurrency;
+
+  /// No description provided for @transactionFormSourceWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحفظة المصدر'**
+  String get transactionFormSourceWallet;
+
+  /// No description provided for @transactionFormTargetWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحفظة الهدف'**
+  String get transactionFormTargetWallet;
+
+  /// No description provided for @transactionFormConvertedAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ المحوّل: {amount}'**
+  String transactionFormConvertedAmount(String amount);
+
+  /// No description provided for @transactionFormTransferSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ التحويل بنجاح'**
+  String get transactionFormTransferSaveSuccess;
+
+  /// No description provided for @transactionFormSelectSourceCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر العملة المصدر'**
+  String get transactionFormSelectSourceCurrency;
+
+  /// No description provided for @transactionFormSelectTargetCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر العملة الهدف'**
+  String get transactionFormSelectTargetCurrency;
+
+  /// No description provided for @transactionFormSelectSourceWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر المحفظة المصدر'**
+  String get transactionFormSelectSourceWallet;
+
+  /// No description provided for @transactionFormSelectTargetWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر المحفظة الهدف'**
+  String get transactionFormSelectTargetWallet;
+
+  /// No description provided for @transactionFormTransferSameError.
+  ///
+  /// In ar, this message translates to:
+  /// **'يجب أن تختلف العملة أو المحفظة بين المصدر والهدف'**
+  String get transactionFormTransferSameError;
+
+  /// No description provided for @transactionFormExchangeRate.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعر الصرف'**
+  String get transactionFormExchangeRate;
+
+  /// No description provided for @transactionFormExchangeRateHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'1 {source} = ? {target}'**
+  String transactionFormExchangeRateHint(String source, String target);
+
+  /// No description provided for @transactionFormExchangeRateRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل سعر صرف أكبر من صفر'**
+  String get transactionFormExchangeRateRequired;
+
+  /// No description provided for @transactionFormAmountHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'0.00'**
+  String get transactionFormAmountHint;
+
+  /// No description provided for @transactionEditTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل العملية'**
+  String get transactionEditTitle;
+
+  /// No description provided for @transactionEditTypeLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'نوع العملية'**
+  String get transactionEditTypeLabel;
+
+  /// No description provided for @transactionEditSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ التعديلات'**
+  String get transactionEditSave;
+
+  /// No description provided for @transactionEditSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ التعديلات بنجاح'**
+  String get transactionEditSaveSuccess;
+
+  /// No description provided for @transactionEditExpired.
+  ///
+  /// In ar, this message translates to:
+  /// **'انتهت مدة التعديل المسموحة'**
+  String get transactionEditExpired;
+
+  /// No description provided for @transactionDeleteExpired.
+  ///
+  /// In ar, this message translates to:
+  /// **'انتهت مدة الحذف المسموحة'**
+  String get transactionDeleteExpired;
+
+  /// No description provided for @transactionDeleteConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل تريد حذف هذه العملية؟'**
+  String get transactionDeleteConfirm;
+
+  /// No description provided for @transactionDeleteSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف العملية'**
+  String get transactionDeleteSuccess;
+
+  /// No description provided for @transactionDelete.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف'**
+  String get transactionDelete;
+
+  /// No description provided for @transactionsListTransferCurrencyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{from} → {to}'**
+  String transactionsListTransferCurrencyTitle(String from, String to);
+
   /// No description provided for @transactionFormAmountLabel.
   ///
   /// In ar, this message translates to:
@@ -931,6 +1237,222 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تعذر حفظ العملية: {error}'**
   String transactionFormSaveError(String error);
+
+  /// No description provided for @transactionsListTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'العمليات'**
+  String get transactionsListTitle;
+
+  /// No description provided for @transactionsListTabAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكل'**
+  String get transactionsListTabAll;
+
+  /// No description provided for @transactionsListTabExpenses.
+  ///
+  /// In ar, this message translates to:
+  /// **'المصروفات'**
+  String get transactionsListTabExpenses;
+
+  /// No description provided for @transactionsListTabIncomes.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإيرادات'**
+  String get transactionsListTabIncomes;
+
+  /// No description provided for @transactionsListTabTransfers.
+  ///
+  /// In ar, this message translates to:
+  /// **'التحويلات'**
+  String get transactionsListTabTransfers;
+
+  /// No description provided for @transactionsListTabDebts.
+  ///
+  /// In ar, this message translates to:
+  /// **'الذمم'**
+  String get transactionsListTabDebts;
+
+  /// No description provided for @transactionsListDebtReceivable.
+  ///
+  /// In ar, this message translates to:
+  /// **'لي عليه'**
+  String get transactionsListDebtReceivable;
+
+  /// No description provided for @transactionsListDebtPayable.
+  ///
+  /// In ar, this message translates to:
+  /// **'علي'**
+  String get transactionsListDebtPayable;
+
+  /// No description provided for @transactionsListDueDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'استحقاق {date}'**
+  String transactionsListDueDate(String date);
+
+  /// No description provided for @transactionsListDebtPaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسدّد'**
+  String get transactionsListDebtPaid;
+
+  /// No description provided for @transactionsListFilter.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصفية'**
+  String get transactionsListFilter;
+
+  /// No description provided for @transactionsListThisMonth.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الشهر'**
+  String get transactionsListThisMonth;
+
+  /// No description provided for @transactionsListAllWallets.
+  ///
+  /// In ar, this message translates to:
+  /// **'جميع المحافظ'**
+  String get transactionsListAllWallets;
+
+  /// No description provided for @transactionsListSearchHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'بحث في العمليات...'**
+  String get transactionsListSearchHint;
+
+  /// No description provided for @transactionsListEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد عمليات بعد.\nابدأ بتسجيل مصروف أو دخل.'**
+  String get transactionsListEmpty;
+
+  /// No description provided for @transactionsListUnknownWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'محفظة غير معروفة'**
+  String get transactionsListUnknownWallet;
+
+  /// No description provided for @transactionsListLoadError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر تحميل العمليات: {error}'**
+  String transactionsListLoadError(String error);
+
+  /// No description provided for @transactionsListNoData.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يوجد بيانات'**
+  String get transactionsListNoData;
+
+  /// No description provided for @transactionsListLoadMore.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض المزيد'**
+  String get transactionsListLoadMore;
+
+  /// No description provided for @transactionsListThisMonthHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'يعرض عمليات الشهر الحالي فقط — أوقف «هذا الشهر» لعرض الكل'**
+  String get transactionsListThisMonthHint;
+
+  /// No description provided for @transactionsListAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة عملية'**
+  String get transactionsListAdd;
+
+  /// No description provided for @transactionsListTransferTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحويل من {from} إلى {to}'**
+  String transactionsListTransferTitle(String from, String to);
+
+  /// No description provided for @transactionsListNotesTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملاحظات'**
+  String get transactionsListNotesTitle;
+
+  /// No description provided for @transactionsListNoNotes.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد ملاحظات'**
+  String get transactionsListNoNotes;
+
+  /// No description provided for @transactionsListFilterTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصفية العمليات'**
+  String get transactionsListFilterTitle;
+
+  /// No description provided for @transactionsListFilterDateFrom.
+  ///
+  /// In ar, this message translates to:
+  /// **'من تاريخ'**
+  String get transactionsListFilterDateFrom;
+
+  /// No description provided for @transactionsListFilterDateTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى تاريخ'**
+  String get transactionsListFilterDateTo;
+
+  /// No description provided for @transactionsListFilterCategory.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصنيف'**
+  String get transactionsListFilterCategory;
+
+  /// No description provided for @transactionsListFilterType.
+  ///
+  /// In ar, this message translates to:
+  /// **'نوع العملية'**
+  String get transactionsListFilterType;
+
+  /// No description provided for @transactionsListFilterAllCategories.
+  ///
+  /// In ar, this message translates to:
+  /// **'جميع التصنيفات'**
+  String get transactionsListFilterAllCategories;
+
+  /// No description provided for @transactionsListFilterAllTypes.
+  ///
+  /// In ar, this message translates to:
+  /// **'جميع الأنواع'**
+  String get transactionsListFilterAllTypes;
+
+  /// No description provided for @transactionsListFilterApply.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطبيق'**
+  String get transactionsListFilterApply;
+
+  /// No description provided for @transactionsListFilterReset.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة تعيين'**
+  String get transactionsListFilterReset;
+
+  /// No description provided for @transactionsListDateToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'اليوم، {date}'**
+  String transactionsListDateToday(String date);
+
+  /// No description provided for @transactionsListDateYesterday.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمس، {date}'**
+  String transactionsListDateYesterday(String date);
+
+  /// No description provided for @transactionsListSelectWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر المحفظة'**
+  String get transactionsListSelectWallet;
 
   /// No description provided for @comingSoon.
   ///

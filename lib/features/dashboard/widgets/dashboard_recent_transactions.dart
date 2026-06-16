@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
@@ -38,7 +39,7 @@ class DashboardRecentTransactions extends StatelessWidget {
               ),
               const Spacer(),
               TextButton(
-                onPressed: () {},
+                onPressed: () => context.go('/transactions'),
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
                   minimumSize: Size.zero,

@@ -14,12 +14,14 @@ class DashboardMonthlySummary extends StatelessWidget {
     required this.monthlyIncome,
     required this.monthlyExpense,
     required this.debts,
+    this.onDebtsTap,
   });
 
   final String baseCode;
   final double monthlyIncome;
   final double monthlyExpense;
   final double debts;
+  final VoidCallback? onDebtsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +70,7 @@ class DashboardMonthlySummary extends StatelessWidget {
                 valueColor: AppColors.debtAccent,
                 subtitle: l10n.dashboardDebtsOwedToOthers,
                 subtitleColor: AppColors.debtAccent,
+                onTap: onDebtsTap,
               ),
             ),
           ],
@@ -99,6 +102,7 @@ class _SummaryCell extends StatelessWidget {
     this.subtitleColor,
     this.changeText,
     this.changeColor,
+    this.onTap,
   });
 
   final String title;
@@ -108,12 +112,13 @@ class _SummaryCell extends StatelessWidget {
   final Color? subtitleColor;
   final String? changeText;
   final Color? changeColor;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
 
-    return Padding(
+    final content = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -164,6 +169,17 @@ class _SummaryCell extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+
+    if (onTap == null) return content;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: content,
       ),
     );
   }

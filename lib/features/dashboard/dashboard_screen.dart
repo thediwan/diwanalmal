@@ -180,6 +180,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       monthlyIncome: data.monthlyIncome,
                       monthlyExpense: data.monthlyExpense,
                       debts: data.debts,
+                      onDebtsTap: () => context.go('/transactions?tab=debt'),
                     ),
                     const DashboardSectionDivider(),
                     DashboardGoalsSection(

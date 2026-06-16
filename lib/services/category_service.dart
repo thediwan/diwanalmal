@@ -21,6 +21,13 @@ class CategoryService {
     return _getByType(DatabaseConstants.categoryIncome);
   }
 
+  /// All non-deleted categories for filter sheets.
+  Future<List<TransactionCategory>> getAllCategories() async {
+    final expense = await getExpenseCategories();
+    final income = await getIncomeCategories();
+    return [...expense, ...income];
+  }
+
   Future<List<TransactionCategory>> _getByType(String type) async {
     final userId = await _lazarus.getActiveUserId();
     if (userId == null) return [];

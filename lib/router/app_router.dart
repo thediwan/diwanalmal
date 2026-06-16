@@ -14,8 +14,12 @@ import '../features/auth/start_auth_screen.dart';
 import '../features/auth/unlock_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/profile/profile_placeholder_screen.dart';
+import '../features/transactions/transaction_edit_screen.dart';
 import '../features/transactions/transaction_add_screen.dart';
-import '../features/transactions/transactions_list_placeholder_screen.dart';
+import '../features/transactions/models/transaction_entry_type.dart';
+import '../features/transactions/models/transaction_list_item.dart';
+import '../features/transactions/transactions_list_screen.dart';
+import '../database/daos/finance_dao.dart';
 import '../features/onboarding/select_base_currency_screen.dart';
 import '../features/settings/currencies/currencies_screen.dart';
 import '../features/settings/currencies/currency_form_screen.dart';
@@ -104,7 +108,19 @@ class AppRouter {
       ),
       GoRoute(
         path: '/transactions/add',
-        builder: (context, state) => const TransactionAddScreen(),
+        builder: (context, state) => TransactionAddScreen(
+          initialEntryType: _entryTypeFromQuery(state.uri.queryParameters['type']),
+        ),
+      ),
+      GoRoute(
+        path: '/transactions/:id/edit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          final kind = state.extra is TransactionListKind
+              ? state.extra as TransactionListKind
+              : TransactionListKind.expense;
+          return TransactionEditScreen(id: id, kind: kind);
+        },
       ),
       ShellRoute(
         builder: (context, state, child) {
@@ -144,8 +160,11 @@ class AppRouter {
           ),
           GoRoute(
             path: '/transactions',
-            builder: (context, state) =>
-                const TransactionsListPlaceholderScreen(),
+            builder: (context, state) => TransactionsListScreen(
+              initialTab: _activityFeedTabFromQuery(
+                state.uri.queryParameters['tab'],
+              ),
+            ),
           ),
           GoRoute(
             path: '/wallets',
@@ -228,5 +247,37 @@ class AppRouter {
     }
 
     return null;
+  }
+}
+
+ActivityFeedTab? _activityFeedTabFromQuery(String? raw) {
+  switch (raw) {
+    case 'expense':
+      return ActivityFeedTab.expense;
+    case 'income':
+      return ActivityFeedTab.income;
+    case 'transfer':
+      return ActivityFeedTab.transfer;
+    case 'debt':
+      return ActivityFeedTab.debt;
+    default:
+      return null;
+  }
+}
+
+TransactionEntryType? _entryTypeFromQuery(String? raw) {
+  switch (raw) {
+    case 'expense':
+      return TransactionEntryType.expense;
+    case 'income':
+      return TransactionEntryType.income;
+    case 'transfer':
+      return TransactionEntryType.currencyTransfer;
+    case 'debtor':
+      return TransactionEntryType.debtor;
+    case 'creditor':
+      return TransactionEntryType.creditor;
+    default:
+      return null;
   }
 }

@@ -143,6 +143,78 @@
   "transactionAddComingSoon": "إضافة المعاملات ستتوفر قريباً",
   "transactionFormExpense": "مصروف",
   "transactionFormIncome": "دخل",
+  "transactionFormCurrencyTransfer": "تحويل بين عملات",
+  "transactionFormDebtor": "مدين (لي عليه)",
+  "transactionFormCreditor": "دائن (علي)",
+  "transactionFormPersonName": "اسم الشخص",
+  "transactionFormPersonNameHint": "أدخل اسم الشخص",
+  "transactionFormPersonNameRequired": "أدخل اسم الشخص",
+  "transactionFormDueDate": "تاريخ الاستحقاق",
+  "transactionFormDueDateOptional": "اختياري — اضغط للتحديد",
+  "transactionFormClearDueDate": "مسح تاريخ الاستحقاق",
+  "transactionFormDebtLedgerHint": "قيد الذمة لا يؤثر على رصيد المحفظة حتى الدفع أو التحصيل.",
+  "transactionFormDebtSaveSuccess": "تم حفظ قيد الذمة بنجاح",
+  "transactionDebtTotal": "الإجمالي",
+  "transactionDebtPaid": "المدفوع",
+  "transactionDebtRemaining": "المتبقي",
+  "transactionDebtPaymentHistory": "سجل الدفعات",
+  "transactionDebtNoPayments": "لا توجد دفعات بعد",
+  "transactionDebtReceive": "تحصيل",
+  "transactionDebtPay": "دفع",
+  "transactionDebtSettleTitle": "مبلغ التسديد",
+  "transactionDebtSettleHint": "أدخل المبلغ للدفع أو التحصيل",
+  "transactionDebtSettleConfirm": "تأكيد",
+  "transactionDebtSettleSuccess": "تم تسجيل الدفعة بنجاح",
+  "transactionDebtSettleExceedsRemaining": "المبلغ أكبر من المتبقي",
+  "transactionDebtFullyPaid": "مسدّد بالكامل",
+  "transactionDebtSettlementTitleReceive": "تحصيل — {person}",
+  "@transactionDebtSettlementTitleReceive": {
+    "placeholders": { "person": { "type": "String" } }
+  },
+  "transactionDebtSettlementTitlePay": "دفع — {person}",
+  "@transactionDebtSettlementTitlePay": {
+    "placeholders": { "person": { "type": "String" } }
+  },
+  "transactionFormSourceCurrency": "العملة المصدر",
+  "transactionFormTargetCurrency": "العملة الهدف",
+  "transactionFormSourceWallet": "المحفظة المصدر",
+  "transactionFormTargetWallet": "المحفظة الهدف",
+  "transactionFormConvertedAmount": "المبلغ المحوّل: {amount}",
+  "@transactionFormConvertedAmount": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "transactionFormTransferSaveSuccess": "تم حفظ التحويل بنجاح",
+  "transactionFormSelectSourceCurrency": "اختر العملة المصدر",
+  "transactionFormSelectTargetCurrency": "اختر العملة الهدف",
+  "transactionFormSelectSourceWallet": "اختر المحفظة المصدر",
+  "transactionFormSelectTargetWallet": "اختر المحفظة الهدف",
+  "transactionFormTransferSameError": "يجب أن تختلف العملة أو المحفظة بين المصدر والهدف",
+  "transactionFormExchangeRate": "سعر الصرف",
+  "transactionFormExchangeRateHint": "1 {source} = ? {target}",
+  "@transactionFormExchangeRateHint": {
+    "placeholders": {
+      "source": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+  "transactionFormExchangeRateRequired": "أدخل سعر صرف أكبر من صفر",
+  "transactionFormAmountHint": "0.00",
+  "transactionEditTitle": "تعديل العملية",
+  "transactionEditTypeLabel": "نوع العملية",
+  "transactionEditSave": "حفظ التعديلات",
+  "transactionEditSaveSuccess": "تم حفظ التعديلات بنجاح",
+  "transactionEditExpired": "انتهت مدة التعديل المسموحة",
+  "transactionDeleteExpired": "انتهت مدة الحذف المسموحة",
+  "transactionDeleteConfirm": "هل تريد حذف هذه العملية؟",
+  "transactionDeleteSuccess": "تم حذف العملية",
+  "transactionDelete": "حذف",
+  "transactionsListTransferCurrencyTitle": "{from} → {to}",
+  "@transactionsListTransferCurrencyTitle": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
   "transactionFormAmountLabel": "مبلغ المعاملة",
   "transactionFormAmountRequired": "أدخل مبلغاً أكبر من صفر",
   "transactionFormSelectCurrency": "اختر العملة",
@@ -167,6 +239,60 @@
   "@transactionFormSaveError": {
     "placeholders": { "error": { "type": "String" } }
   },
+  "transactionsListTitle": "العمليات",
+  "transactionsListTabAll": "الكل",
+  "transactionsListTabExpenses": "المصروفات",
+  "transactionsListTabIncomes": "الإيرادات",
+  "transactionsListTabTransfers": "التحويلات",
+  "transactionsListTabDebts": "الذمم",
+  "transactionsListDebtReceivable": "لي عليه",
+  "transactionsListDebtPayable": "علي",
+  "transactionsListDueDate": "استحقاق {date}",
+  "@transactionsListDueDate": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "transactionsListDebtPaid": "مسدّد",
+  "transactionsListFilter": "تصفية",
+  "transactionsListThisMonth": "هذا الشهر",
+  "transactionsListAllWallets": "جميع المحافظ",
+  "transactionsListSearchHint": "بحث في العمليات...",
+  "transactionsListEmpty": "لا توجد عمليات بعد.\nابدأ بتسجيل مصروف أو دخل.",
+  "transactionsListUnknownWallet": "محفظة غير معروفة",
+  "transactionsListLoadError": "تعذر تحميل العمليات: {error}",
+  "@transactionsListLoadError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "transactionsListNoData": "لا يوجد بيانات",
+  "transactionsListLoadMore": "عرض المزيد",
+  "transactionsListThisMonthHint": "يعرض عمليات الشهر الحالي فقط — أوقف «هذا الشهر» لعرض الكل",
+  "transactionsListAdd": "إضافة عملية",
+  "transactionsListTransferTitle": "تحويل من {from} إلى {to}",
+  "@transactionsListTransferTitle": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "transactionsListNotesTitle": "ملاحظات",
+  "transactionsListNoNotes": "لا توجد ملاحظات",
+  "transactionsListFilterTitle": "تصفية العمليات",
+  "transactionsListFilterDateFrom": "من تاريخ",
+  "transactionsListFilterDateTo": "إلى تاريخ",
+  "transactionsListFilterCategory": "التصنيف",
+  "transactionsListFilterType": "نوع العملية",
+  "transactionsListFilterAllCategories": "جميع التصنيفات",
+  "transactionsListFilterAllTypes": "جميع الأنواع",
+  "transactionsListFilterApply": "تطبيق",
+  "transactionsListFilterReset": "إعادة تعيين",
+  "transactionsListDateToday": "اليوم، {date}",
+  "@transactionsListDateToday": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "transactionsListDateYesterday": "أمس، {date}",
+  "@transactionsListDateYesterday": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "transactionsListSelectWallet": "اختر المحفظة",
   "comingSoon": "قريباً",
   "walletsTitle": "المحافظ",
   "walletsSubtitle": "إدارة أصولك النقدية والبنكية",

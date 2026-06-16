@@ -390,6 +390,171 @@ class AppLocalizationsAr extends AppLocalizations {
   String get transactionFormIncome => 'دخل';
 
   @override
+  String get transactionFormCurrencyTransfer => 'تحويل بين عملات';
+
+  @override
+  String get transactionFormDebtor => 'مدين (لي عليه)';
+
+  @override
+  String get transactionFormCreditor => 'دائن (علي)';
+
+  @override
+  String get transactionFormPersonName => 'اسم الشخص';
+
+  @override
+  String get transactionFormPersonNameHint => 'أدخل اسم الشخص';
+
+  @override
+  String get transactionFormPersonNameRequired => 'أدخل اسم الشخص';
+
+  @override
+  String get transactionFormDueDate => 'تاريخ الاستحقاق';
+
+  @override
+  String get transactionFormDueDateOptional => 'اختياري — اضغط للتحديد';
+
+  @override
+  String get transactionFormClearDueDate => 'مسح تاريخ الاستحقاق';
+
+  @override
+  String get transactionFormDebtLedgerHint =>
+      'قيد الذمة لا يؤثر على رصيد المحفظة حتى الدفع أو التحصيل.';
+
+  @override
+  String get transactionFormDebtSaveSuccess => 'تم حفظ قيد الذمة بنجاح';
+
+  @override
+  String get transactionDebtTotal => 'الإجمالي';
+
+  @override
+  String get transactionDebtPaid => 'المدفوع';
+
+  @override
+  String get transactionDebtRemaining => 'المتبقي';
+
+  @override
+  String get transactionDebtPaymentHistory => 'سجل الدفعات';
+
+  @override
+  String get transactionDebtNoPayments => 'لا توجد دفعات بعد';
+
+  @override
+  String get transactionDebtReceive => 'تحصيل';
+
+  @override
+  String get transactionDebtPay => 'دفع';
+
+  @override
+  String get transactionDebtSettleTitle => 'مبلغ التسديد';
+
+  @override
+  String get transactionDebtSettleHint => 'أدخل المبلغ للدفع أو التحصيل';
+
+  @override
+  String get transactionDebtSettleConfirm => 'تأكيد';
+
+  @override
+  String get transactionDebtSettleSuccess => 'تم تسجيل الدفعة بنجاح';
+
+  @override
+  String get transactionDebtSettleExceedsRemaining => 'المبلغ أكبر من المتبقي';
+
+  @override
+  String get transactionDebtFullyPaid => 'مسدّد بالكامل';
+
+  @override
+  String transactionDebtSettlementTitleReceive(String person) {
+    return 'تحصيل — $person';
+  }
+
+  @override
+  String transactionDebtSettlementTitlePay(String person) {
+    return 'دفع — $person';
+  }
+
+  @override
+  String get transactionFormSourceCurrency => 'العملة المصدر';
+
+  @override
+  String get transactionFormTargetCurrency => 'العملة الهدف';
+
+  @override
+  String get transactionFormSourceWallet => 'المحفظة المصدر';
+
+  @override
+  String get transactionFormTargetWallet => 'المحفظة الهدف';
+
+  @override
+  String transactionFormConvertedAmount(String amount) {
+    return 'المبلغ المحوّل: $amount';
+  }
+
+  @override
+  String get transactionFormTransferSaveSuccess => 'تم حفظ التحويل بنجاح';
+
+  @override
+  String get transactionFormSelectSourceCurrency => 'اختر العملة المصدر';
+
+  @override
+  String get transactionFormSelectTargetCurrency => 'اختر العملة الهدف';
+
+  @override
+  String get transactionFormSelectSourceWallet => 'اختر المحفظة المصدر';
+
+  @override
+  String get transactionFormSelectTargetWallet => 'اختر المحفظة الهدف';
+
+  @override
+  String get transactionFormTransferSameError =>
+      'يجب أن تختلف العملة أو المحفظة بين المصدر والهدف';
+
+  @override
+  String get transactionFormExchangeRate => 'سعر الصرف';
+
+  @override
+  String transactionFormExchangeRateHint(String source, String target) {
+    return '1 $source = ? $target';
+  }
+
+  @override
+  String get transactionFormExchangeRateRequired => 'أدخل سعر صرف أكبر من صفر';
+
+  @override
+  String get transactionFormAmountHint => '0.00';
+
+  @override
+  String get transactionEditTitle => 'تعديل العملية';
+
+  @override
+  String get transactionEditTypeLabel => 'نوع العملية';
+
+  @override
+  String get transactionEditSave => 'حفظ التعديلات';
+
+  @override
+  String get transactionEditSaveSuccess => 'تم حفظ التعديلات بنجاح';
+
+  @override
+  String get transactionEditExpired => 'انتهت مدة التعديل المسموحة';
+
+  @override
+  String get transactionDeleteExpired => 'انتهت مدة الحذف المسموحة';
+
+  @override
+  String get transactionDeleteConfirm => 'هل تريد حذف هذه العملية؟';
+
+  @override
+  String get transactionDeleteSuccess => 'تم حذف العملية';
+
+  @override
+  String get transactionDelete => 'حذف';
+
+  @override
+  String transactionsListTransferCurrencyTitle(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
   String get transactionFormAmountLabel => 'مبلغ المعاملة';
 
   @override
@@ -448,6 +613,126 @@ class AppLocalizationsAr extends AppLocalizations {
   String transactionFormSaveError(String error) {
     return 'تعذر حفظ العملية: $error';
   }
+
+  @override
+  String get transactionsListTitle => 'العمليات';
+
+  @override
+  String get transactionsListTabAll => 'الكل';
+
+  @override
+  String get transactionsListTabExpenses => 'المصروفات';
+
+  @override
+  String get transactionsListTabIncomes => 'الإيرادات';
+
+  @override
+  String get transactionsListTabTransfers => 'التحويلات';
+
+  @override
+  String get transactionsListTabDebts => 'الذمم';
+
+  @override
+  String get transactionsListDebtReceivable => 'لي عليه';
+
+  @override
+  String get transactionsListDebtPayable => 'علي';
+
+  @override
+  String transactionsListDueDate(String date) {
+    return 'استحقاق $date';
+  }
+
+  @override
+  String get transactionsListDebtPaid => 'مسدّد';
+
+  @override
+  String get transactionsListFilter => 'تصفية';
+
+  @override
+  String get transactionsListThisMonth => 'هذا الشهر';
+
+  @override
+  String get transactionsListAllWallets => 'جميع المحافظ';
+
+  @override
+  String get transactionsListSearchHint => 'بحث في العمليات...';
+
+  @override
+  String get transactionsListEmpty =>
+      'لا توجد عمليات بعد.\nابدأ بتسجيل مصروف أو دخل.';
+
+  @override
+  String get transactionsListUnknownWallet => 'محفظة غير معروفة';
+
+  @override
+  String transactionsListLoadError(String error) {
+    return 'تعذر تحميل العمليات: $error';
+  }
+
+  @override
+  String get transactionsListNoData => 'لا يوجد بيانات';
+
+  @override
+  String get transactionsListLoadMore => 'عرض المزيد';
+
+  @override
+  String get transactionsListThisMonthHint =>
+      'يعرض عمليات الشهر الحالي فقط — أوقف «هذا الشهر» لعرض الكل';
+
+  @override
+  String get transactionsListAdd => 'إضافة عملية';
+
+  @override
+  String transactionsListTransferTitle(String from, String to) {
+    return 'تحويل من $from إلى $to';
+  }
+
+  @override
+  String get transactionsListNotesTitle => 'ملاحظات';
+
+  @override
+  String get transactionsListNoNotes => 'لا توجد ملاحظات';
+
+  @override
+  String get transactionsListFilterTitle => 'تصفية العمليات';
+
+  @override
+  String get transactionsListFilterDateFrom => 'من تاريخ';
+
+  @override
+  String get transactionsListFilterDateTo => 'إلى تاريخ';
+
+  @override
+  String get transactionsListFilterCategory => 'التصنيف';
+
+  @override
+  String get transactionsListFilterType => 'نوع العملية';
+
+  @override
+  String get transactionsListFilterAllCategories => 'جميع التصنيفات';
+
+  @override
+  String get transactionsListFilterAllTypes => 'جميع الأنواع';
+
+  @override
+  String get transactionsListFilterApply => 'تطبيق';
+
+  @override
+  String get transactionsListFilterReset => 'إعادة تعيين';
+
+  @override
+  String transactionsListDateToday(String date) {
+    return 'اليوم، $date';
+  }
+
+  @override
+  String transactionsListDateYesterday(String date) {
+    return 'أمس، $date';
+  }
+
+  @override
+  String get transactionsListSelectWallet => 'اختر المحفظة';
 
   @override
   String get comingSoon => 'قريباً';

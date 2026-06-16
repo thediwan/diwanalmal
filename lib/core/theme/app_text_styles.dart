@@ -1,95 +1,98 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../constants/app_colors.dart';
 import 'app_theme_colors.dart';
+import 'app_typography.dart';
 
-/// Typography helpers based on design system.
+/// Semantic text styles — all sizes and families come from [AppTypography].
 abstract final class AppTextStyles {
-  static TextStyle get _headingBase => GoogleFonts.almarai(
-        fontWeight: FontWeight.w700,
+  static TextStyle get headingLarge => AppTypography.heading(
+        size: AppTypography.sizeHeadingLarge,
       );
 
-  static TextStyle headingLarge = _headingBase.copyWith(fontSize: 28);
+  static TextStyle get headingMedium => AppTypography.heading(
+        size: AppTypography.sizeHeadingMedium,
+      );
 
-  static TextStyle headingMedium = _headingBase.copyWith(fontSize: 22);
+  static TextStyle get headingSmall => AppTypography.heading(
+        size: AppTypography.sizeHeadingSmall,
+        fontWeight: FontWeight.w600,
+      );
 
-  static TextStyle headingSmall = GoogleFonts.almarai(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-  );
+  static TextStyle get bodyLarge => AppTypography.body(
+        size: AppTypography.sizeBodyLarge,
+      );
 
-  static TextStyle bodyLarge = GoogleFonts.cairo(
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-  );
+  static TextStyle get bodyMedium => AppTypography.body(
+        size: AppTypography.sizeBodyMedium,
+      );
 
-  static TextStyle bodyMedium = GoogleFonts.cairo(
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-  );
+  static TextStyle get bodySmall => AppTypography.body(
+        size: AppTypography.sizeBodySmall,
+      );
 
-  static TextStyle bodySmall = GoogleFonts.cairo(
-    fontSize: 12,
-    fontWeight: FontWeight.w400,
-  );
-
-  static TextStyle label = GoogleFonts.cairo(
-    fontSize: 13,
-    fontWeight: FontWeight.w500,
-  );
+  static TextStyle get label => AppTypography.body(
+        size: AppTypography.sizeLabel,
+        fontWeight: FontWeight.w500,
+      );
 
   /// Small captions on light/dark surfaces.
   static TextStyle captionOnSurface(AppThemeColors colors) => bodySmall.copyWith(
         color: colors.textMuted,
         fontWeight: FontWeight.w500,
-        fontSize: 12,
+        fontSize: AppTypography.scaled(AppTypography.sizeBodySmall),
       );
 
-  /// Section labels on surfaces.
+  /// Section labels on surfaces (form field group titles).
   static TextStyle labelOnSurface(AppThemeColors colors) => label.copyWith(
         color: colors.textSecondary,
         fontWeight: FontWeight.w600,
-        fontSize: 13,
+        fontSize: AppTypography.scaled(AppTypography.sizeLabel),
       );
 
-  /// Typed text inside form fields — dark for readability.
+  /// Typed text inside form fields and dropdowns.
   static TextStyle inputTextStyleFor(AppThemeColors colors) => bodyLarge.copyWith(
         color: colors.inputText,
         fontWeight: FontWeight.w600,
-        fontSize: 15,
+        fontSize: AppTypography.scaled(AppTypography.sizeInput),
+      );
+
+  /// Dropdown menu item text.
+  static TextStyle dropdownItemFor(AppThemeColors colors) => bodyMedium.copyWith(
+        color: colors.textPrimary,
+        fontSize: AppTypography.scaled(AppTypography.sizeBodyMedium),
       );
 
   /// Placeholder / hint text inside form fields.
-  static TextStyle inputHint = bodyMedium.copyWith(
-    color: AppColors.textSecondaryLight,
-    fontWeight: FontWeight.w400,
-  );
+  static TextStyle get inputHint => bodyMedium.copyWith(
+        color: AppColors.textSecondaryLight,
+        fontWeight: FontWeight.w400,
+      );
 
   /// Floating labels on form fields.
-  static TextStyle inputLabel = label.copyWith(
-    color: AppColors.textPrimaryLight,
-    fontWeight: FontWeight.w600,
-  );
+  static TextStyle get inputLabel => label.copyWith(
+        color: AppColors.textPrimaryLight,
+        fontWeight: FontWeight.w600,
+      );
 
   /// @deprecated Use [captionOnSurface] with theme colors.
-  static TextStyle captionOnLight = bodySmall.copyWith(
-    color: AppColors.textSecondaryLight,
-    fontWeight: FontWeight.w500,
-    fontSize: 12,
-  );
+  static TextStyle get captionOnLight => bodySmall.copyWith(
+        color: AppColors.textSecondaryLight,
+        fontWeight: FontWeight.w500,
+        fontSize: AppTypography.scaled(AppTypography.sizeBodySmall),
+      );
 
   /// @deprecated Use [labelOnSurface] with theme colors.
-  static TextStyle labelOnLight = label.copyWith(
-    color: AppColors.textSecondaryLight,
-    fontWeight: FontWeight.w600,
-    fontSize: 13,
-  );
+  static TextStyle get labelOnLight => label.copyWith(
+        color: AppColors.textSecondaryLight,
+        fontWeight: FontWeight.w600,
+        fontSize: AppTypography.scaled(AppTypography.sizeLabel),
+      );
 
   /// @deprecated Use [inputTextStyleFor].
-  static TextStyle inputText = bodyLarge.copyWith(
-    color: AppColors.inputTextLight,
-    fontWeight: FontWeight.w600,
-    fontSize: 15,
-  );
+  static TextStyle get inputText => bodyLarge.copyWith(
+        color: AppColors.inputTextLight,
+        fontWeight: FontWeight.w600,
+        fontSize: AppTypography.scaled(AppTypography.sizeInput),
+      );
 }

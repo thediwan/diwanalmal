@@ -143,6 +143,78 @@
   "transactionAddComingSoon": "Adding transactions will be available soon",
   "transactionFormExpense": "Expense",
   "transactionFormIncome": "Income",
+  "transactionFormCurrencyTransfer": "Currency transfer",
+  "transactionFormDebtor": "Receivable",
+  "transactionFormCreditor": "Payable",
+  "transactionFormPersonName": "Person name",
+  "transactionFormPersonNameHint": "Enter the person's name",
+  "transactionFormPersonNameRequired": "Enter a person name",
+  "transactionFormDueDate": "Due date",
+  "transactionFormDueDateOptional": "Optional — tap to set",
+  "transactionFormClearDueDate": "Clear due date",
+  "transactionFormDebtLedgerHint": "Debt entries do not affect wallet balances until you pay or receive.",
+  "transactionFormDebtSaveSuccess": "Debt entry saved successfully",
+  "transactionDebtTotal": "Total",
+  "transactionDebtPaid": "Paid",
+  "transactionDebtRemaining": "Remaining",
+  "transactionDebtPaymentHistory": "Payment history",
+  "transactionDebtNoPayments": "No payments yet",
+  "transactionDebtReceive": "Receive",
+  "transactionDebtPay": "Pay",
+  "transactionDebtSettleTitle": "Settlement amount",
+  "transactionDebtSettleHint": "Enter amount to pay or receive",
+  "transactionDebtSettleConfirm": "Confirm",
+  "transactionDebtSettleSuccess": "Settlement recorded successfully",
+  "transactionDebtSettleExceedsRemaining": "Amount exceeds the remaining balance",
+  "transactionDebtFullyPaid": "Fully settled",
+  "transactionDebtSettlementTitleReceive": "Receive — {person}",
+  "@transactionDebtSettlementTitleReceive": {
+    "placeholders": { "person": { "type": "String" } }
+  },
+  "transactionDebtSettlementTitlePay": "Pay — {person}",
+  "@transactionDebtSettlementTitlePay": {
+    "placeholders": { "person": { "type": "String" } }
+  },
+  "transactionFormSourceCurrency": "Source currency",
+  "transactionFormTargetCurrency": "Target currency",
+  "transactionFormSourceWallet": "Source wallet",
+  "transactionFormTargetWallet": "Target wallet",
+  "transactionFormConvertedAmount": "Converted amount: {amount}",
+  "@transactionFormConvertedAmount": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "transactionFormTransferSaveSuccess": "Transfer saved successfully",
+  "transactionFormSelectSourceCurrency": "Select source currency",
+  "transactionFormSelectTargetCurrency": "Select target currency",
+  "transactionFormSelectSourceWallet": "Select source wallet",
+  "transactionFormSelectTargetWallet": "Select target wallet",
+  "transactionFormTransferSameError": "Source and target currency or wallet must differ",
+  "transactionFormExchangeRate": "Exchange rate",
+  "transactionFormExchangeRateHint": "1 {source} = ? {target}",
+  "@transactionFormExchangeRateHint": {
+    "placeholders": {
+      "source": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+  "transactionFormExchangeRateRequired": "Enter an exchange rate greater than zero",
+  "transactionFormAmountHint": "0.00",
+  "transactionEditTitle": "Edit transaction",
+  "transactionEditTypeLabel": "Transaction type",
+  "transactionEditSave": "Save changes",
+  "transactionEditSaveSuccess": "Changes saved successfully",
+  "transactionEditExpired": "Edit window has expired",
+  "transactionDeleteExpired": "Delete window has expired",
+  "transactionDeleteConfirm": "Delete this transaction?",
+  "transactionDeleteSuccess": "Transaction deleted",
+  "transactionDelete": "Delete",
+  "transactionsListTransferCurrencyTitle": "{from} → {to}",
+  "@transactionsListTransferCurrencyTitle": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
   "transactionFormAmountLabel": "Transaction amount",
   "transactionFormAmountRequired": "Enter an amount greater than zero",
   "transactionFormSelectCurrency": "Select a currency",
@@ -167,6 +239,60 @@
   "@transactionFormSaveError": {
     "placeholders": { "error": { "type": "String" } }
   },
+  "transactionsListTitle": "Transactions",
+  "transactionsListTabAll": "All",
+  "transactionsListTabExpenses": "Expenses",
+  "transactionsListTabIncomes": "Income",
+  "transactionsListTabTransfers": "Transfers",
+  "transactionsListTabDebts": "Debts",
+  "transactionsListDebtReceivable": "Receivable",
+  "transactionsListDebtPayable": "Payable",
+  "transactionsListDueDate": "Due {date}",
+  "@transactionsListDueDate": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "transactionsListDebtPaid": "Paid",
+  "transactionsListFilter": "Filter",
+  "transactionsListThisMonth": "This month",
+  "transactionsListAllWallets": "All wallets",
+  "transactionsListSearchHint": "Search transactions...",
+  "transactionsListEmpty": "No transactions yet.\nStart by recording an expense or income.",
+  "transactionsListUnknownWallet": "Unknown wallet",
+  "transactionsListLoadError": "Could not load transactions: {error}",
+  "@transactionsListLoadError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "transactionsListNoData": "No data found",
+  "transactionsListLoadMore": "Load more",
+  "transactionsListThisMonthHint": "Showing this month only — turn off \"This month\" to see all",
+  "transactionsListAdd": "Add transaction",
+  "transactionsListTransferTitle": "Transfer from {from} to {to}",
+  "@transactionsListTransferTitle": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+  "transactionsListNotesTitle": "Notes",
+  "transactionsListNoNotes": "No notes",
+  "transactionsListFilterTitle": "Filter transactions",
+  "transactionsListFilterDateFrom": "From date",
+  "transactionsListFilterDateTo": "To date",
+  "transactionsListFilterCategory": "Category",
+  "transactionsListFilterType": "Transaction type",
+  "transactionsListFilterAllCategories": "All categories",
+  "transactionsListFilterAllTypes": "All types",
+  "transactionsListFilterApply": "Apply",
+  "transactionsListFilterReset": "Reset",
+  "transactionsListDateToday": "Today, {date}",
+  "@transactionsListDateToday": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "transactionsListDateYesterday": "Yesterday, {date}",
+  "@transactionsListDateYesterday": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "transactionsListSelectWallet": "Select wallet",
   "comingSoon": "Coming soon",
   "walletsTitle": "Wallets",
   "walletsSubtitle": "Manage your cash and bank assets",

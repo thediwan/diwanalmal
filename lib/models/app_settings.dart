@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
+import '../core/constants/transaction_policy.dart';
+
 /// Application-wide settings stored locally.
 class AppSettings extends HiveObject {
   AppSettings({
@@ -15,7 +17,10 @@ class AppSettings extends HiveObject {
     this.biometricEnabled = false,
     this.isSecuritySetupComplete = false,
     this.securityCodeAcknowledged = false,
-  });
+    int? transactionDeleteWindowHours,
+    int? transactionEditWindowDays,
+  })  : _transactionDeleteWindowHours = transactionDeleteWindowHours,
+        _transactionEditWindowDays = transactionEditWindowDays;
 
   final bool isSetupComplete;
   final String baseCurrencyCode;
@@ -29,6 +34,18 @@ class AppSettings extends HiveObject {
   final bool isSecuritySetupComplete;
   final bool securityCodeAcknowledged;
 
+  final int? _transactionDeleteWindowHours;
+  final int? _transactionEditWindowDays;
+
+  /// Never null — safe after Hive migrations or hot reload.
+  int get transactionDeleteWindowHours =>
+      _transactionDeleteWindowHours ??
+      TransactionPolicyDefaults.deleteWindowHours;
+
+  /// Never null — safe after Hive migrations or hot reload.
+  int get transactionEditWindowDays =>
+      _transactionEditWindowDays ?? TransactionPolicyDefaults.editWindowDays;
+
   AppSettings copyWith({
     bool? isSetupComplete,
     String? baseCurrencyCode,
@@ -41,6 +58,8 @@ class AppSettings extends HiveObject {
     bool? biometricEnabled,
     bool? isSecuritySetupComplete,
     bool? securityCodeAcknowledged,
+    int? transactionDeleteWindowHours,
+    int? transactionEditWindowDays,
   }) {
     return AppSettings(
       isSetupComplete: isSetupComplete ?? this.isSetupComplete,
@@ -56,6 +75,10 @@ class AppSettings extends HiveObject {
           isSecuritySetupComplete ?? this.isSecuritySetupComplete,
       securityCodeAcknowledged:
           securityCodeAcknowledged ?? this.securityCodeAcknowledged,
+      transactionDeleteWindowHours: transactionDeleteWindowHours ??
+          _transactionDeleteWindowHours,
+      transactionEditWindowDays:
+          transactionEditWindowDays ?? _transactionEditWindowDays,
     );
   }
 
@@ -76,7 +99,10 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
   AppSettings read(BinaryReader reader) {
     final isSetupComplete = reader.readBool();
     final baseCurrencyCode = reader.readString();
-    final themeMode = ThemeMode.values[reader.readInt()];
+    final themeModeIndex = reader.readInt();
+    final themeMode = themeModeIndex >= 0 && themeModeIndex < ThemeMode.values.length
+        ? ThemeMode.values[themeModeIndex]
+        : ThemeMode.system;
 
     if (reader.availableBytes == 0) {
       return AppSettings(
@@ -97,10 +123,21 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       pinCode: reader.readString(),
       biometricEnabled: reader.readBool(),
       isSecuritySetupComplete: reader.readBool(),
-      securityCodeAcknowledged: reader.availableBytes > 0
-          ? reader.readBool()
-          : false,
+      securityCodeAcknowledged: _readOptionalBool(reader),
+      transactionDeleteWindowHours: _readOptionalInt(reader),
+      transactionEditWindowDays: _readOptionalInt(reader),
     );
+  }
+
+  /// Reads a bool only when at least one byte remains.
+  static bool _readOptionalBool(BinaryReader reader) {
+    return reader.availableBytes > 0 ? reader.readBool() : false;
+  }
+
+  /// Reads a Hive-encoded int when any bytes remain.
+  static int? _readOptionalInt(BinaryReader reader) {
+    if (reader.availableBytes == 0) return null;
+    return reader.readInt();
   }
 
   @override
@@ -116,6 +153,8 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeString(obj.pinCode)
       ..writeBool(obj.biometricEnabled)
       ..writeBool(obj.isSecuritySetupComplete)
-      ..writeBool(obj.securityCodeAcknowledged);
+      ..writeBool(obj.securityCodeAcknowledged)
+      ..writeInt(obj.transactionDeleteWindowHours)
+      ..writeInt(obj.transactionEditWindowDays);
   }
 }
