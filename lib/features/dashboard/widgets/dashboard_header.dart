@@ -10,7 +10,7 @@ import '../../../core/theme/app_text_styles.dart';
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
 
-  static const _logoAsset = 'assets/images/logo_amanah.png';
+  static const _logoAsset = 'assets/images/logo.png';
 
   @override
   Widget build(BuildContext context) {

@@ -9,7 +9,7 @@ class BrandLogo extends StatelessWidget {
 
   final double height;
 
-  static const _assetPath = 'assets/images/logo_amanah.png';
+  static const _assetPath = 'assets/images/logo.png';
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class BrandLogoTile extends StatelessWidget {
 
   final double size;
 
-  static const _assetPath = 'assets/images/logo_amanah.png';
+  static const _assetPath = 'assets/images/logo.png';
 
   @override
   Widget build(BuildContext context) {

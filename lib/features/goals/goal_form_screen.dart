@@ -28,7 +28,7 @@ class GoalFormScreen extends StatefulWidget {
 }
 
 class _GoalFormScreenState extends State<GoalFormScreen> {
-  static const _logoAsset = 'assets/images/logo_amanah.png';
+  static const _logoAsset = 'assets/images/logo.png';
 
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();

@@ -22,7 +22,7 @@ class WalletsHeader extends StatelessWidget {
   final ValueChanged<String> onSearchChanged;
   final VoidCallback onAddWallet;
 
-  static const _logoAsset = 'assets/images/logo_amanah.png';
+  static const _logoAsset = 'assets/images/logo.png';
 
   @override
   Widget build(BuildContext context) {

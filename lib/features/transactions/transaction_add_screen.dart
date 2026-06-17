@@ -46,7 +46,7 @@ class TransactionAddScreen extends StatefulWidget {
 }
 
 class _TransactionAddScreenState extends State<TransactionAddScreen> {
-  static const _logoAsset = 'assets/images/logo_amanah.png';
+  static const _logoAsset = 'assets/images/logo.png';
 
   final _amountInput = TransactionAmountInput();
   final _scrollController = ScrollController();

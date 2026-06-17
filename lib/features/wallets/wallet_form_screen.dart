@@ -32,7 +32,7 @@ class WalletFormScreen extends StatefulWidget {
 }
 
 class _WalletFormScreenState extends State<WalletFormScreen> {
-  static const _logoAsset = 'assets/images/logo_amanah.png';
+  static const _logoAsset = 'assets/images/logo.png';
 
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -500,7 +500,7 @@ class _FormTopBar extends StatelessWidget {
   final bool showDelete;
   final VoidCallback onDelete;
 
-  static const _logoAsset = 'assets/images/logo_amanah.png';
+  static const _logoAsset = 'assets/images/logo.png';
 
   @override
   Widget build(BuildContext context) {

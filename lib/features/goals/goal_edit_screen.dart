@@ -34,7 +34,7 @@ class GoalEditScreen extends StatefulWidget {
 }
 
 class _GoalEditScreenState extends State<GoalEditScreen> {
-  static const _logoAsset = 'assets/images/logo_amanah.png';
+  static const _logoAsset = 'assets/images/logo.png';
 
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
