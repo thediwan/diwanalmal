@@ -622,6 +622,89 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionFormCategory => 'Category';
 
   @override
+  String get categoryGeneralIncome => 'General income';
+
+  @override
+  String get categoryGeneralExpense => 'General expense';
+
+  @override
+  String get transactionFormCategoryUnavailable =>
+      'Categories are not ready yet. Restart the app and try again.';
+
+  @override
+  String get categoriesTitleExpense => 'Expense categories';
+
+  @override
+  String get categoriesTitleIncome => 'Income categories';
+
+  @override
+  String get categoriesEmpty => 'No categories yet';
+
+  @override
+  String get categoryFormNewTitle => 'New category';
+
+  @override
+  String get categoryFormEditTitle => 'Edit category';
+
+  @override
+  String get categoryFormName => 'Category name';
+
+  @override
+  String get categoryFormNameHint => 'e.g. Groceries';
+
+  @override
+  String get categoryFormNameRequired => 'Name is required';
+
+  @override
+  String get categoryFormType => 'Type';
+
+  @override
+  String get categoryFormTypeExpense => 'Expense';
+
+  @override
+  String get categoryFormTypeIncome => 'Income';
+
+  @override
+  String get categoryFormIcon => 'Icon';
+
+  @override
+  String get categoryFormColor => 'Color';
+
+  @override
+  String get categoryFormSave => 'Save';
+
+  @override
+  String get categoryFormCreate => 'Create';
+
+  @override
+  String get categoryFormSaveSuccess => 'Category saved successfully';
+
+  @override
+  String get categoryFormDeleteSuccess => 'Category deleted successfully';
+
+  @override
+  String get categoryFormDeleteTitle => 'Delete category';
+
+  @override
+  String categoryFormDeleteMessage(String name) {
+    return 'Delete \"$name\"?';
+  }
+
+  @override
+  String get categoryFormHasTransactions =>
+      'Cannot delete: transactions use this category';
+
+  @override
+  String get categoryFormSystemProtected =>
+      'Default categories cannot be edited or deleted';
+
+  @override
+  String get categoryFormSystemBadge => 'Default';
+
+  @override
+  String get categoryFormNotFound => 'Category not found';
+
+  @override
   String get transactionFormSelectCategory => 'Select a category';
 
   @override

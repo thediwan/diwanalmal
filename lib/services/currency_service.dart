@@ -122,6 +122,8 @@ class CurrencyService {
       baseCode: normalized,
     );
 
+    await _lazarus.ensureSystemCategories(userId);
+
     final settings = _hiveService.getSettings().copyWith(
           isSetupComplete: true,
           baseCurrencyCode: normalized,
@@ -266,6 +268,8 @@ class CurrencyService {
             updatedAt: now,
           ),
         );
+
+    await _lazarus.ensureSystemCategories(userId);
 
     return userId;
   }

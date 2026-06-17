@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/category_icon_styles.dart';
+import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
+import '../../../core/helpers/category_localization.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../models/transaction_category.dart';
 
@@ -69,6 +71,7 @@ class _CategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final l10n = context.l10n;
     final accent = CategoryIconStyles.colorFor(category.colorHex);
 
     return Material(
@@ -101,7 +104,7 @@ class _CategoryTile extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              category.name,
+              category.localizedName(l10n),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,

@@ -55,6 +55,24 @@ abstract final class UserFacingError {
     return message(l10n, error);
   }
 
+  /// Category CRUD business error codes.
+  static String categoryMessage(AppLocalizations l10n, Object error) {
+    final raw = error.toString();
+    if (raw.contains('category_system_protected')) {
+      return l10n.categoryFormSystemProtected;
+    }
+    if (raw.contains('category_has_transactions')) {
+      return l10n.categoryFormHasTransactions;
+    }
+    if (raw.contains('category_name_required')) {
+      return l10n.categoryFormNameRequired;
+    }
+    if (raw.contains('category_not_found')) {
+      return l10n.categoryFormNotFound;
+    }
+    return message(l10n, error);
+  }
+
   static bool _looksTechnical(String value) {
     return value.contains('SqliteException') ||
         value.contains('SQL logic error') ||

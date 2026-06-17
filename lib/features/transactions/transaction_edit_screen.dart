@@ -204,6 +204,18 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       widget.kind == TransactionListKind.debtor ||
       widget.kind == TransactionListKind.creditor;
 
+  Future<void> _openCategoriesManager() async {
+    final type = widget.kind == TransactionListKind.income
+        ? DatabaseConstants.categoryIncome
+        : DatabaseConstants.categoryExpense;
+    await context.push('/categories?type=$type');
+    if (!mounted) return;
+    final categoryService = CategoryService(LazarusDatabaseService.instance);
+    _expenseCategories = await categoryService.getExpenseCategories();
+    _incomeCategories = await categoryService.getIncomeCategories();
+    setState(() {});
+  }
+
   double? _parsePositiveDouble(String raw) {
     final normalized = raw.trim().replaceAll(',', '.');
     if (normalized.isEmpty) return null;
@@ -459,13 +471,18 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
         );
       } else {
         final currency = _currencyById(_currencyId);
-        if (currency == null || _walletId == null || _categoryId == null) return;
+        final categoryId = widget.kind == TransactionListKind.income
+            ? DatabaseConstants.systemGeneralIncomeCategoryId
+            : _categoryId;
+        if (currency == null || _walletId == null || categoryId == null) {
+          return;
+        }
 
         await TransactionService(LazarusDatabaseService.instance).update(
           input: UpdateTransactionInput(
             id: widget.id,
             walletId: _walletId!,
-            categoryId: _categoryId!,
+            categoryId: categoryId,
             amount: _amountInput.value,
             currency: currency,
             notes: _notesController.text,
@@ -881,20 +898,22 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                       onSelected: (id) => setState(() => _walletId = id),
                       emptyLabel: l10n.transactionFormNoWalletForCurrency,
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.transactionFormCategory,
-                      style: AppFormFields.sectionLabelStyleOf(context),
-                    ),
-                    const SizedBox(height: 8),
-                    TransactionCategoryGrid(
-                      categories: _activeCategories,
-                      selectedCategoryId: _categoryId,
-                      onSelected: (cat) =>
-                          setState(() => _categoryId = cat.id),
-                      moreLabel: l10n.transactionFormMore,
-                      onMoreTap: () {},
-                    ),
+                    if (widget.kind == TransactionListKind.expense) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.transactionFormCategory,
+                        style: AppFormFields.sectionLabelStyleOf(context),
+                      ),
+                      const SizedBox(height: 8),
+                      TransactionCategoryGrid(
+                        categories: _activeCategories,
+                        selectedCategoryId: _categoryId,
+                        onSelected: (cat) =>
+                            setState(() => _categoryId = cat.id),
+                        moreLabel: l10n.transactionFormMore,
+                        onMoreTap: _openCategoriesManager,
+                      ),
+                    ],
                   ],
                   const SizedBox(height: 16),
                   TextFormField(

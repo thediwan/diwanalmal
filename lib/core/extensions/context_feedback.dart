@@ -39,6 +39,7 @@ extension ContextFeedback on BuildContext {
     String? message,
     bool walletContext = false,
     bool currencyContext = false,
+    bool categoryContext = false,
   }) {
     final strings = l10n;
     final text = message ??
@@ -46,7 +47,9 @@ extension ContextFeedback on BuildContext {
             ? UserFacingError.walletMessage(strings, error)
             : currencyContext
                 ? UserFacingError.currencyMessage(strings, error)
-                : UserFacingError.message(strings, error));
+                : categoryContext
+                    ? UserFacingError.categoryMessage(strings, error)
+                    : UserFacingError.message(strings, error));
     showErrorFeedback(text);
   }
 

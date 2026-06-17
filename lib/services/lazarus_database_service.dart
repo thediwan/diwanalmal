@@ -4,6 +4,7 @@ import '../core/constants/seed_constants.dart';
 import '../database/lazarus_database.dart';
 import '../database/seed/category_seed_service.dart';
 import '../database/seed/database_seed_service.dart';
+import '../database/seed/system_category_service.dart';
 import '../models/currency.dart' as app;
 import '../models/wallet.dart' as app;
 import '../core/helpers/currency_uniqueness.dart';
@@ -33,8 +34,9 @@ class LazarusDatabaseService {
     final service = LazarusDatabaseService._(db);
 
     await service._migrateHiveIfNeeded(hiveService);
+    await service._ensureSystemCategoriesForActiveUser();
     if (SeedConstants.enabled) {
-      await service._ensureDefaultCategoriesForActiveUser();
+      await service._ensureDemoCategoriesForActiveUser();
     }
 
     _instance = service;
@@ -57,9 +59,20 @@ class LazarusDatabaseService {
     await CategorySeedService(database).ensureDefaultCategories(userId);
   }
 
+  /// Ensures protected system categories for the active user.
+  Future<void> ensureSystemCategories(String userId) {
+    return SystemCategoryService(database).ensureForUser(userId);
+  }
+
   Future<String?> getActiveUserId() => database.getActiveUserId();
 
-  Future<void> _ensureDefaultCategoriesForActiveUser() async {
+  Future<void> _ensureSystemCategoriesForActiveUser() async {
+    final userId = await getActiveUserId();
+    if (userId == null) return;
+    await ensureSystemCategories(userId);
+  }
+
+  Future<void> _ensureDemoCategoriesForActiveUser() async {
     final userId = await getActiveUserId();
     if (userId == null) return;
     await CategorySeedService(database).ensureDefaultCategories(userId);
@@ -163,6 +176,8 @@ class LazarusDatabaseService {
             );
       }
     });
+
+    await ensureSystemCategories(userId);
   }
 
   /// Maps Drift currency row to app [Currency] model.

@@ -617,6 +617,89 @@ class AppLocalizationsAr extends AppLocalizations {
   String get transactionFormCategory => 'التصنيف';
 
   @override
+  String get categoryGeneralIncome => 'دخل عام';
+
+  @override
+  String get categoryGeneralExpense => 'مصروف عام';
+
+  @override
+  String get transactionFormCategoryUnavailable =>
+      'التصنيفات غير جاهزة. أعد تشغيل التطبيق وحاول مرة أخرى.';
+
+  @override
+  String get categoriesTitleExpense => 'تصنيفات المصروف';
+
+  @override
+  String get categoriesTitleIncome => 'تصنيفات الدخل';
+
+  @override
+  String get categoriesEmpty => 'لا توجد تصنيفات بعد';
+
+  @override
+  String get categoryFormNewTitle => 'تصنيف جديد';
+
+  @override
+  String get categoryFormEditTitle => 'تعديل التصنيف';
+
+  @override
+  String get categoryFormName => 'اسم التصنيف';
+
+  @override
+  String get categoryFormNameHint => 'مثال: بقالة';
+
+  @override
+  String get categoryFormNameRequired => 'الاسم مطلوب';
+
+  @override
+  String get categoryFormType => 'النوع';
+
+  @override
+  String get categoryFormTypeExpense => 'مصروف';
+
+  @override
+  String get categoryFormTypeIncome => 'دخل';
+
+  @override
+  String get categoryFormIcon => 'الأيقونة';
+
+  @override
+  String get categoryFormColor => 'اللون';
+
+  @override
+  String get categoryFormSave => 'حفظ';
+
+  @override
+  String get categoryFormCreate => 'إنشاء';
+
+  @override
+  String get categoryFormSaveSuccess => 'تم حفظ التصنيف بنجاح';
+
+  @override
+  String get categoryFormDeleteSuccess => 'تم حذف التصنيف بنجاح';
+
+  @override
+  String get categoryFormDeleteTitle => 'حذف التصنيف';
+
+  @override
+  String categoryFormDeleteMessage(String name) {
+    return 'حذف \"$name\"؟';
+  }
+
+  @override
+  String get categoryFormHasTransactions =>
+      'لا يمكن الحذف: توجد معاملات مرتبطة بهذا التصنيف';
+
+  @override
+  String get categoryFormSystemProtected =>
+      'التصنيفات الأساسية لا يمكن تعديلها أو حذفها';
+
+  @override
+  String get categoryFormSystemBadge => 'أساسي';
+
+  @override
+  String get categoryFormNotFound => 'التصنيف غير موجود';
+
+  @override
   String get transactionFormSelectCategory => 'اختر التصنيف';
 
   @override

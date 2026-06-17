@@ -138,6 +138,15 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
       _entryType == TransactionEntryType.debtor ||
       _entryType == TransactionEntryType.creditor;
 
+  bool get _isIncomeEntry => _entryType == TransactionEntryType.income;
+
+  TransactionCategory? get _systemGeneralIncomeCategory =>
+      _incomeCategories
+          .where(
+            (c) => c.id == DatabaseConstants.systemGeneralIncomeCategoryId,
+          )
+          .firstOrNull;
+
   double? get _debtAmountValue =>
       _parsePositiveDouble(_debtAmountController.text);
 
@@ -257,7 +266,21 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
       if (wallets.every((w) => w.id != _selectedWalletId)) {
         _selectedWalletId = wallets.firstOrNull?.id;
       }
-      if (categories.every((c) => c.id != _selectedCategoryId)) {
+      if (_isIncomeEntry) {
+        _selectedCategoryId = _systemGeneralIncomeCategory?.id;
+      } else if (_entryType == TransactionEntryType.expense) {
+        final generalExpense = categories
+            .where(
+              (c) =>
+                  c.id == DatabaseConstants.systemGeneralExpenseCategoryId,
+            )
+            .firstOrNull;
+        if (_selectedCategoryId == null && generalExpense != null) {
+          _selectedCategoryId = generalExpense.id;
+        } else if (categories.every((c) => c.id != _selectedCategoryId)) {
+          _selectedCategoryId = categories.firstOrNull?.id;
+        }
+      } else if (categories.every((c) => c.id != _selectedCategoryId)) {
         _selectedCategoryId = categories.firstOrNull?.id;
       }
     });
@@ -372,7 +395,28 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   }
 
   void _showMoreCategoriesPlaceholder() {
-    _showFormWarning(context.l10n.transactionFormCategoriesComingSoon);
+    final type = _entryType == TransactionEntryType.income
+        ? DatabaseConstants.categoryIncome
+        : DatabaseConstants.categoryExpense;
+    _openCategoriesManager(type);
+  }
+
+  Future<void> _openCategoriesManager(String type) async {
+    await context.push('/categories?type=$type');
+    if (!mounted) return;
+    await _reloadCategories();
+  }
+
+  Future<void> _reloadCategories() async {
+    final categoryService = CategoryService(LazarusDatabaseService.instance);
+    final expense = await categoryService.getExpenseCategories();
+    final income = await categoryService.getIncomeCategories();
+    if (!mounted) return;
+    setState(() {
+      _expenseCategories = expense;
+      _incomeCategories = income;
+    });
+    _syncWalletAndCategoryDefaults();
   }
 
   Future<void> _pickDueDate() async {
@@ -422,12 +466,18 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
       return;
     }
 
-    final category = _activeCategories
-        .where((c) => c.id == _selectedCategoryId)
-        .firstOrNull;
+    final category = _isIncomeEntry
+        ? _systemGeneralIncomeCategory
+        : _activeCategories
+            .where((c) => c.id == _selectedCategoryId)
+            .firstOrNull;
 
     if (category == null) {
-      _showFormWarning(l10n.transactionFormSelectCategory);
+      _showFormWarning(
+        _isIncomeEntry
+            ? l10n.transactionFormCategoryUnavailable
+            : l10n.transactionFormSelectCategory,
+      );
       return;
     }
 
@@ -870,21 +920,23 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                                 setState(() => _selectedWalletId = id),
                             emptyLabel: l10n.transactionFormNoWalletForCurrency,
                           ),
-                          const SizedBox(height: 22),
-                          _SectionHeader(
-                            title: l10n.transactionFormCategory,
-                            icon: Icons.category_outlined,
-                          ),
-                          const SizedBox(height: 10),
-                          TransactionCategoryGrid(
-                            categories: _activeCategories,
-                            selectedCategoryId: _selectedCategoryId,
-                            onSelected: (category) => setState(
-                              () => _selectedCategoryId = category.id,
+                          if (_entryType == TransactionEntryType.expense) ...[
+                            const SizedBox(height: 22),
+                            _SectionHeader(
+                              title: l10n.transactionFormCategory,
+                              icon: Icons.category_outlined,
                             ),
-                            moreLabel: l10n.transactionFormMore,
-                            onMoreTap: _showMoreCategoriesPlaceholder,
-                          ),
+                            const SizedBox(height: 10),
+                            TransactionCategoryGrid(
+                              categories: _activeCategories,
+                              selectedCategoryId: _selectedCategoryId,
+                              onSelected: (category) => setState(
+                                () => _selectedCategoryId = category.id,
+                              ),
+                              moreLabel: l10n.transactionFormMore,
+                              onMoreTap: _showMoreCategoriesPlaceholder,
+                            ),
+                          ],
                         ],
                         const SizedBox(height: 22),
                         _SectionHeader(

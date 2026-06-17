@@ -38,4 +38,33 @@ abstract final class CategoryIconStyles {
     if (value == null) return fallback;
     return Color(0xFF000000 | value);
   }
+
+  /// Icons available when creating or editing a category.
+  static const List<String> selectableIconKeys = [
+    shopping,
+    food,
+    transport,
+    home,
+    health,
+    sport,
+    bills,
+    salary,
+    freelance,
+    investment,
+    other,
+  ];
+
+  /// Preset accent colors for the category form.
+  static const List<String> presetColorHexes = [
+    '#2563EB',
+    '#EA580C',
+    '#7C3AED',
+    '#0891B2',
+    '#DC2626',
+    '#16A34A',
+    '#CA8A04',
+    '#1A56BE',
+    '#059669',
+    '#6B7280',
+  ];
 }

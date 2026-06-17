@@ -18,6 +18,16 @@ abstract final class DatabaseConstants {
   static const String categoryIncome = 'income';
   static const String categoryExpense = 'expense';
 
+  /// Built-in category ids — one per user, not editable or deletable.
+  static const String systemGeneralIncomeCategoryId =
+      'sys-cat-general-income';
+  static const String systemGeneralExpenseCategoryId =
+      'sys-cat-general-expense';
+
+  static bool isSystemCategoryId(String id) =>
+      id == systemGeneralIncomeCategoryId ||
+      id == systemGeneralExpenseCategoryId;
+
   static const String debtOwedToMe = 'owed_to_me';
   static const String debtIOwe = 'i_owe';
 

@@ -1250,6 +1250,162 @@ abstract class AppLocalizations {
   /// **'التصنيف'**
   String get transactionFormCategory;
 
+  /// No description provided for @categoryGeneralIncome.
+  ///
+  /// In ar, this message translates to:
+  /// **'دخل عام'**
+  String get categoryGeneralIncome;
+
+  /// No description provided for @categoryGeneralExpense.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصروف عام'**
+  String get categoryGeneralExpense;
+
+  /// No description provided for @transactionFormCategoryUnavailable.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصنيفات غير جاهزة. أعد تشغيل التطبيق وحاول مرة أخرى.'**
+  String get transactionFormCategoryUnavailable;
+
+  /// No description provided for @categoriesTitleExpense.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصنيفات المصروف'**
+  String get categoriesTitleExpense;
+
+  /// No description provided for @categoriesTitleIncome.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصنيفات الدخل'**
+  String get categoriesTitleIncome;
+
+  /// No description provided for @categoriesEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد تصنيفات بعد'**
+  String get categoriesEmpty;
+
+  /// No description provided for @categoryFormNewTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصنيف جديد'**
+  String get categoryFormNewTitle;
+
+  /// No description provided for @categoryFormEditTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل التصنيف'**
+  String get categoryFormEditTitle;
+
+  /// No description provided for @categoryFormName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم التصنيف'**
+  String get categoryFormName;
+
+  /// No description provided for @categoryFormNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: بقالة'**
+  String get categoryFormNameHint;
+
+  /// No description provided for @categoryFormNameRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم مطلوب'**
+  String get categoryFormNameRequired;
+
+  /// No description provided for @categoryFormType.
+  ///
+  /// In ar, this message translates to:
+  /// **'النوع'**
+  String get categoryFormType;
+
+  /// No description provided for @categoryFormTypeExpense.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصروف'**
+  String get categoryFormTypeExpense;
+
+  /// No description provided for @categoryFormTypeIncome.
+  ///
+  /// In ar, this message translates to:
+  /// **'دخل'**
+  String get categoryFormTypeIncome;
+
+  /// No description provided for @categoryFormIcon.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأيقونة'**
+  String get categoryFormIcon;
+
+  /// No description provided for @categoryFormColor.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللون'**
+  String get categoryFormColor;
+
+  /// No description provided for @categoryFormSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ'**
+  String get categoryFormSave;
+
+  /// No description provided for @categoryFormCreate.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء'**
+  String get categoryFormCreate;
+
+  /// No description provided for @categoryFormSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ التصنيف بنجاح'**
+  String get categoryFormSaveSuccess;
+
+  /// No description provided for @categoryFormDeleteSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف التصنيف بنجاح'**
+  String get categoryFormDeleteSuccess;
+
+  /// No description provided for @categoryFormDeleteTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف التصنيف'**
+  String get categoryFormDeleteTitle;
+
+  /// No description provided for @categoryFormDeleteMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف \"{name}\"؟'**
+  String categoryFormDeleteMessage(String name);
+
+  /// No description provided for @categoryFormHasTransactions.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يمكن الحذف: توجد معاملات مرتبطة بهذا التصنيف'**
+  String get categoryFormHasTransactions;
+
+  /// No description provided for @categoryFormSystemProtected.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصنيفات الأساسية لا يمكن تعديلها أو حذفها'**
+  String get categoryFormSystemProtected;
+
+  /// No description provided for @categoryFormSystemBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'أساسي'**
+  String get categoryFormSystemBadge;
+
+  /// No description provided for @categoryFormNotFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصنيف غير موجود'**
+  String get categoryFormNotFound;
+
   /// No description provided for @transactionFormSelectCategory.
   ///
   /// In ar, this message translates to:

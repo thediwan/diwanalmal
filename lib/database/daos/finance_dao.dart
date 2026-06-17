@@ -344,6 +344,50 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
         .then((row) => row?.name);
   }
 
+  /// Loads one active category row.
+  Future<Category?> getCategoryById(String id) {
+    return (select(db.categories)
+          ..where((c) => c.id.equals(id))
+          ..where((c) => c.deletedAt.isNull()))
+        .getSingleOrNull();
+  }
+
+  /// Counts non-deleted transactions linked to a category.
+  Future<int> countTransactionsForCategory(String categoryId) async {
+    final countExpr = db.transactions.id.count();
+    final row = await (selectOnly(db.transactions)
+          ..addColumns([countExpr])
+          ..where(db.transactions.categoryId.equals(categoryId))
+          ..where(db.transactions.deletedAt.isNull()))
+        .getSingleOrNull();
+    return row?.read(countExpr) ?? 0;
+  }
+
+  /// Inserts a category row.
+  Future<void> insertCategory(CategoriesCompanion row) {
+    return into(db.categories).insert(row);
+  }
+
+  /// Updates an existing category row.
+  Future<bool> updateCategory(CategoriesCompanion row) async {
+    final count = await (update(db.categories)
+          ..where((c) => c.id.equals(row.id.value)))
+        .write(row);
+    return count > 0;
+  }
+
+  /// Soft-deletes a category.
+  Future<bool> softDeleteCategory(String id, DateTime deletedAt) async {
+    final count = await (update(db.categories)..where((c) => c.id.equals(id)))
+        .write(
+      CategoriesCompanion(
+        deletedAt: Value(deletedAt),
+        updatedAt: Value(deletedAt),
+      ),
+    );
+    return count > 0;
+  }
+
   /// Single transfer with wallet and currency metadata.
   Future<TransferWithMeta?> getTransferById(String id) {
     final tr = db.transfers;

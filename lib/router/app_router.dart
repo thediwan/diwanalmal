@@ -12,6 +12,8 @@ import '../features/auth/security_code_screen.dart';
 import '../features/auth/setup_lock_screen.dart';
 import '../features/auth/start_auth_screen.dart';
 import '../features/auth/unlock_screen.dart';
+import '../features/categories/categories_screen.dart';
+import '../features/categories/category_form_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/profile/profile_placeholder_screen.dart';
 import '../features/transactions/transaction_edit_screen.dart';
@@ -20,6 +22,7 @@ import '../features/transactions/models/transaction_entry_type.dart';
 import '../features/transactions/models/transaction_list_item.dart';
 import '../features/transactions/transactions_list_screen.dart';
 import '../database/daos/finance_dao.dart';
+import '../core/constants/database_constants.dart';
 import '../features/onboarding/select_base_currency_screen.dart';
 import '../features/settings/currencies/currencies_screen.dart';
 import '../features/settings/currencies/currency_form_screen.dart';
@@ -111,6 +114,27 @@ class AppRouter {
         builder: (context, state) => TransactionAddScreen(
           initialEntryType: _entryTypeFromQuery(state.uri.queryParameters['type']),
         ),
+      ),
+      GoRoute(
+        path: '/categories',
+        builder: (context, state) => CategoriesScreen(
+          initialType: _categoryTypeFromQuery(state.uri.queryParameters['type']),
+        ),
+        routes: [
+          GoRoute(
+            path: 'add',
+            builder: (context, state) => CategoryFormScreen(
+              initialType: _categoryTypeFromQuery(state.uri.queryParameters['type']),
+            ),
+          ),
+          GoRoute(
+            path: ':id/edit',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return CategoryFormScreen(categoryId: id);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/transactions/:id/edit',
@@ -280,4 +304,11 @@ TransactionEntryType? _entryTypeFromQuery(String? raw) {
     default:
       return null;
   }
+}
+
+String _categoryTypeFromQuery(String? raw) {
+  if (raw == 'income') {
+    return DatabaseConstants.categoryIncome;
+  }
+  return DatabaseConstants.categoryExpense;
 }
