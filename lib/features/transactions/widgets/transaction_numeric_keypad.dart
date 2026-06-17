@@ -1,21 +1,33 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/helpers/number_format_preferences.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
 
-/// Calculator-style numeric keypad for transaction amounts (cents-based).
+/// Calculator-style numeric keypad for transaction amounts.
 class TransactionNumericKeypad extends StatelessWidget {
   const TransactionNumericKeypad({
     super.key,
     required this.onDigit,
+    required this.onDecimal,
+    required this.onDoubleZero,
     required this.onBackspace,
+    this.decimalLabel,
   });
 
   final ValueChanged<int> onDigit;
+  final VoidCallback onDecimal;
+  final VoidCallback onDoubleZero;
   final VoidCallback onBackspace;
+
+  /// Label for the decimal key; defaults to user number-format preference.
+  final String? decimalLabel;
 
   @override
   Widget build(BuildContext context) {
+    final decimalKey =
+        decimalLabel ?? NumberFormatPreferences.current.decimalSeparator;
+
     return Column(
       children: [
         for (final row in const [
@@ -39,10 +51,14 @@ class TransactionNumericKeypad extends StatelessWidget {
             Expanded(
               child: _KeyButton(
                 label: '00',
-                onTap: () {
-                  onDigit(0);
-                  onDigit(0);
-                },
+                onTap: onDoubleZero,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _KeyButton(
+                label: decimalKey,
+                onTap: onDecimal,
               ),
             ),
             const SizedBox(width: 10),
@@ -106,33 +122,126 @@ class _KeyButton extends StatelessWidget {
   }
 }
 
-/// Tracks amount entry in minor units (cents) for keypad input.
+/// Keypad-driven amount entry in whole currency units (not cents).
 class TransactionAmountInput {
   TransactionAmountInput();
 
-  int _minorUnits = 0;
+  String _whole = '';
+  String _fraction = '';
+  bool _editingFraction = false;
 
-  double get value => _minorUnits / 100;
+  static const int _maxWholeDigits = 9;
+  static const int _maxFractionDigits = 2;
 
-  String get display => value.toStringAsFixed(2);
+  double get value {
+    if (_whole.isEmpty && _fraction.isEmpty && !_editingFraction) {
+      return 0;
+    }
+    final wholeText = _whole.isEmpty ? '0' : _whole;
+    if (!_editingFraction && _fraction.isEmpty) {
+      return double.tryParse(wholeText) ?? 0;
+    }
+    final fractionText = _fraction.padRight(_maxFractionDigits, '0');
+    return double.tryParse('$wholeText.$fractionText') ?? 0;
+  }
+
+  /// Live display while typing (respects user decimal separator).
+  String get display {
+    final decimalSep = NumberFormatPreferences.current.decimalSeparator;
+    if (_whole.isEmpty && !_editingFraction) return '0';
+    final wholeText = _whole.isEmpty ? '0' : _whole;
+    if (!_editingFraction) return wholeText;
+    if (_fraction.isEmpty) return '$wholeText$decimalSep';
+    return '$wholeText$decimalSep$_fraction';
+  }
 
   void appendDigit(int digit) {
     if (digit < 0 || digit > 9) return;
-    final next = _minorUnits * 10 + digit;
-    if (next > 99999999999) return;
-    _minorUnits = next;
+    if (_editingFraction) {
+      if (_fraction.length >= _maxFractionDigits) return;
+      _fraction += '$digit';
+      return;
+    }
+    if (_whole == '0') {
+      if (digit == 0) return;
+      _whole = '$digit';
+      return;
+    }
+    if (_whole.length >= _maxWholeDigits) return;
+    _whole += '$digit';
+  }
+
+  /// Appends `00` to the whole part, or completes the fraction when active.
+  void appendDoubleZero() {
+    if (_editingFraction) {
+      if (_fraction.length >= _maxFractionDigits) return;
+      if (_fraction.isEmpty) {
+        _fraction = '00';
+        return;
+      }
+      if (_fraction.length == 1) {
+        _fraction += '0';
+      }
+      return;
+    }
+    if (_whole.isEmpty) {
+      _whole = '0';
+      return;
+    }
+    if (_whole.length > _maxWholeDigits - 2) return;
+    _whole += '00';
+  }
+
+  void startDecimal() {
+    if (_editingFraction) return;
+    _editingFraction = true;
+    if (_whole.isEmpty) _whole = '0';
   }
 
   void backspace() {
-    _minorUnits ~/= 10;
+    if (_editingFraction) {
+      if (_fraction.isNotEmpty) {
+        _fraction = _fraction.substring(0, _fraction.length - 1);
+        return;
+      }
+      _editingFraction = false;
+      return;
+    }
+    if (_whole.isNotEmpty) {
+      _whole = _whole.substring(0, _whole.length - 1);
+    }
   }
 
   void reset() {
-    _minorUnits = 0;
+    _whole = '';
+    _fraction = '';
+    _editingFraction = false;
   }
 
   /// Sets amount from an existing record (edit screen).
   void setValue(double amount) {
-    _minorUnits = (amount * 100).round();
+    _whole = '';
+    _fraction = '';
+    _editingFraction = false;
+    if (amount == 0) return;
+
+    final text = _amountToInputString(amount);
+    if (!text.contains('.')) {
+      _whole = text;
+      return;
+    }
+    final parts = text.split('.');
+    _whole = parts[0];
+    _fraction = parts[1];
+    _editingFraction = true;
+  }
+
+  static String _amountToInputString(double amount) {
+    var text = amount.toString();
+    if (text.contains('.')) {
+      text = text.replaceAll(RegExp(r'0+$'), '');
+      text = text.replaceAll(RegExp(r'\.$'), '');
+    }
+    return text;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 import '../core/constants/transaction_policy.dart';
+import 'amount_format_style.dart';
 
 /// Application-wide settings stored locally.
 class AppSettings extends HiveObject {
@@ -19,8 +20,10 @@ class AppSettings extends HiveObject {
     this.securityCodeAcknowledged = false,
     int? transactionDeleteWindowHours,
     int? transactionEditWindowDays,
+    int? amountFormatStyleIndex,
   })  : _transactionDeleteWindowHours = transactionDeleteWindowHours,
-        _transactionEditWindowDays = transactionEditWindowDays;
+        _transactionEditWindowDays = transactionEditWindowDays,
+        _amountFormatStyleIndex = amountFormatStyleIndex;
 
   final bool isSetupComplete;
   final String baseCurrencyCode;
@@ -36,6 +39,7 @@ class AppSettings extends HiveObject {
 
   final int? _transactionDeleteWindowHours;
   final int? _transactionEditWindowDays;
+  final int? _amountFormatStyleIndex;
 
   /// Never null — safe after Hive migrations or hot reload.
   int get transactionDeleteWindowHours =>
@@ -45,6 +49,10 @@ class AppSettings extends HiveObject {
   /// Never null — safe after Hive migrations or hot reload.
   int get transactionEditWindowDays =>
       _transactionEditWindowDays ?? TransactionPolicyDefaults.editWindowDays;
+
+  /// Number grouping / decimal separator for amounts (settings UI later).
+  AmountFormatStyle get amountFormatStyle =>
+      AmountFormatStyle.fromStorageIndex(_amountFormatStyleIndex);
 
   AppSettings copyWith({
     bool? isSetupComplete,
@@ -60,6 +68,7 @@ class AppSettings extends HiveObject {
     bool? securityCodeAcknowledged,
     int? transactionDeleteWindowHours,
     int? transactionEditWindowDays,
+    int? amountFormatStyleIndex,
   }) {
     return AppSettings(
       isSetupComplete: isSetupComplete ?? this.isSetupComplete,
@@ -79,6 +88,8 @@ class AppSettings extends HiveObject {
           _transactionDeleteWindowHours,
       transactionEditWindowDays:
           transactionEditWindowDays ?? _transactionEditWindowDays,
+      amountFormatStyleIndex:
+          amountFormatStyleIndex ?? _amountFormatStyleIndex,
     );
   }
 
@@ -126,6 +137,7 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       securityCodeAcknowledged: _readOptionalBool(reader),
       transactionDeleteWindowHours: _readOptionalInt(reader),
       transactionEditWindowDays: _readOptionalInt(reader),
+      amountFormatStyleIndex: _readOptionalInt(reader),
     );
   }
 
@@ -155,6 +167,7 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeBool(obj.isSecuritySetupComplete)
       ..writeBool(obj.securityCodeAcknowledged)
       ..writeInt(obj.transactionDeleteWindowHours)
-      ..writeInt(obj.transactionEditWindowDays);
+      ..writeInt(obj.transactionEditWindowDays)
+      ..writeInt(obj.amountFormatStyle.storageIndex);
   }
 }

@@ -1039,6 +1039,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsThemeSystem => 'تلقائي';
 
   @override
+  String get settingsAmountFormat => 'تنسيق الأرقام';
+
+  @override
+  String get settingsAmountFormatSubtitle => 'فاصل الآلاف والكسور العشرية';
+
+  @override
+  String get settingsAmountFormatWestern => '1,234.56';
+
+  @override
+  String get settingsAmountFormatEuropean => '1.234,56';
+
+  @override
+  String get settingsAmountFormatPlain => '1234.56';
+
+  @override
   String get settingsAppLock => 'قفل التطبيق';
 
   @override

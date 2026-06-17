@@ -2024,6 +2024,36 @@ abstract class AppLocalizations {
   /// **'تلقائي'**
   String get settingsThemeSystem;
 
+  /// No description provided for @settingsAmountFormat.
+  ///
+  /// In ar, this message translates to:
+  /// **'تنسيق الأرقام'**
+  String get settingsAmountFormat;
+
+  /// No description provided for @settingsAmountFormatSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاصل الآلاف والكسور العشرية'**
+  String get settingsAmountFormatSubtitle;
+
+  /// No description provided for @settingsAmountFormatWestern.
+  ///
+  /// In ar, this message translates to:
+  /// **'1,234.56'**
+  String get settingsAmountFormatWestern;
+
+  /// No description provided for @settingsAmountFormatEuropean.
+  ///
+  /// In ar, this message translates to:
+  /// **'1.234,56'**
+  String get settingsAmountFormatEuropean;
+
+  /// No description provided for @settingsAmountFormatPlain.
+  ///
+  /// In ar, this message translates to:
+  /// **'1234.56'**
+  String get settingsAmountFormatPlain;
+
   /// No description provided for @settingsAppLock.
   ///
   /// In ar, this message translates to:

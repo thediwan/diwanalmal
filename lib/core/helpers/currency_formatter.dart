@@ -1,29 +1,41 @@
-import 'package:intl/intl.dart';
+import '../../models/amount_format_style.dart';
+import 'number_format_preferences.dart';
 
-/// Formats monetary amounts for display.
+/// Formats monetary amounts for display using [NumberFormatPreferences].
 abstract final class CurrencyFormatter {
+  static NumberFormatPreferences get _prefs => NumberFormatPreferences.current;
+
+  /// Applies user number-format settings (call on startup and when settings change).
+  static void configureFromStyle(AmountFormatStyle style) {
+    NumberFormatPreferences.configure(style);
+  }
+
   static String format(double amount, {String symbol = '', int decimals = 2}) {
-    final formatter = NumberFormat('#,##0.${'0' * decimals}', 'en_US');
-    final formatted = formatter.format(amount);
+    final formatted = _prefs.formatAmount(
+      amount,
+      minDecimals: decimals,
+      maxDecimals: decimals,
+    );
     if (symbol.isEmpty) return formatted;
     return '$formatted $symbol';
   }
 
   static String formatWithCode(double amount, String code, {int decimals = 2}) {
-    final formatter = NumberFormat('#,##0.${'0' * decimals}', 'en_US');
-    return '${formatter.format(amount)} $code';
+    return '${_prefs.formatAmount(amount, minDecimals: decimals, maxDecimals: decimals)} $code';
   }
 
   /// Formats as `USD 1,250.00` (code before amount) for dashboard display.
   static String formatCodeFirst(double amount, String code, {int decimals = 2}) {
-    final formatter = NumberFormat('#,##0.${'0' * decimals}', 'en_US');
-    return '$code ${formatter.format(amount)}';
+    return '$code ${_prefs.formatAmount(amount, minDecimals: decimals, maxDecimals: decimals)}';
   }
 
   /// Formats numeric part only, e.g. `1,250.00`.
   static String formatAmountOnly(double amount, {int decimals = 2}) {
-    final formatter = NumberFormat('#,##0.${'0' * decimals}', 'en_US');
-    return formatter.format(amount);
+    return _prefs.formatAmount(
+      amount,
+      minDecimals: decimals,
+      maxDecimals: decimals,
+    );
   }
 
   /// Converts amount from one currency to base using exchange rate.

@@ -869,6 +869,9 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                     const SizedBox(height: 12),
                     TransactionNumericKeypad(
                       onDigit: (d) => setState(() => _amountInput.appendDigit(d)),
+                      onDecimal: () => setState(() => _amountInput.startDecimal()),
+                      onDoubleZero: () =>
+                          setState(() => _amountInput.appendDoubleZero()),
                       onBackspace: () => setState(() => _amountInput.backspace()),
                     ),
                     const SizedBox(height: 20),

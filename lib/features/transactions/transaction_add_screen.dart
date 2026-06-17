@@ -49,6 +49,9 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   static const _logoAsset = 'assets/images/logo_amanah.png';
 
   final _amountInput = TransactionAmountInput();
+  final _scrollController = ScrollController();
+  final _notesFocusNode = FocusNode();
+  final _notesSectionKey = GlobalKey();
   final _notesController = TextEditingController();
   final _transferAmountController = TextEditingController();
   final _exchangeRateController = TextEditingController();
@@ -80,7 +83,36 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   @override
   void initState() {
     super.initState();
+    _notesFocusNode.addListener(_onNotesFocusChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _initialize());
+  }
+
+  /// Scrolls notes and date into view when the system keyboard opens.
+  void _onNotesFocusChanged() {
+    if (!_notesFocusNode.hasFocus) return;
+    _scheduleNotesSectionScroll();
+  }
+
+  void _scheduleNotesSectionScroll() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_notesFocusNode.hasFocus) return;
+      _scrollNotesSectionIntoView();
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (!mounted || !_notesFocusNode.hasFocus) return;
+        _scrollNotesSectionIntoView();
+      });
+    });
+  }
+
+  void _scrollNotesSectionIntoView() {
+    final sectionContext = _notesSectionKey.currentContext;
+    if (sectionContext == null) return;
+    Scrollable.ensureVisible(
+      sectionContext,
+      alignment: 0.05,
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+    );
   }
 
   Future<void> _initialize() async {
@@ -329,6 +361,14 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
 
   void _onDigit(int digit) {
     setState(() => _amountInput.appendDigit(digit));
+  }
+
+  void _onDoubleZero() {
+    setState(() => _amountInput.appendDoubleZero());
+  }
+
+  void _onDecimal() {
+    setState(() => _amountInput.startDecimal());
   }
 
   void _onBackspace() {
@@ -667,6 +707,9 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   @override
   void dispose() {
     _feedbackDismissTimer?.cancel();
+    _notesFocusNode.removeListener(_onNotesFocusChanged);
+    _notesFocusNode.dispose();
+    _scrollController.dispose();
     _notesController.dispose();
     _transferAmountController.dispose();
     _exchangeRateController.dispose();
@@ -682,8 +725,12 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
     final locale = Localizations.localeOf(context).toString();
     final currencies = context.watch<CurrencyProvider>().currencies;
     final uniqueCurrencies = uniqueCurrenciesByCode(currencies);
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
 
-    return AuthBackground(
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.transparent,
+      body: AuthBackground(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -696,7 +743,11 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, 16 + keyboardInset),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -904,6 +955,8 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                           const SizedBox(height: 16),
                           TransactionNumericKeypad(
                             onDigit: _onDigit,
+                            onDecimal: _onDecimal,
+                            onDoubleZero: _onDoubleZero,
                             onBackspace: _onBackspace,
                           ),
                           const SizedBox(height: 22),
@@ -939,25 +992,34 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                           ],
                         ],
                         const SizedBox(height: 22),
-                        _SectionHeader(
-                          title: l10n.transactionFormNotes,
-                          icon: Icons.notes_outlined,
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: _notesController,
-                          maxLines: 3,
-                          style: AppFormFields.inputTextStyleOf(context),
-                          decoration: AppFormFields.decoration(
-                            context,
-                            hintText: l10n.transactionFormNotesHint,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        _DateBar(
-                          dateLabel: _formatDateLabel(l10n, locale),
-                          changeLabel: l10n.transactionFormChangeDate,
-                          onChange: _pickDate,
+                        Column(
+                          key: _notesSectionKey,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _SectionHeader(
+                              title: l10n.transactionFormNotes,
+                              icon: Icons.notes_outlined,
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: _notesController,
+                              focusNode: _notesFocusNode,
+                              maxLines: 3,
+                              textInputAction: TextInputAction.done,
+                              style: AppFormFields.inputTextStyleOf(context),
+                              decoration: AppFormFields.decoration(
+                                context,
+                                hintText: l10n.transactionFormNotesHint,
+                              ),
+                              onTap: _scheduleNotesSectionScroll,
+                            ),
+                            const SizedBox(height: 16),
+                            _DateBar(
+                              dateLabel: _formatDateLabel(l10n, locale),
+                              changeLabel: l10n.transactionFormChangeDate,
+                              onChange: _pickDate,
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -1012,6 +1074,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 }

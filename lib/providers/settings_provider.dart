@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../core/constants/transaction_policy.dart';
+import '../core/helpers/currency_formatter.dart';
+import '../models/amount_format_style.dart';
 import '../models/app_settings.dart';
 import '../services/auth_service.dart';
 import '../services/biometric_service.dart';
@@ -14,6 +16,7 @@ class SettingsProvider extends ChangeNotifier {
     this._biometricService,
   ) {
     _settings = _hiveService.getSettings();
+    CurrencyFormatter.configureFromStyle(_settings.amountFormatStyle);
     _syncMustShowSecurityCode();
   }
 
@@ -54,6 +57,9 @@ class SettingsProvider extends ChangeNotifier {
     return days > 0 ? days : TransactionPolicyDefaults.editWindowDays;
   }
 
+  /// Thousands / decimal separators for monetary amounts.
+  AmountFormatStyle get amountFormatStyle => _settings.amountFormatStyle;
+
   /// Best available code for the security screen (memory, then Hive).
   String get displaySecurityCode =>
       _displaySecurityCode.isNotEmpty ? _displaySecurityCode : securityCode;
@@ -78,6 +84,14 @@ class SettingsProvider extends ChangeNotifier {
 
   Future<void> setThemeMode(ThemeMode mode) async {
     _settings = _settings.copyWith(themeMode: mode);
+    await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  /// Persists amount grouping style (settings screen will call this later).
+  Future<void> setAmountFormatStyle(AmountFormatStyle style) async {
+    _settings = _settings.copyWith(amountFormatStyleIndex: style.storageIndex);
+    CurrencyFormatter.configureFromStyle(style);
     await _hiveService.saveSettings(_settings);
     notifyListeners();
   }

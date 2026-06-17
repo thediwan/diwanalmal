@@ -1046,6 +1046,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsThemeSystem => 'System';
 
   @override
+  String get settingsAmountFormat => 'Number format';
+
+  @override
+  String get settingsAmountFormatSubtitle => 'Thousands and decimal separators';
+
+  @override
+  String get settingsAmountFormatWestern => '1,234.56';
+
+  @override
+  String get settingsAmountFormatEuropean => '1.234,56';
+
+  @override
+  String get settingsAmountFormatPlain => '1234.56';
+
+  @override
   String get settingsAppLock => 'App lock';
 
   @override
