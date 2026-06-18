@@ -317,6 +317,30 @@
       "to": { "type": "String" }
     }
   },
+  "transactionsListGoalDepositTitle": "Deposit to {goal}",
+  "@transactionsListGoalDepositTitle": {
+    "placeholders": {
+      "goal": { "type": "String" }
+    }
+  },
+  "transactionsListGoalDepositDetail": "From wallet {wallet}",
+  "@transactionsListGoalDepositDetail": {
+    "placeholders": {
+      "wallet": { "type": "String" }
+    }
+  },
+  "transactionsListGoalWithdrawTitle": "Withdraw from {goal}",
+  "@transactionsListGoalWithdrawTitle": {
+    "placeholders": {
+      "goal": { "type": "String" }
+    }
+  },
+  "transactionsListGoalWithdrawDetail": "To wallet {wallet}",
+  "@transactionsListGoalWithdrawDetail": {
+    "placeholders": {
+      "wallet": { "type": "String" }
+    }
+  },
   "transactionsListNotesTitle": "Notes",
   "transactionsListNoNotes": "No notes",
   "transactionsListFilterTitle": "Filter transactions",
@@ -537,5 +561,33 @@
   "goalEditDeleteError": "Could not delete goal: {error}",
   "@goalEditDeleteError": {
     "placeholders": { "error": { "type": "String" } }
-  }
+  },
+  "goalDeposit": "Deposit",
+  "goalWithdraw": "Withdraw",
+  "goalTransferHistory": "Transfer history",
+  "goalThisMonthProgress": "This month: {saved} / {required} required",
+  "@goalThisMonthProgress": {
+    "placeholders": {
+      "saved": { "type": "String" },
+      "required": { "type": "String" }
+    }
+  },
+  "goalWalletBadge": "Goal",
+  "goalSelectSourceWallet": "Source wallet for opening savings",
+  "goalSelectSourceWalletRequired": "Select a source wallet for the opening savings amount",
+  "goalInsufficientBalance": "Insufficient wallet balance",
+  "goalDeleteHasBalance": "Cannot delete the goal while it still holds savings. Withdraw the balance first.",
+  "goalSavedAmountReadOnly": "Saved amount (from goal wallet)",
+  "goalTransferDeposit": "Deposit to goal",
+  "goalTransferWithdraw": "Withdraw from goal",
+  "goalNoTransfersYet": "No transfers yet",
+  "goalSavingsDepositTitle": "Deposit to goal",
+  "goalSavingsWithdrawTitle": "Withdraw from goal",
+  "goalSavingsSelectWallet": "Select wallet",
+  "goalSavingsAmount": "Amount",
+  "goalSavingsSuccess": "Transaction saved successfully",
+  "goalSavingsWalletCurrencyMismatch": "The selected wallet does not support the goal currency",
+  "goalSavingsGoalWallet": "Goal wallet",
+  "goalSavingsSourceWallet": "Source wallet",
+  "goalSavingsDestinationWallet": "Destination wallet"
 }

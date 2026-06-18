@@ -99,6 +99,29 @@ class WalletListItem extends StatelessWidget {
                             ),
                           ),
                         ),
+                        if (treasury.isGoalWallet) ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.dashboardPrimary.withValues(
+                                alpha: 0.12,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              l10n.goalWalletBadge,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.dashboardPrimary,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                        ],
                         if (onEdit != null) ...[
                           const SizedBox(width: 4),
                           InkWell(

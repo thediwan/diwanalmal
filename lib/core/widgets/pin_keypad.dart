@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
+import '../extensions/context_theme.dart';
 import '../theme/app_text_styles.dart';
 
 /// Numeric keypad for PIN entry.
@@ -16,6 +17,7 @@ class PinKeypad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     final keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'];
 
     return GridView.builder(
@@ -33,8 +35,11 @@ class PinKeypad extends StatelessWidget {
         if (key.isEmpty) return const SizedBox.shrink();
 
         return Material(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: colors.inputFill,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: colors.inputBorder),
+          ),
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
             onTap: () {
@@ -48,7 +53,7 @@ class PinKeypad extends StatelessWidget {
               child: Text(
                 key,
                 style: AppTextStyles.headingMedium.copyWith(
-                  color: AppColors.textPrimaryLight,
+                  color: colors.textPrimary,
                 ),
               ),
             ),
@@ -72,6 +77,8 @@ class PinDots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(maxLength, (index) {
@@ -84,7 +91,7 @@ class PinDots extends StatelessWidget {
             shape: BoxShape.circle,
             color: filled
                 ? AppColors.primaryContainer
-                : AppColors.primaryContainer.withValues(alpha: 0.2),
+                : colors.textMuted.withValues(alpha: 0.35),
           ),
         );
       }),

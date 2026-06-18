@@ -153,6 +153,11 @@ class TransferService {
         updatedAt: now,
       ),
     );
+
+    await _db.financeDao.syncGoalsForWalletIds([
+      input.fromWalletId,
+      input.toWalletId,
+    ]);
   }
 
   /// Updates a transfer when still within the edit window.

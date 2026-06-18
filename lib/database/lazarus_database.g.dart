@@ -7006,6 +7006,15 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, FinancialGoal> {
       requiredDuringInsert: true,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES app_users (id)'));
+  static const VerificationMeta _walletIdMeta =
+      const VerificationMeta('walletId');
+  @override
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+      'wallet_id', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES wallets (id)'));
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -7069,6 +7078,7 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, FinancialGoal> {
   List<GeneratedColumn> get $columns => [
         id,
         userId,
+        walletId,
         title,
         targetAmount,
         savedAmount,
@@ -7099,6 +7109,10 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, FinancialGoal> {
           userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
     } else if (isInserting) {
       context.missing(_userIdMeta);
+    }
+    if (data.containsKey('wallet_id')) {
+      context.handle(_walletIdMeta,
+          walletId.isAcceptableOrUnknown(data['wallet_id']!, _walletIdMeta));
     }
     if (data.containsKey('title')) {
       context.handle(
@@ -7167,6 +7181,8 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, FinancialGoal> {
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       userId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+      walletId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}wallet_id']),
       title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
       targetAmount: attachedDatabase.typeMapping
@@ -7197,6 +7213,7 @@ class $GoalsTable extends Goals with TableInfo<$GoalsTable, FinancialGoal> {
 class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
   final String id;
   final String userId;
+  final String? walletId;
   final String title;
   final double targetAmount;
   final double savedAmount;
@@ -7209,6 +7226,7 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
   const FinancialGoal(
       {required this.id,
       required this.userId,
+      this.walletId,
       required this.title,
       required this.targetAmount,
       required this.savedAmount,
@@ -7223,6 +7241,9 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['user_id'] = Variable<String>(userId);
+    if (!nullToAbsent || walletId != null) {
+      map['wallet_id'] = Variable<String>(walletId);
+    }
     map['title'] = Variable<String>(title);
     map['target_amount'] = Variable<double>(targetAmount);
     map['saved_amount'] = Variable<double>(savedAmount);
@@ -7245,6 +7266,9 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
     return GoalsCompanion(
       id: Value(id),
       userId: Value(userId),
+      walletId: walletId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(walletId),
       title: Value(title),
       targetAmount: Value(targetAmount),
       savedAmount: Value(savedAmount),
@@ -7266,6 +7290,7 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
     return FinancialGoal(
       id: serializer.fromJson<String>(json['id']),
       userId: serializer.fromJson<String>(json['userId']),
+      walletId: serializer.fromJson<String?>(json['walletId']),
       title: serializer.fromJson<String>(json['title']),
       targetAmount: serializer.fromJson<double>(json['targetAmount']),
       savedAmount: serializer.fromJson<double>(json['savedAmount']),
@@ -7283,6 +7308,7 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'userId': serializer.toJson<String>(userId),
+      'walletId': serializer.toJson<String?>(walletId),
       'title': serializer.toJson<String>(title),
       'targetAmount': serializer.toJson<double>(targetAmount),
       'savedAmount': serializer.toJson<double>(savedAmount),
@@ -7298,6 +7324,7 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
   FinancialGoal copyWith(
           {String? id,
           String? userId,
+          Value<String?> walletId = const Value.absent(),
           String? title,
           double? targetAmount,
           double? savedAmount,
@@ -7310,6 +7337,7 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
       FinancialGoal(
         id: id ?? this.id,
         userId: userId ?? this.userId,
+        walletId: walletId.present ? walletId.value : this.walletId,
         title: title ?? this.title,
         targetAmount: targetAmount ?? this.targetAmount,
         savedAmount: savedAmount ?? this.savedAmount,
@@ -7324,6 +7352,7 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
     return FinancialGoal(
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
       title: data.title.present ? data.title.value : this.title,
       targetAmount: data.targetAmount.present
           ? data.targetAmount.value
@@ -7346,6 +7375,7 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
     return (StringBuffer('FinancialGoal(')
           ..write('id: $id, ')
           ..write('userId: $userId, ')
+          ..write('walletId: $walletId, ')
           ..write('title: $title, ')
           ..write('targetAmount: $targetAmount, ')
           ..write('savedAmount: $savedAmount, ')
@@ -7360,14 +7390,15 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
   }
 
   @override
-  int get hashCode => Object.hash(id, userId, title, targetAmount, savedAmount,
-      currencyId, icon, targetDate, notes, createdAt, updatedAt);
+  int get hashCode => Object.hash(id, userId, walletId, title, targetAmount,
+      savedAmount, currencyId, icon, targetDate, notes, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is FinancialGoal &&
           other.id == this.id &&
           other.userId == this.userId &&
+          other.walletId == this.walletId &&
           other.title == this.title &&
           other.targetAmount == this.targetAmount &&
           other.savedAmount == this.savedAmount &&
@@ -7382,6 +7413,7 @@ class FinancialGoal extends DataClass implements Insertable<FinancialGoal> {
 class GoalsCompanion extends UpdateCompanion<FinancialGoal> {
   final Value<String> id;
   final Value<String> userId;
+  final Value<String?> walletId;
   final Value<String> title;
   final Value<double> targetAmount;
   final Value<double> savedAmount;
@@ -7395,6 +7427,7 @@ class GoalsCompanion extends UpdateCompanion<FinancialGoal> {
   const GoalsCompanion({
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
+    this.walletId = const Value.absent(),
     this.title = const Value.absent(),
     this.targetAmount = const Value.absent(),
     this.savedAmount = const Value.absent(),
@@ -7409,6 +7442,7 @@ class GoalsCompanion extends UpdateCompanion<FinancialGoal> {
   GoalsCompanion.insert({
     required String id,
     required String userId,
+    this.walletId = const Value.absent(),
     required String title,
     required double targetAmount,
     this.savedAmount = const Value.absent(),
@@ -7429,6 +7463,7 @@ class GoalsCompanion extends UpdateCompanion<FinancialGoal> {
   static Insertable<FinancialGoal> custom({
     Expression<String>? id,
     Expression<String>? userId,
+    Expression<String>? walletId,
     Expression<String>? title,
     Expression<double>? targetAmount,
     Expression<double>? savedAmount,
@@ -7443,6 +7478,7 @@ class GoalsCompanion extends UpdateCompanion<FinancialGoal> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (userId != null) 'user_id': userId,
+      if (walletId != null) 'wallet_id': walletId,
       if (title != null) 'title': title,
       if (targetAmount != null) 'target_amount': targetAmount,
       if (savedAmount != null) 'saved_amount': savedAmount,
@@ -7459,6 +7495,7 @@ class GoalsCompanion extends UpdateCompanion<FinancialGoal> {
   GoalsCompanion copyWith(
       {Value<String>? id,
       Value<String>? userId,
+      Value<String?>? walletId,
       Value<String>? title,
       Value<double>? targetAmount,
       Value<double>? savedAmount,
@@ -7472,6 +7509,7 @@ class GoalsCompanion extends UpdateCompanion<FinancialGoal> {
     return GoalsCompanion(
       id: id ?? this.id,
       userId: userId ?? this.userId,
+      walletId: walletId ?? this.walletId,
       title: title ?? this.title,
       targetAmount: targetAmount ?? this.targetAmount,
       savedAmount: savedAmount ?? this.savedAmount,
@@ -7493,6 +7531,9 @@ class GoalsCompanion extends UpdateCompanion<FinancialGoal> {
     }
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
+    }
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
@@ -7532,6 +7573,7 @@ class GoalsCompanion extends UpdateCompanion<FinancialGoal> {
     return (StringBuffer('GoalsCompanion(')
           ..write('id: $id, ')
           ..write('userId: $userId, ')
+          ..write('walletId: $walletId, ')
           ..write('title: $title, ')
           ..write('targetAmount: $targetAmount, ')
           ..write('savedAmount: $savedAmount, ')
@@ -11171,6 +11213,20 @@ final class $$WalletsTableReferences
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: cache));
   }
+
+  static MultiTypedResultKey<$GoalsTable, List<FinancialGoal>> _goalsRefsTable(
+          _$LazarusDatabase db) =>
+      MultiTypedResultKey.fromTable(db.goals,
+          aliasName: $_aliasNameGenerator(db.wallets.id, db.goals.walletId));
+
+  $$GoalsTableProcessedTableManager get goalsRefs {
+    final manager = $$GoalsTableTableManager($_db, $_db.goals)
+        .filter((f) => f.walletId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_goalsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
 }
 
 class $$WalletsTableFilterComposer
@@ -11289,6 +11345,27 @@ class $$WalletsTableFilterComposer
             $$TransactionsTableFilterComposer(
               $db: $db,
               $table: $db.transactions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> goalsRefs(
+      Expression<bool> Function($$GoalsTableFilterComposer f) f) {
+    final $$GoalsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.goals,
+        getReferencedColumn: (t) => t.walletId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GoalsTableFilterComposer(
+              $db: $db,
+              $table: $db.goals,
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -11481,6 +11558,27 @@ class $$WalletsTableAnnotationComposer
             ));
     return f(composer);
   }
+
+  Expression<T> goalsRefs<T extends Object>(
+      Expression<T> Function($$GoalsTableAnnotationComposer a) f) {
+    final $$GoalsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.goals,
+        getReferencedColumn: (t) => t.walletId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GoalsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.goals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$WalletsTableTableManager extends RootTableManager<
@@ -11498,7 +11596,8 @@ class $$WalletsTableTableManager extends RootTableManager<
         {bool userId,
         bool walletCurrencyAccountsRefs,
         bool debtsRefs,
-        bool transactionsRefs})> {
+        bool transactionsRefs,
+        bool goalsRefs})> {
   $$WalletsTableTableManager(_$LazarusDatabase db, $WalletsTable table)
       : super(TableManagerState(
           db: db,
@@ -11573,13 +11672,15 @@ class $$WalletsTableTableManager extends RootTableManager<
               {userId = false,
               walletCurrencyAccountsRefs = false,
               debtsRefs = false,
-              transactionsRefs = false}) {
+              transactionsRefs = false,
+              goalsRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [
                 if (walletCurrencyAccountsRefs) db.walletCurrencyAccounts,
                 if (debtsRefs) db.debts,
-                if (transactionsRefs) db.transactions
+                if (transactionsRefs) db.transactions,
+                if (goalsRefs) db.goals
               ],
               addJoins: <
                   T extends TableManagerState<
@@ -11644,6 +11745,18 @@ class $$WalletsTableTableManager extends RootTableManager<
                         referencedItemsForCurrentItem: (item,
                                 referencedItems) =>
                             referencedItems.where((e) => e.walletId == item.id),
+                        typedResults: items),
+                  if (goalsRefs)
+                    await $_getPrefetchedData<DbWallet, $WalletsTable,
+                            FinancialGoal>(
+                        currentTable: table,
+                        referencedTable:
+                            $$WalletsTableReferences._goalsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$WalletsTableReferences(db, table, p0).goalsRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.walletId == item.id),
                         typedResults: items)
                 ];
               },
@@ -11667,7 +11780,8 @@ typedef $$WalletsTableProcessedTableManager = ProcessedTableManager<
         {bool userId,
         bool walletCurrencyAccountsRefs,
         bool debtsRefs,
-        bool transactionsRefs})>;
+        bool transactionsRefs,
+        bool goalsRefs})>;
 typedef $$WalletCurrencyAccountsTableCreateCompanionBuilder
     = WalletCurrencyAccountsCompanion Function({
   required String id,
@@ -15880,6 +15994,7 @@ typedef $$BudgetsTableProcessedTableManager = ProcessedTableManager<
 typedef $$GoalsTableCreateCompanionBuilder = GoalsCompanion Function({
   required String id,
   required String userId,
+  Value<String?> walletId,
   required String title,
   required double targetAmount,
   Value<double> savedAmount,
@@ -15894,6 +16009,7 @@ typedef $$GoalsTableCreateCompanionBuilder = GoalsCompanion Function({
 typedef $$GoalsTableUpdateCompanionBuilder = GoalsCompanion Function({
   Value<String> id,
   Value<String> userId,
+  Value<String?> walletId,
   Value<String> title,
   Value<double> targetAmount,
   Value<double> savedAmount,
@@ -15919,6 +16035,20 @@ final class $$GoalsTableReferences
     final manager = $$AppUsersTableTableManager($_db, $_db.appUsers)
         .filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $WalletsTable _walletIdTable(_$LazarusDatabase db) => db.wallets
+      .createAlias($_aliasNameGenerator(db.goals.walletId, db.wallets.id));
+
+  $$WalletsTableProcessedTableManager? get walletId {
+    final $_column = $_itemColumn<String>('wallet_id');
+    if ($_column == null) return null;
+    final manager = $$WalletsTableTableManager($_db, $_db.wallets)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_walletIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: [item]));
@@ -15988,6 +16118,26 @@ class $$GoalsTableFilterComposer
             $$AppUsersTableFilterComposer(
               $db: $db,
               $table: $db.appUsers,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$WalletsTableFilterComposer get walletId {
+    final $$WalletsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.walletId,
+        referencedTable: $db.wallets,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WalletsTableFilterComposer(
+              $db: $db,
+              $table: $db.wallets,
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -16074,6 +16224,26 @@ class $$GoalsTableOrderingComposer
     return composer;
   }
 
+  $$WalletsTableOrderingComposer get walletId {
+    final $$WalletsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.walletId,
+        referencedTable: $db.wallets,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WalletsTableOrderingComposer(
+              $db: $db,
+              $table: $db.wallets,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
   $$CurrenciesTableOrderingComposer get currencyId {
     final $$CurrenciesTableOrderingComposer composer = $composerBuilder(
         composer: this,
@@ -16151,6 +16321,26 @@ class $$GoalsTableAnnotationComposer
     return composer;
   }
 
+  $$WalletsTableAnnotationComposer get walletId {
+    final $$WalletsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.walletId,
+        referencedTable: $db.wallets,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WalletsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.wallets,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
   $$CurrenciesTableAnnotationComposer get currencyId {
     final $$CurrenciesTableAnnotationComposer composer = $composerBuilder(
         composer: this,
@@ -16183,7 +16373,7 @@ class $$GoalsTableTableManager extends RootTableManager<
     $$GoalsTableUpdateCompanionBuilder,
     (FinancialGoal, $$GoalsTableReferences),
     FinancialGoal,
-    PrefetchHooks Function({bool userId, bool currencyId})> {
+    PrefetchHooks Function({bool userId, bool walletId, bool currencyId})> {
   $$GoalsTableTableManager(_$LazarusDatabase db, $GoalsTable table)
       : super(TableManagerState(
           db: db,
@@ -16197,6 +16387,7 @@ class $$GoalsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> userId = const Value.absent(),
+            Value<String?> walletId = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<double> targetAmount = const Value.absent(),
             Value<double> savedAmount = const Value.absent(),
@@ -16211,6 +16402,7 @@ class $$GoalsTableTableManager extends RootTableManager<
               GoalsCompanion(
             id: id,
             userId: userId,
+            walletId: walletId,
             title: title,
             targetAmount: targetAmount,
             savedAmount: savedAmount,
@@ -16225,6 +16417,7 @@ class $$GoalsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             required String id,
             required String userId,
+            Value<String?> walletId = const Value.absent(),
             required String title,
             required double targetAmount,
             Value<double> savedAmount = const Value.absent(),
@@ -16239,6 +16432,7 @@ class $$GoalsTableTableManager extends RootTableManager<
               GoalsCompanion.insert(
             id: id,
             userId: userId,
+            walletId: walletId,
             title: title,
             targetAmount: targetAmount,
             savedAmount: savedAmount,
@@ -16254,7 +16448,8 @@ class $$GoalsTableTableManager extends RootTableManager<
               .map((e) =>
                   (e.readTable(table), $$GoalsTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({userId = false, currencyId = false}) {
+          prefetchHooksCallback: (
+              {userId = false, walletId = false, currencyId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -16278,6 +16473,15 @@ class $$GoalsTableTableManager extends RootTableManager<
                     referencedTable: $$GoalsTableReferences._userIdTable(db),
                     referencedColumn:
                         $$GoalsTableReferences._userIdTable(db).id,
+                  ) as T;
+                }
+                if (walletId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.walletId,
+                    referencedTable: $$GoalsTableReferences._walletIdTable(db),
+                    referencedColumn:
+                        $$GoalsTableReferences._walletIdTable(db).id,
                   ) as T;
                 }
                 if (currencyId) {
@@ -16312,7 +16516,7 @@ typedef $$GoalsTableProcessedTableManager = ProcessedTableManager<
     $$GoalsTableUpdateCompanionBuilder,
     (FinancialGoal, $$GoalsTableReferences),
     FinancialGoal,
-    PrefetchHooks Function({bool userId, bool currencyId})>;
+    PrefetchHooks Function({bool userId, bool walletId, bool currencyId})>;
 typedef $$AttachmentsTableCreateCompanionBuilder = AttachmentsCompanion
     Function({
   required String id,

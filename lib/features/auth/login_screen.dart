@@ -93,6 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           l10n.authLoginTitle,
                           style: AppTextStyles.headingSmall.copyWith(
                             fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -213,12 +214,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             onPressed: _loading ? null : _submit,
                             child: _loading
-                                ? const SizedBox(
+                                ? SizedBox(
                                     width: 22,
                                     height: 22,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      color: Colors.white,
+                                      color: colors.onPrimary,
                                     ),
                                   )
                                 : Row(

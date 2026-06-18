@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/context_l10n.dart';
+import '../extensions/context_theme.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_text_styles.dart';
@@ -21,6 +22,8 @@ class AuthHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     if (compact) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -30,7 +33,7 @@ class AuthHeader extends StatelessWidget {
           Text(
             AppConstants.appName,
             style: AppTextStyles.headingMedium.copyWith(
-              color: AppColors.primaryContainer,
+              color: colors.textPrimary,
             ),
           ),
         ],
@@ -55,7 +58,7 @@ class AuthHeader extends StatelessWidget {
             tagline ?? context.l10n.appTagline,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondaryLight,
+              color: colors.textSecondary,
             ),
           ),
         ],

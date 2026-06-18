@@ -818,6 +818,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String transactionsListGoalDepositTitle(String goal) {
+    return 'Deposit to $goal';
+  }
+
+  @override
+  String transactionsListGoalDepositDetail(String wallet) {
+    return 'From wallet $wallet';
+  }
+
+  @override
+  String transactionsListGoalWithdrawTitle(String goal) {
+    return 'Withdraw from $goal';
+  }
+
+  @override
+  String transactionsListGoalWithdrawDetail(String wallet) {
+    return 'To wallet $wallet';
+  }
+
+  @override
   String get transactionsListNotesTitle => 'Notes';
 
   @override
@@ -1332,4 +1352,75 @@ class AppLocalizationsEn extends AppLocalizations {
   String goalEditDeleteError(String error) {
     return 'Could not delete goal: $error';
   }
+
+  @override
+  String get goalDeposit => 'Deposit';
+
+  @override
+  String get goalWithdraw => 'Withdraw';
+
+  @override
+  String get goalTransferHistory => 'Transfer history';
+
+  @override
+  String goalThisMonthProgress(String saved, String required) {
+    return 'This month: $saved / $required required';
+  }
+
+  @override
+  String get goalWalletBadge => 'Goal';
+
+  @override
+  String get goalSelectSourceWallet => 'Source wallet for opening savings';
+
+  @override
+  String get goalSelectSourceWalletRequired =>
+      'Select a source wallet for the opening savings amount';
+
+  @override
+  String get goalInsufficientBalance => 'Insufficient wallet balance';
+
+  @override
+  String get goalDeleteHasBalance =>
+      'Cannot delete the goal while it still holds savings. Withdraw the balance first.';
+
+  @override
+  String get goalSavedAmountReadOnly => 'Saved amount (from goal wallet)';
+
+  @override
+  String get goalTransferDeposit => 'Deposit to goal';
+
+  @override
+  String get goalTransferWithdraw => 'Withdraw from goal';
+
+  @override
+  String get goalNoTransfersYet => 'No transfers yet';
+
+  @override
+  String get goalSavingsDepositTitle => 'Deposit to goal';
+
+  @override
+  String get goalSavingsWithdrawTitle => 'Withdraw from goal';
+
+  @override
+  String get goalSavingsSelectWallet => 'Select wallet';
+
+  @override
+  String get goalSavingsAmount => 'Amount';
+
+  @override
+  String get goalSavingsSuccess => 'Transaction saved successfully';
+
+  @override
+  String get goalSavingsWalletCurrencyMismatch =>
+      'The selected wallet does not support the goal currency';
+
+  @override
+  String get goalSavingsGoalWallet => 'Goal wallet';
+
+  @override
+  String get goalSavingsSourceWallet => 'Source wallet';
+
+  @override
+  String get goalSavingsDestinationWallet => 'Destination wallet';
 }

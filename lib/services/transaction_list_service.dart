@@ -43,6 +43,10 @@ class TransactionListService {
             filter.advancedTypeFilter != ActivityFeedTab.debt);
     final mergeStreams = includeTransactions && includeTransfers;
 
+    final goalWalletTitles = includeTransfers
+        ? await dao.getGoalWalletTitles(userId)
+        : const <String, String>{};
+
     final merged = <TransactionListItem>[];
 
     if (includeTransactions) {
@@ -82,6 +86,7 @@ class TransactionListService {
             localeName: localeName,
             deleteWindowHours: deleteWindowHours,
             editWindowDays: editWindowDays,
+            goalWalletTitles: goalWalletTitles,
           ),
         ),
       );
@@ -252,31 +257,74 @@ class TransactionListService {
     required String localeName,
     required int deleteWindowHours,
     required int editWindowDays,
+    required Map<String, String> goalWalletTitles,
   }) {
     final tr = row.transfer;
     final showSecondary =
         row.currencyCode.toUpperCase() != baseCurrencyCode.toUpperCase();
-    final title = tr.notes?.trim().isNotEmpty == true
-        ? tr.notes!.trim()
-        : l10n.transactionsListTransferCurrencyTitle(
-            row.currencyCode,
-            row.toCurrencyCode,
-          );
     final createdAt = tr.createdAt;
     final targetAmount = tr.toAmount ?? tr.amount;
 
-    final transferStyle = TransactionIconStyles.forTransfer();
+    final toGoalTitle = goalWalletTitles[tr.toWalletId];
+    final fromGoalTitle = goalWalletTitles[tr.fromWalletId];
+    final isGoalDeposit =
+        toGoalTitle != null && fromGoalTitle == null;
+    final isGoalWithdraw =
+        fromGoalTitle != null && toGoalTitle == null;
 
-    return TransactionListItem(
-      id: tr.id,
-      kind: TransactionListKind.transfer,
-      title: title,
-      subtitle: _formatSubtitle(
+    late final TransactionListKind kind;
+    late final TransactionIconStyle iconStyle;
+    late final String title;
+    late final String subtitle;
+
+    if (isGoalDeposit) {
+      kind = TransactionListKind.goalDeposit;
+      iconStyle = TransactionIconStyles.forGoalDeposit();
+      final fromWallet = _resolveWalletName(
+        row.fromWalletName,
+        l10n.transactionsListUnknownWallet,
+      );
+      title = l10n.transactionsListGoalDepositTitle(toGoalTitle);
+      subtitle = _formatGoalTransferSubtitle(
+        date: tr.transactionDate,
+        detail: l10n.transactionsListGoalDepositDetail(fromWallet),
+        localeName: localeName,
+      );
+    } else if (isGoalWithdraw) {
+      kind = TransactionListKind.goalWithdraw;
+      iconStyle = TransactionIconStyles.forGoalWithdraw();
+      final toWallet = _resolveWalletName(
+        row.toWalletName,
+        l10n.transactionsListUnknownWallet,
+      );
+      title = l10n.transactionsListGoalWithdrawTitle(fromGoalTitle);
+      subtitle = _formatGoalTransferSubtitle(
+        date: tr.transactionDate,
+        detail: l10n.transactionsListGoalWithdrawDetail(toWallet),
+        localeName: localeName,
+      );
+    } else {
+      kind = TransactionListKind.transfer;
+      iconStyle = TransactionIconStyles.forTransfer();
+      title = tr.notes?.trim().isNotEmpty == true
+          ? tr.notes!.trim()
+          : l10n.transactionsListTransferTitle(
+              row.fromWalletName,
+              row.toWalletName,
+            );
+      subtitle = _formatSubtitle(
         date: tr.transactionDate,
         walletName: row.fromWalletName,
         localeName: localeName,
         unknownWalletLabel: l10n.transactionsListUnknownWallet,
-      ),
+      );
+    }
+
+    return TransactionListItem(
+      id: tr.id,
+      kind: kind,
+      title: title,
+      subtitle: subtitle,
       primaryAmount: CurrencyFormatter.formatCodeFirst(
         tr.amount,
         row.currencyCode,
@@ -290,8 +338,8 @@ class TransactionListService {
       transactionDate: tr.transactionDate,
       createdAt: createdAt,
       notes: tr.notes,
-      icon: transferStyle.icon,
-      iconColor: transferStyle.color,
+      icon: iconStyle.icon,
+      iconColor: iconStyle.color,
       isIncome: false,
       isTransfer: true,
       canEdit: TransactionPolicy.canEdit(
@@ -303,6 +351,19 @@ class TransactionListService {
         deleteWindowHours: deleteWindowHours,
       ),
     );
+  }
+
+  String _formatGoalTransferSubtitle({
+    required DateTime date,
+    required String detail,
+    required String localeName,
+  }) {
+    final time = DateFormat.jm(localeName).format(date);
+    return '$time • $detail';
+  }
+
+  String _resolveWalletName(String name, String unknownLabel) {
+    return name.trim().isEmpty ? unknownLabel : name;
   }
 
   String _formatDebtSubtitle({

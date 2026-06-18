@@ -824,12 +824,9 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = selected
-        ? AppColors.dashboardPrimary.withValues(alpha: 0.12)
-        : Colors.grey.shade100;
-    final fg = selected
-        ? AppColors.dashboardPrimary
-        : Colors.grey.shade700;
+    final colors = context.appColors;
+    final bg = selected ? colors.accentSurface : colors.inputFill;
+    final fg = selected ? AppColors.dashboardPrimary : colors.textSecondary;
 
     return Material(
       color: bg,

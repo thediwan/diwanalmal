@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/extensions/context_l10n.dart';
+import '../../core/extensions/context_theme.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -152,6 +153,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
     final pinLength = _isConfirmStep ? _confirmPin.length : _pin.length;
 
     return Scaffold(
@@ -167,14 +169,17 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                       onPressed: () => context.canPop()
                           ? context.pop()
                           : context.go('/auth/register'),
-                      icon: const Icon(CupertinoIcons.arrow_right),
+                      icon: Icon(
+                        CupertinoIcons.arrow_right,
+                        color: colors.textPrimary,
+                      ),
                     ),
                     Expanded(
                       child: Text(
                         AppConstants.appName,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.headingMedium.copyWith(
-                          color: AppColors.primaryContainer,
+                          color: colors.textPrimary,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -217,6 +222,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                                 l10n.authFingerprint,
                                 style: AppTextStyles.headingSmall.copyWith(
                                   fontWeight: FontWeight.w700,
+                                  color: colors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -224,7 +230,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                                 l10n.authFingerprintDesc,
                                 textAlign: TextAlign.center,
                                 style: AppTextStyles.bodyMedium.copyWith(
-                                  color: AppColors.textSecondaryLight,
+                                  color: colors.textSecondary,
                                   height: 1.4,
                                 ),
                               ),
@@ -235,7 +241,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                                 child: FilledButton(
                                   style: FilledButton.styleFrom(
                                     backgroundColor: AppColors.primaryContainer,
-                                    foregroundColor: Colors.white,
+                                    foregroundColor: colors.onPrimary,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -266,6 +272,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                                   : l10n.authPinPersonal,
                               style: AppTextStyles.headingSmall.copyWith(
                                 fontWeight: FontWeight.w700,
+                                color: colors.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -275,7 +282,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                                   : l10n.authPinEnterHint,
                               textAlign: TextAlign.center,
                               style: AppTextStyles.bodyMedium.copyWith(
-                                color: AppColors.textSecondaryLight,
+                                color: colors.textSecondary,
                               ),
                             ),
                             if (_error != null) ...[
@@ -307,8 +314,9 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: AppColors.primaryContainer,
-                                  side: const BorderSide(
-                                    color: AppColors.primaryContainer,
+                                  side: BorderSide(
+                                    color: AppColors.primaryContainer
+                                        .withValues(alpha: 0.6),
                                     width: 1.5,
                                   ),
                                   shape: RoundedRectangleBorder(

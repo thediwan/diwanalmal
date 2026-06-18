@@ -8,6 +8,7 @@ class Treasury {
     required this.accounts,
     this.subtitle,
     this.iconStyle,
+    this.isGoalWallet = false,
   });
 
   final String id;
@@ -17,6 +18,7 @@ class Treasury {
   final String? subtitle;
   final String? iconStyle;
   final List<TreasuryAccountBalance> accounts;
+  final bool isGoalWallet;
 
   double get totalInBase =>
       accounts.fold(0, (sum, a) => sum + a.balanceInBase);

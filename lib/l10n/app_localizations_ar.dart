@@ -812,6 +812,26 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String transactionsListGoalDepositTitle(String goal) {
+    return 'إيداع في $goal';
+  }
+
+  @override
+  String transactionsListGoalDepositDetail(String wallet) {
+    return 'من محفظة $wallet';
+  }
+
+  @override
+  String transactionsListGoalWithdrawTitle(String goal) {
+    return 'سحب من $goal';
+  }
+
+  @override
+  String transactionsListGoalWithdrawDetail(String wallet) {
+    return 'إلى محفظة $wallet';
+  }
+
+  @override
   String get transactionsListNotesTitle => 'ملاحظات';
 
   @override
@@ -1322,4 +1342,75 @@ class AppLocalizationsAr extends AppLocalizations {
   String goalEditDeleteError(String error) {
     return 'تعذر حذف الهدف: $error';
   }
+
+  @override
+  String get goalDeposit => 'إيداع';
+
+  @override
+  String get goalWithdraw => 'سحب';
+
+  @override
+  String get goalTransferHistory => 'سجل التحويلات';
+
+  @override
+  String goalThisMonthProgress(String saved, String required) {
+    return 'هذا الشهر: $saved / $required مطلوب';
+  }
+
+  @override
+  String get goalWalletBadge => 'هدف';
+
+  @override
+  String get goalSelectSourceWallet => 'محفظة المصدر للمبلغ الافتتاحي';
+
+  @override
+  String get goalSelectSourceWalletRequired =>
+      'اختر محفظة المصدر للمبلغ المدخر الافتتاحي';
+
+  @override
+  String get goalInsufficientBalance => 'رصيد المحفظة غير كافٍ';
+
+  @override
+  String get goalDeleteHasBalance =>
+      'لا يمكن حذف الهدف طالما يحتوي على مدخرات. اسحب المبلغ أولاً.';
+
+  @override
+  String get goalSavedAmountReadOnly => 'المبلغ المدخر (من محفظة الهدف)';
+
+  @override
+  String get goalTransferDeposit => 'إيداع للهدف';
+
+  @override
+  String get goalTransferWithdraw => 'سحب من الهدف';
+
+  @override
+  String get goalNoTransfersYet => 'لا توجد تحويلات بعد';
+
+  @override
+  String get goalSavingsDepositTitle => 'إيداع للهدف';
+
+  @override
+  String get goalSavingsWithdrawTitle => 'سحب من الهدف';
+
+  @override
+  String get goalSavingsSelectWallet => 'اختر المحفظة';
+
+  @override
+  String get goalSavingsAmount => 'المبلغ';
+
+  @override
+  String get goalSavingsSuccess => 'تمت العملية بنجاح';
+
+  @override
+  String get goalSavingsWalletCurrencyMismatch =>
+      'المحفظة المختارة لا تدعم عملة الهدف';
+
+  @override
+  String get goalSavingsGoalWallet => 'محفظة الهدف';
+
+  @override
+  String get goalSavingsSourceWallet => 'محفظة المصدر';
+
+  @override
+  String get goalSavingsDestinationWallet => 'محفظة الوجهة';
 }

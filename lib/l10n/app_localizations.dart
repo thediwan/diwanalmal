@@ -1604,6 +1604,30 @@ abstract class AppLocalizations {
   /// **'تحويل من {from} إلى {to}'**
   String transactionsListTransferTitle(String from, String to);
 
+  /// No description provided for @transactionsListGoalDepositTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إيداع في {goal}'**
+  String transactionsListGoalDepositTitle(String goal);
+
+  /// No description provided for @transactionsListGoalDepositDetail.
+  ///
+  /// In ar, this message translates to:
+  /// **'من محفظة {wallet}'**
+  String transactionsListGoalDepositDetail(String wallet);
+
+  /// No description provided for @transactionsListGoalWithdrawTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سحب من {goal}'**
+  String transactionsListGoalWithdrawTitle(String goal);
+
+  /// No description provided for @transactionsListGoalWithdrawDetail.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى محفظة {wallet}'**
+  String transactionsListGoalWithdrawDetail(String wallet);
+
   /// No description provided for @transactionsListNotesTitle.
   ///
   /// In ar, this message translates to:
@@ -2533,6 +2557,138 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تعذر حذف الهدف: {error}'**
   String goalEditDeleteError(String error);
+
+  /// No description provided for @goalDeposit.
+  ///
+  /// In ar, this message translates to:
+  /// **'إيداع'**
+  String get goalDeposit;
+
+  /// No description provided for @goalWithdraw.
+  ///
+  /// In ar, this message translates to:
+  /// **'سحب'**
+  String get goalWithdraw;
+
+  /// No description provided for @goalTransferHistory.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجل التحويلات'**
+  String get goalTransferHistory;
+
+  /// No description provided for @goalThisMonthProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الشهر: {saved} / {required} مطلوب'**
+  String goalThisMonthProgress(String saved, String required);
+
+  /// No description provided for @goalWalletBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدف'**
+  String get goalWalletBadge;
+
+  /// No description provided for @goalSelectSourceWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'محفظة المصدر للمبلغ الافتتاحي'**
+  String get goalSelectSourceWallet;
+
+  /// No description provided for @goalSelectSourceWalletRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر محفظة المصدر للمبلغ المدخر الافتتاحي'**
+  String get goalSelectSourceWalletRequired;
+
+  /// No description provided for @goalInsufficientBalance.
+  ///
+  /// In ar, this message translates to:
+  /// **'رصيد المحفظة غير كافٍ'**
+  String get goalInsufficientBalance;
+
+  /// No description provided for @goalDeleteHasBalance.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يمكن حذف الهدف طالما يحتوي على مدخرات. اسحب المبلغ أولاً.'**
+  String get goalDeleteHasBalance;
+
+  /// No description provided for @goalSavedAmountReadOnly.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ المدخر (من محفظة الهدف)'**
+  String get goalSavedAmountReadOnly;
+
+  /// No description provided for @goalTransferDeposit.
+  ///
+  /// In ar, this message translates to:
+  /// **'إيداع للهدف'**
+  String get goalTransferDeposit;
+
+  /// No description provided for @goalTransferWithdraw.
+  ///
+  /// In ar, this message translates to:
+  /// **'سحب من الهدف'**
+  String get goalTransferWithdraw;
+
+  /// No description provided for @goalNoTransfersYet.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد تحويلات بعد'**
+  String get goalNoTransfersYet;
+
+  /// No description provided for @goalSavingsDepositTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إيداع للهدف'**
+  String get goalSavingsDepositTitle;
+
+  /// No description provided for @goalSavingsWithdrawTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سحب من الهدف'**
+  String get goalSavingsWithdrawTitle;
+
+  /// No description provided for @goalSavingsSelectWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر المحفظة'**
+  String get goalSavingsSelectWallet;
+
+  /// No description provided for @goalSavingsAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ'**
+  String get goalSavingsAmount;
+
+  /// No description provided for @goalSavingsSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تمت العملية بنجاح'**
+  String get goalSavingsSuccess;
+
+  /// No description provided for @goalSavingsWalletCurrencyMismatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحفظة المختارة لا تدعم عملة الهدف'**
+  String get goalSavingsWalletCurrencyMismatch;
+
+  /// No description provided for @goalSavingsGoalWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'محفظة الهدف'**
+  String get goalSavingsGoalWallet;
+
+  /// No description provided for @goalSavingsSourceWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'محفظة المصدر'**
+  String get goalSavingsSourceWallet;
+
+  /// No description provided for @goalSavingsDestinationWallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'محفظة الوجهة'**
+  String get goalSavingsDestinationWallet;
 }
 
 class _AppLocalizationsDelegate

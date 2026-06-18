@@ -8,6 +8,7 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 import 'daos/finance_dao.dart';
 import 'tables/schema_tables.dart';
+import '../core/helpers/uuid_helper.dart';
 
 part 'lazarus_database.g.dart';
 
@@ -59,10 +60,12 @@ class LazarusDatabase extends _$LazarusDatabase {
     await _ensureTransferCrossCurrencyColumns();
     await _ensureTransactionDebtColumns();
     await _ensureDebtsWalletColumn();
+    await _ensureGoalsWalletColumn();
+    await _backfillGoalWallets();
   }
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -169,6 +172,11 @@ class LazarusDatabase extends _$LazarusDatabase {
             await _ensureDebtsWalletColumn();
             await _ensureTransactionDebtColumns();
           }
+
+          if (from < 11) {
+            await _ensureGoalsWalletColumn();
+            await _backfillGoalWallets();
+          }
         },
       );
 
@@ -232,6 +240,63 @@ class LazarusDatabase extends _$LazarusDatabase {
       await customStatement('DROP TABLE transactions');
       await customStatement(
         'ALTER TABLE transactions_new RENAME TO transactions',
+      );
+    }
+  }
+
+  /// Adds [wallet_id] on [goals] when missing (legacy DB repair).
+  Future<void> _ensureGoalsWalletColumn() async {
+    final rows = await customSelect('PRAGMA table_info(goals)').get();
+    if (rows.isEmpty) return;
+
+    final columnNames = rows
+        .map((row) => row.read<String>('name'))
+        .toSet();
+
+    if (!columnNames.contains('wallet_id')) {
+      await customStatement(
+        'ALTER TABLE goals ADD COLUMN wallet_id TEXT REFERENCES wallets(id)',
+      );
+    }
+  }
+
+  /// Creates a treasury wallet for legacy goals that lack [wallet_id].
+  Future<void> _backfillGoalWallets() async {
+    final orphanGoals =
+        await (select(goals)..where((g) => g.walletId.isNull())).get();
+
+    for (final goal in orphanGoals) {
+      final now = DateTime.now();
+      final walletId = UuidHelper.generate();
+
+      await into(wallets).insert(
+        WalletsCompanion.insert(
+          id: walletId,
+          userId: goal.userId,
+          name: goal.title,
+          icon: Value(goal.icon),
+          iconStyle: Value(goal.icon),
+          createdAt: goal.createdAt,
+          updatedAt: now,
+        ),
+      );
+
+      await into(walletCurrencyAccounts).insert(
+        WalletCurrencyAccountsCompanion.insert(
+          id: UuidHelper.generate(),
+          walletId: walletId,
+          currencyId: goal.currencyId,
+          openingBalance: Value(goal.savedAmount),
+          createdAt: goal.createdAt,
+          updatedAt: now,
+        ),
+      );
+
+      await (update(goals)..where((g) => g.id.equals(goal.id))).write(
+        GoalsCompanion(
+          walletId: Value(walletId),
+          updatedAt: Value(now),
+        ),
       );
     }
   }

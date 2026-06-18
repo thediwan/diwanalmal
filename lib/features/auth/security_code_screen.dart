@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/extensions/context_l10n.dart';
+import '../../core/extensions/context_theme.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_form_card.dart';
@@ -21,6 +22,7 @@ class SecurityCodeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
 
     if (securityCode.isEmpty) {
       return Scaffold(
@@ -33,7 +35,7 @@ class SecurityCodeScreen extends StatelessWidget {
                   l10n.authSecurityCodeLoadError,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondaryLight,
+                    color: colors.textSecondary,
                   ),
                 ),
               ),
@@ -70,9 +72,9 @@ class SecurityCodeScreen extends StatelessWidget {
                       color: AppColors.success,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       CupertinoIcons.check_mark,
-                      color: Colors.white,
+                      color: colors.onPrimary,
                       size: 40,
                     ),
                   ),
@@ -83,7 +85,7 @@ class SecurityCodeScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: AppTextStyles.headingMedium.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimaryLight,
+                    color: colors.textPrimary,
                     fontSize: 24,
                   ),
                 ),
@@ -92,7 +94,7 @@ class SecurityCodeScreen extends StatelessWidget {
                   l10n.authSecurityCodeHint,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondaryLight,
+                    color: colors.textSecondary,
                     height: 1.55,
                     fontSize: 15,
                   ),
@@ -137,17 +139,15 @@ class SecurityCodeScreen extends StatelessWidget {
                                   height: 54,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: colors.inputFill,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: AppColors.primaryContainer
-                                          .withValues(alpha: 0.28),
+                                      color: colors.inputBorder,
                                       width: 1.2,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: AppColors.primaryContainer
-                                            .withValues(alpha: 0.06),
+                                        color: colors.cardShadow,
                                         blurRadius: 4,
                                         offset: const Offset(0, 2),
                                       ),
@@ -171,8 +171,8 @@ class SecurityCodeScreen extends StatelessWidget {
                       const SizedBox(height: 22),
                       OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.textSecondaryLight,
-                          backgroundColor: const Color(0xFFF0F2F5),
+                          foregroundColor: colors.textSecondary,
+                          backgroundColor: colors.surfaceVariant,
                           side: BorderSide.none,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 22,
@@ -188,15 +188,15 @@ class SecurityCodeScreen extends StatelessWidget {
                           );
                           context.showSuccessFeedback(l10n.authCodeCopied);
                         },
-                        icon: const Icon(
+                        icon: Icon(
                           CupertinoIcons.doc_on_doc,
                           size: 18,
-                          color: AppColors.textSecondaryLight,
+                          color: colors.textSecondary,
                         ),
                         label: Text(
                           l10n.authCopyCode,
                           style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textSecondaryLight,
+                            color: colors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -212,7 +212,7 @@ class SecurityCodeScreen extends StatelessWidget {
                     vertical: 14,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFEF2F2),
+                    color: AppColors.expense.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: AppColors.expense.withValues(alpha: 0.15),
@@ -247,7 +247,7 @@ class SecurityCodeScreen extends StatelessWidget {
                   child: FilledButton(
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.primaryContainer,
-                      foregroundColor: Colors.white,
+                      foregroundColor: colors.onPrimary,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -266,15 +266,15 @@ class SecurityCodeScreen extends StatelessWidget {
                         Text(
                           l10n.next,
                           style: AppTextStyles.bodyLarge.copyWith(
-                            color: Colors.white,
+                            color: colors.onPrimary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Icon(
+                        Icon(
                           CupertinoIcons.arrow_left,
                           size: 20,
-                          color: Colors.white,
+                          color: colors.onPrimary,
                         ),
                       ],
                     ),
@@ -285,7 +285,7 @@ class SecurityCodeScreen extends StatelessWidget {
                   l10n.authGoToCurrency,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondaryLight,
+                    color: colors.textSecondary,
                     fontSize: 13,
                   ),
                 ),

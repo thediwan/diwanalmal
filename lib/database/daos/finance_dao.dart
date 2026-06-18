@@ -148,6 +148,163 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
         .go();
   }
 
+  /// Loads the goal linked to a treasury wallet, if any.
+  Future<FinancialGoal?> getGoalByWalletId({
+    required String userId,
+    required String walletId,
+  }) {
+    return (select(db.goals)
+          ..where((g) => g.userId.equals(userId))
+          ..where((g) => g.walletId.equals(walletId)))
+        .getSingleOrNull();
+  }
+
+  /// Wallet ids that back financial goals (for UI badges).
+  Future<Set<String>> getGoalWalletIds(String userId) async {
+    final rows = await (select(db.goals)
+          ..where((g) => g.userId.equals(userId))
+          ..where((g) => g.walletId.isNotNull()))
+        .get();
+    return rows.map((g) => g.walletId!).toSet();
+  }
+
+  /// Maps goal wallet id → goal title for transfer list labeling.
+  Future<Map<String, String>> getGoalWalletTitles(String userId) async {
+    final rows = await (select(db.goals)
+          ..where((g) => g.userId.equals(userId))
+          ..where((g) => g.walletId.isNotNull()))
+        .get();
+    return {for (final goal in rows) goal.walletId!: goal.title};
+  }
+
+  /// Syncs [goals.saved_amount] from the linked wallet balance.
+  Future<double> syncGoalSavedAmount(FinancialGoal goal) async {
+    final walletId = goal.walletId;
+    if (walletId == null) return goal.savedAmount;
+
+    final balance = await computeAccountBalance(
+      walletId: walletId,
+      currencyId: goal.currencyId,
+    );
+    final now = DateTime.now();
+    await (update(db.goals)..where((g) => g.id.equals(goal.id))).write(
+      GoalsCompanion(
+        savedAmount: Value(balance),
+        updatedAt: Value(now),
+      ),
+    );
+    return balance;
+  }
+
+  /// Syncs saved amounts for every goal of the user.
+  Future<void> syncAllGoalSavedAmounts(String userId) async {
+    final goals = await getGoals(userId);
+    for (final goal in goals) {
+      if (goal.walletId != null) {
+        await syncGoalSavedAmount(goal);
+      }
+    }
+  }
+
+  /// Transfers received by [walletId] in [currencyId] during a calendar month.
+  Future<double> sumTransfersToWalletInMonth({
+    required String walletId,
+    required String currencyId,
+    required int year,
+    required int month,
+  }) async {
+    final start = DateTime(year, month);
+    final end = DateTime(year, month + 1);
+    final currency = await (select(db.currencies)
+          ..where((c) => c.id.equals(currencyId)))
+        .getSingleOrNull();
+    if (currency == null) return 0;
+
+    final incoming = await (select(db.transfers)
+          ..where((t) => t.toWalletId.equals(walletId))
+          ..where((t) => t.deletedAt.isNull())
+          ..where((t) => t.transactionDate.isBiggerOrEqualValue(start))
+          ..where((t) => t.transactionDate.isSmallerThanValue(end)))
+        .get();
+
+    var total = 0.0;
+    for (final tr in incoming) {
+      final creditCurrencyId = tr.toCurrencyId ?? tr.currencyId;
+      if (creditCurrencyId != currencyId) continue;
+      final creditAmount = tr.toAmount ?? tr.amount;
+      final creditRate = tr.toExchangeRate ?? tr.exchangeRate;
+      total += _amountInWalletCurrency(
+        amount: creditAmount,
+        txCurrencyId: creditCurrencyId,
+        txRate: creditRate,
+        walletCurrency: currency,
+      );
+    }
+    return total;
+  }
+
+  /// Transfers sent from [walletId] in [currencyId] during a calendar month.
+  Future<double> sumTransfersFromWalletInMonth({
+    required String walletId,
+    required String currencyId,
+    required int year,
+    required int month,
+  }) async {
+    final start = DateTime(year, month);
+    final end = DateTime(year, month + 1);
+    final currency = await (select(db.currencies)
+          ..where((c) => c.id.equals(currencyId)))
+        .getSingleOrNull();
+    if (currency == null) return 0;
+
+    final outgoing = await (select(db.transfers)
+          ..where((t) => t.fromWalletId.equals(walletId))
+          ..where((t) => t.currencyId.equals(currencyId))
+          ..where((t) => t.deletedAt.isNull())
+          ..where((t) => t.transactionDate.isBiggerOrEqualValue(start))
+          ..where((t) => t.transactionDate.isSmallerThanValue(end)))
+        .get();
+
+    var total = 0.0;
+    for (final tr in outgoing) {
+      total += _amountInWalletCurrency(
+        amount: tr.amount,
+        txCurrencyId: tr.currencyId,
+        txRate: tr.exchangeRate,
+        walletCurrency: currency,
+      );
+    }
+    return total;
+  }
+
+  /// Recent transfers involving a goal wallet (newest first).
+  Future<List<TransferWithMeta>> getTransfersForWallet({
+    required String userId,
+    required String walletId,
+    int limit = 50,
+  }) {
+    return getFilteredTransfers(
+      userId: userId,
+      filter: ActivityFeedFilter(walletId: walletId),
+      limit: limit,
+    );
+  }
+
+  /// Refreshes saved_amount for goals linked to any of [walletIds].
+  Future<void> syncGoalsForWalletIds(List<String> walletIds) async {
+    if (walletIds.isEmpty) return;
+
+    final uniqueIds = walletIds.toSet();
+    for (final walletId in uniqueIds) {
+      final goal = await (select(db.goals)
+            ..where((g) => g.walletId.equals(walletId)))
+          .getSingleOrNull();
+      if (goal != null) {
+        await syncGoalSavedAmount(goal);
+      }
+    }
+  }
+
   /// Monthly income total in base currency for a calendar month.
   Future<double> sumMonthlyIncomeBase({
     required String userId,

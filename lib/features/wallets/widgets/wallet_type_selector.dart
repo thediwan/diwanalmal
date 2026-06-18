@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/treasury_icon_styles.dart';
 import '../../../core/extensions/context_l10n.dart';
+import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
 import 'treasury_icon.dart';
 
@@ -77,6 +78,8 @@ class _WalletTypeOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Semantics(
       button: true,
       selected: isSelected,
@@ -91,14 +94,12 @@ class _WalletTypeOption extends StatelessWidget {
             curve: Curves.easeOutCubic,
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? const Color(0xFFEFF6FF)
-                  : Colors.white,
+              color: isSelected ? colors.accentSurface : colors.inputFill,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected
                     ? AppColors.dashboardPrimary
-                    : const Color(0xFFE5E7EB),
+                    : colors.inputBorder,
                 width: isSelected ? 2 : 1,
               ),
               boxShadow: isSelected
@@ -109,11 +110,11 @@ class _WalletTypeOption extends StatelessWidget {
                         offset: const Offset(0, 3),
                       ),
                     ]
-                  : const [
+                  : [
                       BoxShadow(
-                        color: Color(0x08000000),
+                        color: colors.cardShadow,
                         blurRadius: 6,
-                        offset: Offset(0, 2),
+                        offset: const Offset(0, 2),
                       ),
                     ],
             ),
@@ -136,7 +137,7 @@ class _WalletTypeOption extends StatelessWidget {
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                     color: isSelected
                         ? AppColors.dashboardPrimary
-                        : AppColors.textSecondaryLight,
+                        : colors.textSecondary,
                     fontSize: 12,
                   ),
                 ),

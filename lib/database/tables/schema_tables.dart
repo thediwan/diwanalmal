@@ -239,6 +239,8 @@ class Budgets extends Table {
 class Goals extends Table {
   TextColumn get id => text()();
   TextColumn get userId => text().references(AppUsers, #id)();
+  TextColumn get walletId =>
+      text().nullable().references(Wallets, #id)();
   TextColumn get title => text().withLength(min: 1, max: 255)();
   RealColumn get targetAmount => real()();
   RealColumn get savedAmount => real().withDefault(const Constant(0))();

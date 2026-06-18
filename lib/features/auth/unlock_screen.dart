@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/extensions/context_l10n.dart';
+import '../../core/extensions/context_theme.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -87,6 +88,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final settings = context.watch<SettingsProvider>();
+    final colors = context.appColors;
 
     return Scaffold(
       body: AuthBackground(
@@ -101,14 +103,14 @@ class _UnlockScreenState extends State<UnlockScreen> {
                 Text(
                   AppConstants.appName,
                   style: AppTextStyles.headingMedium.copyWith(
-                    color: AppColors.primaryContainer,
+                    color: colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   l10n.authUnlockSubtitle,
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondaryLight,
+                    color: colors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 28),
@@ -137,11 +139,14 @@ class _UnlockScreenState extends State<UnlockScreen> {
                     height: 52,
                     child: OutlinedButton.icon(
                       onPressed: _loading ? null : _tryBiometric,
-                      icon: const Icon(CupertinoIcons.hand_raised),
+                      icon: Icon(
+                        CupertinoIcons.hand_raised,
+                        color: colors.textPrimary,
+                      ),
                       label: Text(
                         l10n.authUseBiometric,
                         style: AppTextStyles.bodyLarge.copyWith(
-                          color: AppColors.primaryContainer,
+                          color: colors.textPrimary,
                         ),
                       ),
                     ),
