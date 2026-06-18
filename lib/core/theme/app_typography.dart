@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Central typography tokens — single place to adjust fonts app-wide.
 ///
@@ -9,10 +8,10 @@ abstract final class AppTypography {
   static double textScaleFactor = 1.0;
 
   /// Heading font (titles, app bar, section headers).
-  static const String headingFontFamily = 'Almarai';
+  static const String headingFontFamily = 'Qomra';
 
   /// Body font (paragraphs, labels, inputs, buttons).
-  static const String bodyFontFamily = 'Cairo';
+  static const String bodyFontFamily = 'Alyamama';
 
   // --- Size tokens (before scale) ---
 
@@ -36,7 +35,8 @@ abstract final class AppTypography {
     double? height,
     double? letterSpacing,
   }) {
-    return _headingFont(
+    return _font(
+      family: headingFontFamily,
       fontSize: scaled(size),
       fontWeight: fontWeight,
       color: color,
@@ -53,7 +53,8 @@ abstract final class AppTypography {
     double? height,
     double? letterSpacing,
   }) {
-    return _bodyFont(
+    return _font(
+      family: bodyFontFamily,
       fontSize: scaled(size),
       fontWeight: fontWeight,
       color: color,
@@ -62,38 +63,16 @@ abstract final class AppTypography {
     );
   }
 
-  /// Styles to preload at startup so first paint does not block on fonts.
-  static List<TextStyle> get preloadStyles => [
-        heading(size: sizeHeadingLarge, fontWeight: FontWeight.w700),
-        body(size: sizeBodyLarge),
-        body(size: sizeBodyMedium),
-        body(size: sizeInput, fontWeight: FontWeight.w600),
-      ];
-
-  static TextStyle _headingFont({
+  static TextStyle _font({
+    required String family,
     required double fontSize,
     FontWeight? fontWeight,
     Color? color,
     double? height,
     double? letterSpacing,
   }) {
-    return GoogleFonts.almarai(
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      color: color,
-      height: height,
-      letterSpacing: letterSpacing,
-    );
-  }
-
-  static TextStyle _bodyFont({
-    required double fontSize,
-    FontWeight? fontWeight,
-    Color? color,
-    double? height,
-    double? letterSpacing,
-  }) {
-    return GoogleFonts.cairo(
+    return TextStyle(
+      fontFamily: family,
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: color,

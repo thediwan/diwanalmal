@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'core/constants/app_constants.dart';
-import 'core/theme/app_typography.dart';
 import 'core/theme/app_theme.dart';
 import 'l10n/app_localizations.dart';
 import 'core/widgets/app_lifecycle_observer.dart';
@@ -29,9 +27,6 @@ import 'services/wallets_display_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-
-  // Preload fonts so auth screens do not hang on first paint (emulator/offline).
-  await GoogleFonts.pendingFonts(AppTypography.preloadStyles);
 
   final hiveService = HiveService();
   await hiveService.init();

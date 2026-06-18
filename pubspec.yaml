@@ -20,7 +20,6 @@ dependencies:
   go_router: ^14.6.2
   uuid: ^4.5.1
   intl: ^0.20.2
-  google_fonts: ^8.1.0
   local_auth: ^2.3.0
   local_auth_android: ^1.0.56
   local_auth_darwin: ^1.6.1
@@ -66,11 +65,10 @@ flutter:
   assets:
     - assets/images/
 
-  # Add Qomra font files to assets/fonts/ then uncomment:
-  # fonts:
-  #   - family: Qomra
-  #     fonts:
-  #       - asset: assets/fonts/Qomra-Regular.ttf
-  #         weight: 400
-  #       - asset: assets/fonts/Qomra-Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: Qomra
+      fonts:
+        - asset: assets/fonts/Qomra.ttf
+    - family: Alyamama
+      fonts:
+        - asset: assets/fonts/Alyamama.ttf
