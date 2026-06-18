@@ -12,6 +12,7 @@ import '../../core/helpers/uuid_helper.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
+import '../../core/widgets/brand_logo.dart';
 import '../../models/opening_balance_input.dart';
 import '../../providers/currency_provider.dart';
 import '../../providers/wallet_provider.dart';
@@ -32,8 +33,6 @@ class WalletFormScreen extends StatefulWidget {
 }
 
 class _WalletFormScreenState extends State<WalletFormScreen> {
-  static const _logoAsset = 'assets/images/logo.png';
-
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
 
@@ -345,7 +344,7 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    const Center(child: _HeroLogo(logoAsset: _logoAsset)),
+                    const Center(child: _HeroLogo()),
                     const SizedBox(height: 12),
                     Text(
                       isEditing
@@ -500,8 +499,6 @@ class _FormTopBar extends StatelessWidget {
   final bool showDelete;
   final VoidCallback onDelete;
 
-  static const _logoAsset = 'assets/images/logo.png';
-
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -532,8 +529,7 @@ class _FormTopBar extends StatelessWidget {
               icon: const Icon(Icons.delete_outline, color: Colors.red),
             )
           else
-            Image.asset(
-              _logoAsset,
+            BrandLogoImage(
               width: 36,
               height: 36,
               fit: BoxFit.contain,
@@ -550,9 +546,7 @@ class _FormTopBar extends StatelessWidget {
 }
 
 class _HeroLogo extends StatelessWidget {
-  const _HeroLogo({required this.logoAsset});
-
-  final String logoAsset;
+  const _HeroLogo();
 
   @override
   Widget build(BuildContext context) {
@@ -573,8 +567,7 @@ class _HeroLogo extends StatelessWidget {
           ),
         ],
       ),
-      child: Image.asset(
-        logoAsset,
+      child: BrandLogoImage(
         fit: BoxFit.contain,
         errorBuilder: (_, __, ___) => Text(
           AppConstants.appName,

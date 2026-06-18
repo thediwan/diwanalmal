@@ -1,7 +1,36 @@
 import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
+import '../constants/brand_logo_assets.dart';
+import '../extensions/context_theme.dart';
 import '../theme/app_text_styles.dart';
+
+/// Theme-aware brand logo image.
+class BrandLogoImage extends StatelessWidget {
+  const BrandLogoImage({
+    super.key,
+    this.width,
+    this.height,
+    this.fit = BoxFit.contain,
+    this.errorBuilder,
+  });
+
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+  final ImageErrorWidgetBuilder? errorBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      BrandLogoAssets.forContext(context),
+      width: width,
+      height: height,
+      fit: fit,
+      errorBuilder: errorBuilder,
+    );
+  }
+}
 
 /// Full AMANAH wordmark logo (splash).
 class BrandLogo extends StatelessWidget {
@@ -9,12 +38,9 @@ class BrandLogo extends StatelessWidget {
 
   final double height;
 
-  static const _assetPath = 'assets/images/logo.png';
-
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      _assetPath,
+    return BrandLogoImage(
       height: height,
       fit: BoxFit.contain,
       errorBuilder: (_, __, ___) => _FallbackWordmark(height: height),
@@ -28,27 +54,26 @@ class BrandLogoTile extends StatelessWidget {
 
   final double size;
 
-  static const _assetPath = 'assets/images/logo.png';
-
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Container(
       width: size,
       height: size,
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(size * 0.14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryContainer.withValues(alpha: 0.12),
+            color: colors.cardShadow,
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: Image.asset(
-        _assetPath,
+      child: BrandLogoImage(
         fit: BoxFit.contain,
         errorBuilder: (_, __, ___) => Icon(
           Icons.account_balance,

@@ -14,6 +14,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_theme_colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/widgets/auth_background.dart';
+import '../../core/widgets/brand_logo.dart';
 import '../../providers/currency_provider.dart';
 import '../../services/goal_service.dart';
 import '../../services/lazarus_database_service.dart';
@@ -34,8 +35,6 @@ class GoalEditScreen extends StatefulWidget {
 }
 
 class _GoalEditScreenState extends State<GoalEditScreen> {
-  static const _logoAsset = 'assets/images/logo.png';
-
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _targetAmountController = TextEditingController();
@@ -344,7 +343,7 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
         key: _formKey,
         child: Column(
           children: [
-            const _GoalHeroLogo(logoAsset: _logoAsset),
+            const _GoalHeroLogo(),
             const SizedBox(height: 16),
             Text(
               l10n.goalEditHeading,
@@ -574,9 +573,7 @@ class _EditTopBar extends StatelessWidget {
 }
 
 class _GoalHeroLogo extends StatelessWidget {
-  const _GoalHeroLogo({required this.logoAsset});
-
-  final String logoAsset;
+  const _GoalHeroLogo();
 
   @override
   Widget build(BuildContext context) {
@@ -597,8 +594,7 @@ class _GoalHeroLogo extends StatelessWidget {
         ],
       ),
       padding: const EdgeInsets.all(18),
-      child: Image.asset(
-        logoAsset,
+      child: BrandLogoImage(
         fit: BoxFit.contain,
         errorBuilder: (_, __, ___) => const Icon(
           Icons.account_balance,

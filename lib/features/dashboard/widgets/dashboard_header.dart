@@ -5,12 +5,11 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/brand_logo.dart';
 
 /// Dashboard top bar: logo (visual left), centered title, bell + profile (visual right).
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
-
-  static const _logoAsset = 'assets/images/logo.png';
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +40,7 @@ class DashboardHeader extends StatelessWidget {
           ),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              _logoAsset,
+            child: BrandLogoImage(
               width: 36,
               height: 36,
               fit: BoxFit.contain,

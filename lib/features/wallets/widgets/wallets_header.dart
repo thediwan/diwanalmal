@@ -8,6 +8,7 @@ import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_form_fields.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/brand_logo.dart';
 
 /// Top section for the wallets screen (profile, title, search, add).
 class WalletsHeader extends StatelessWidget {
@@ -21,8 +22,6 @@ class WalletsHeader extends StatelessWidget {
   final TextEditingController searchController;
   final ValueChanged<String> onSearchChanged;
   final VoidCallback onAddWallet;
-
-  static const _logoAsset = 'assets/images/logo.png';
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +42,7 @@ class WalletsHeader extends StatelessWidget {
                 onPressed: () {},
               ),
               const Spacer(),
-              Image.asset(
-                _logoAsset,
+              BrandLogoImage(
                 width: 88,
                 height: 36,
                 fit: BoxFit.contain,

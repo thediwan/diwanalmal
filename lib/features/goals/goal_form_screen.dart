@@ -11,6 +11,7 @@ import '../../core/helpers/currency_uniqueness.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
+import '../../core/widgets/brand_logo.dart';
 import '../../providers/currency_provider.dart';
 import 'models/goal_draft.dart';
 import 'widgets/goal_amount_field.dart';
@@ -28,8 +29,6 @@ class GoalFormScreen extends StatefulWidget {
 }
 
 class _GoalFormScreenState extends State<GoalFormScreen> {
-  static const _logoAsset = 'assets/images/logo.png';
-
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _targetAmountController = TextEditingController();
@@ -217,7 +216,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          const _GoalHeroLogo(logoAsset: _logoAsset),
+                          const _GoalHeroLogo(),
                           const SizedBox(height: 16),
                           Text(
                             l10n.goalFormHeading,
@@ -421,9 +420,7 @@ class _GoalFormTopBar extends StatelessWidget {
 }
 
 class _GoalHeroLogo extends StatelessWidget {
-  const _GoalHeroLogo({required this.logoAsset});
-
-  final String logoAsset;
+  const _GoalHeroLogo();
 
   @override
   Widget build(BuildContext context) {
@@ -444,8 +441,7 @@ class _GoalHeroLogo extends StatelessWidget {
         ],
       ),
       padding: const EdgeInsets.all(18),
-      child: Image.asset(
-        logoAsset,
+      child: BrandLogoImage(
         fit: BoxFit.contain,
         errorBuilder: (_, __, ___) => const Icon(
           Icons.account_balance,

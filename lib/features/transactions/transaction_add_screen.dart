@@ -16,6 +16,7 @@ import '../../core/helpers/user_facing_error.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
+import '../../core/widgets/brand_logo.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/currency.dart';
 import '../../models/treasury.dart';
@@ -48,7 +49,6 @@ class TransactionAddScreen extends StatefulWidget {
 
 class _TransactionAddScreenState extends State<TransactionAddScreen>
     with WidgetsBindingObserver {
-  static const _logoAsset = 'assets/images/logo.png';
   static const _saveButtonAreaHeight = 78.0;
 
   final _amountInput = TransactionAmountInput();
@@ -795,7 +795,6 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
         children: [
           _TransactionTopBar(
             title: l10n.appName,
-            logoAsset: _logoAsset,
             onClose: () => context.pop(),
           ),
           Expanded(
@@ -1149,12 +1148,10 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
 class _TransactionTopBar extends StatelessWidget {
   const _TransactionTopBar({
     required this.title,
-    required this.logoAsset,
     required this.onClose,
   });
 
   final String title;
-  final String logoAsset;
   final VoidCallback onClose;
 
   @override
@@ -1172,14 +1169,9 @@ class _TransactionTopBar extends StatelessWidget {
               fontWeight: FontWeight.w800,
             ),
           ),
-          Expanded(
+          const Expanded(
             child: Center(
-              child: Image.asset(
-                logoAsset,
-                height: 28,
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-              ),
+              child: BrandLogoImage(height: 28, fit: BoxFit.contain),
             ),
           ),
           IconButton(
