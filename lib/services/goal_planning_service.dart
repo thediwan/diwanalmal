@@ -171,4 +171,19 @@ class GoalPlanningService {
     if (rateToBase == 0) return 0;
     return baseAmount / rateToBase;
   }
+
+  /// Monthly savings still required to reach [targetDate].
+  static double monthlyRequiredFor({
+    required double targetAmount,
+    required double savedAmount,
+    required DateTime targetDate,
+  }) {
+    final now = DateTime.now();
+    var months = (targetDate.year - now.year) * 12 + (targetDate.month - now.month);
+    if (targetDate.day < now.day) months -= 1;
+    months = months.clamp(1, 600);
+    final remaining = (targetAmount - savedAmount).clamp(0, double.infinity);
+    if (!targetDate.isAfter(now)) return remaining.toDouble();
+    return remaining / months;
+  }
 }

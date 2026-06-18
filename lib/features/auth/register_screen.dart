@@ -163,7 +163,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               child: RichText(
                                 text: TextSpan(
                                   style: AppTextStyles.bodySmall.copyWith(
-                                    color: AppColors.textSecondaryLight,
+                                    color: colors.textSecondary,
                                   ),
                                   children: [
                                     TextSpan(
@@ -198,19 +198,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: FilledButton(
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.primaryContainer,
-                            foregroundColor: Colors.white,
+                            foregroundColor: colors.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                           onPressed: _loading ? null : _submit,
                           child: _loading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 22,
                                   height: 22,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.white,
+                                    color: colors.onPrimary,
                                   ),
                                 )
                               : Row(
@@ -230,7 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: RichText(
                             text: TextSpan(
                               style: AppTextStyles.bodyMedium.copyWith(
-                                color: AppColors.textSecondaryLight,
+                                color: colors.textSecondary,
                               ),
                               children: [
                                 TextSpan(text: l10n.authHasAccount),

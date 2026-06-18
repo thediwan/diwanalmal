@@ -12,6 +12,7 @@ import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_formatter.dart';
 import '../../core/helpers/number_format_preferences.dart';
 import '../../core/helpers/currency_uniqueness.dart';
+import '../../core/helpers/treasury_filters.dart';
 import '../../core/helpers/user_facing_error.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -39,7 +40,10 @@ import 'widgets/transaction_wallet_carousel.dart';
 
 /// Add income, expense, transfer, or debt ledger entry.
 class TransactionAddScreen extends StatefulWidget {
-  const TransactionAddScreen({super.key, this.initialEntryType});
+  const TransactionAddScreen({
+    super.key,
+    this.initialEntryType,
+  });
 
   final TransactionEntryType? initialEntryType;
 
@@ -239,11 +243,13 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
     final currency = _currencies.where((c) => c.id == currencyId).firstOrNull;
     if (currency == null) return [];
 
-    return context.read<WalletProvider>().treasuries.where((treasury) {
-      return treasury.accounts.any(
-        (a) => a.currencyCode.toUpperCase() == currency.code.toUpperCase(),
-      );
-    }).toList();
+    return regularTreasuries(
+      context.read<WalletProvider>().treasuries.where((treasury) {
+        return treasury.accounts.any(
+          (a) => a.currencyCode.toUpperCase() == currency.code.toUpperCase(),
+        );
+      }),
+    );
   }
 
   List<Treasury> get _eligibleWallets =>

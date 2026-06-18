@@ -8,11 +8,15 @@ import '../../core/constants/goal_icon_styles.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_uniqueness.dart';
+import '../../core/helpers/date_only.dart';
+import '../../core/helpers/treasury_filters.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/brand_logo.dart';
+import '../../models/treasury.dart';
 import '../../providers/currency_provider.dart';
+import '../../providers/wallet_provider.dart';
 import 'models/goal_draft.dart';
 import 'widgets/goal_amount_field.dart';
 import 'widgets/goal_icon_selector.dart';
@@ -36,6 +40,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
 
   String _selectedIconStyle = GoalIconStyles.defaultStyle;
   String? _selectedCurrencyId;
+  String? _selectedSourceWalletId;
   DateTime? _targetDate;
   bool _isLoadingCurrencies = false;
 
@@ -53,6 +58,10 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     if (currencyProvider.currencies.isEmpty) {
       await currencyProvider.loadCurrencies();
     }
+    final walletProvider = context.read<WalletProvider>();
+    if (walletProvider.treasuries.isEmpty) {
+      await walletProvider.loadWallets();
+    }
 
     if (!mounted) return;
 
@@ -63,6 +72,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
       _savedAmountController.text = _formatNumber(draft.savedAmount);
       _selectedIconStyle = draft.iconStyle;
       _selectedCurrencyId = draft.currencyId;
+      _selectedSourceWalletId = draft.sourceWalletId;
       _targetDate = draft.targetDate;
     } else {
       _selectedCurrencyId = currencyProvider.baseCurrency?.id ??
@@ -97,7 +107,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     );
 
     if (picked != null && mounted) {
-      setState(() => _targetDate = picked);
+      setState(() => _targetDate = dateOnly(picked));
     }
   }
 
@@ -128,6 +138,11 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
       return;
     }
 
+    if (savedAmount > 0 && _selectedSourceWalletId == null) {
+      context.showWarningFeedback(context.l10n.goalSelectSourceWalletRequired);
+      return;
+    }
+
     final draft = GoalDraft(
       title: _titleController.text.trim(),
       targetAmount: targetAmount,
@@ -136,8 +151,9 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
       currencyCode: currency.code,
       currencySymbol: currency.symbol,
       rateToBase: currency.rateToBase,
-      targetDate: _targetDate!,
+      targetDate: dateOnly(_targetDate!),
       iconStyle: _selectedIconStyle,
+      sourceWalletId: _selectedSourceWalletId,
     );
 
     final updated = await context.push<GoalDraft>('/goals/plan', extra: draft);
@@ -193,6 +209,18 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     final currencies = uniqueCurrenciesByCode(
       context.watch<CurrencyProvider>().currencies,
     );
+    final treasuries = context.watch<WalletProvider>().treasuries;
+    final selectedCurrency = currencies
+        .where((c) => c.id == _selectedCurrencyId)
+        .firstOrNull;
+    final eligibleSourceWallets = selectedCurrency == null
+        ? <Treasury>[]
+        : regularTreasuriesForCurrency(
+            treasuries: treasuries,
+            currencyCode: selectedCurrency.code,
+          );
+    final savedAmount =
+        double.tryParse(_savedAmountController.text.trim()) ?? 0;
     final inputStyle = AppFormFields.inputTextStyleOf(context);
     final locale = Localizations.localeOf(context).toString();
     final dateLabel = _targetDate == null
@@ -300,6 +328,38 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                             ),
                             validator: _validateSavedAmount,
                           ),
+                          if (savedAmount > 0) ...[
+                            const SizedBox(height: 18),
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: GoalFormLabel(
+                                text: l10n.goalSelectSourceWallet,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<String>(
+                              value: eligibleSourceWallets
+                                      .any((w) => w.id == _selectedSourceWalletId)
+                                  ? _selectedSourceWalletId
+                                  : null,
+                              decoration: AppFormFields.decoration(context),
+                              items: [
+                                for (final wallet in eligibleSourceWallets)
+                                  DropdownMenuItem(
+                                    value: wallet.id,
+                                    child: Text(wallet.name),
+                                  ),
+                              ],
+                              onChanged: (id) => setState(
+                                () => _selectedSourceWalletId = id,
+                              ),
+                              validator: savedAmount > 0
+                                  ? (value) => value == null || value.isEmpty
+                                      ? l10n.goalSelectSourceWalletRequired
+                                      : null
+                                  : null,
+                            ),
+                          ],
                           const SizedBox(height: 18),
                           Align(
                             alignment: AlignmentDirectional.centerStart,

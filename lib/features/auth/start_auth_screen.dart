@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/extensions/context_l10n.dart';
+import '../../core/extensions/context_theme.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -59,6 +60,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final settings = context.watch<SettingsProvider>();
+    final colors = context.appColors;
     final hasAccount = settings.hasAccount;
 
     return Scaffold(
@@ -114,6 +116,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                         hasAccount ? l10n.authWelcomeBack : l10n.authWelcome,
                         style: AppTextStyles.headingMedium.copyWith(
                           fontWeight: FontWeight.w700,
+                          color: colors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -123,7 +126,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                             : l10n.authStartNoAccount,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.bodyLarge.copyWith(
-                          color: AppColors.textSecondaryLight,
+                          color: colors.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 28),
@@ -133,19 +136,19 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                         child: FilledButton.icon(
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.primaryContainer,
-                            foregroundColor: Colors.white,
+                            foregroundColor: colors.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                           onPressed: _loading ? null : _startBiometric,
                           icon: _loading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.white,
+                                    color: colors.onPrimary,
                                   ),
                                 )
                               : const Icon(CupertinoIcons.person_crop_circle),
@@ -230,7 +233,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                   l10n.authCopyright,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondaryLight,
+                    color: colors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 12),

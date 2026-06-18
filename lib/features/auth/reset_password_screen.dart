@@ -5,9 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/extensions/context_l10n.dart';
+import '../../core/extensions/context_theme.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/auth_form_card.dart';
 import '../../providers/settings_provider.dart';
 import '../../core/extensions/context_feedback.dart';
@@ -88,10 +90,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.appColors;
     final hasAccount = context.watch<SettingsProvider>().hasAccount;
 
     return Scaffold(
-      body: _ResetPasswordBackground(
+      body: AuthBackground(
         child: SafeArea(
           child: Column(
             children: [
@@ -102,7 +105,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     IconButton(
                       onPressed: () => context.pop(),
                       icon: const Icon(CupertinoIcons.arrow_right),
-                      color: AppColors.textPrimaryLight,
+                      color: colors.textPrimary,
                     ),
                     Expanded(
                       child: Text(
@@ -145,7 +148,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           textAlign: TextAlign.center,
                           style: AppTextStyles.headingMedium.copyWith(
                             fontWeight: FontWeight.w800,
-                            color: AppColors.textPrimaryLight,
+                            color: colors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -153,7 +156,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           l10n.authResetPasswordDesc,
                           textAlign: TextAlign.center,
                           style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textSecondaryLight,
+                            color: colors.textSecondary,
                             height: 1.55,
                           ),
                         ),
@@ -173,6 +176,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               _labeledField(
+                                context: context,
                                 label: l10n.authSecurityCode,
                                 child: TextFormField(
                                   controller: _securityCodeController,
@@ -194,6 +198,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                     letterSpacing: 4,
                                   ),
                                   decoration: _fieldDecoration(
+                                    context,
                                     suffixIcon: const Icon(
                                       CupertinoIcons.shield_fill,
                                       color: AppColors.primaryContainer,
@@ -210,6 +215,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               ),
                               const SizedBox(height: 18),
                               _labeledField(
+                                context: context,
                                 label: l10n.authNewPassword,
                                 child: TextFormField(
                                   controller: _passwordController,
@@ -217,6 +223,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   obscureText: _obscurePassword,
                                   onChanged: (_) => setState(() {}),
                                   decoration: _fieldDecoration(
+                                    context,
                                     suffixIcon: IconButton(
                                       onPressed: () => setState(
                                         () => _obscurePassword = !_obscurePassword,
@@ -225,12 +232,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                         _obscurePassword
                                             ? CupertinoIcons.eye
                                             : CupertinoIcons.eye_slash,
-                                        color: AppColors.textSecondaryLight,
+                                        color: colors.textSecondary,
                                       ),
                                     ),
-                                    prefixIcon: const Icon(
+                                    prefixIcon: Icon(
                                       CupertinoIcons.lock_fill,
-                                      color: AppColors.textSecondaryLight,
+                                      color: colors.textSecondary,
                                     ),
                                   ),
                                   validator: (v) {
@@ -245,12 +252,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               _PasswordStrengthBar(strength: _passwordStrength),
                               const SizedBox(height: 18),
                               _labeledField(
+                                context: context,
                                 label: l10n.authConfirmNewPassword,
                                 child: TextFormField(
                                   controller: _confirmPasswordController,
                                   enabled: hasAccount,
                                   obscureText: _obscureConfirm,
                                   decoration: _fieldDecoration(
+                                    context,
                                     suffixIcon: IconButton(
                                       onPressed: () => setState(
                                         () => _obscureConfirm = !_obscureConfirm,
@@ -259,12 +268,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                         _obscureConfirm
                                             ? CupertinoIcons.eye
                                             : CupertinoIcons.eye_slash,
-                                        color: AppColors.textSecondaryLight,
+                                        color: colors.textSecondary,
                                       ),
                                     ),
-                                    prefixIcon: const Icon(
+                                    prefixIcon: Icon(
                                       Icons.vpn_key_outlined,
-                                      color: AppColors.textSecondaryLight,
+                                      color: colors.textSecondary,
                                     ),
                                   ),
                                   validator: (v) {
@@ -285,7 +294,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           child: FilledButton(
                             style: FilledButton.styleFrom(
                               backgroundColor: AppColors.primaryContainer,
-                              foregroundColor: Colors.white,
+                              foregroundColor: colors.onPrimary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
@@ -293,27 +302,27 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             onPressed:
                                 hasAccount && !_loading ? _submit : null,
                             child: _loading
-                                ? const SizedBox(
+                                ? SizedBox(
                                     width: 22,
                                     height: 22,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      color: Colors.white,
+                                      color: colors.onPrimary,
                                     ),
                                   )
                                 : Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         CupertinoIcons.arrow_left,
                                         size: 20,
-                                        color: Colors.white,
+                                        color: colors.onPrimary,
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
                                         l10n.authResetPassword,
                                         style: AppTextStyles.bodyLarge.copyWith(
-                                          color: Colors.white,
+                                          color: colors.onPrimary,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -333,7 +342,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 
-  Widget _labeledField({required String label, required Widget child}) {
+  Widget _labeledField({
+    required BuildContext context,
+    required String label,
+    required Widget child,
+  }) {
+    final colors = context.appColors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -342,7 +357,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           child: Text(
             label,
             style: AppTextStyles.label.copyWith(
-              color: AppColors.textSecondaryLight,
+              color: colors.textSecondary,
             ),
           ),
         ),
@@ -352,32 +367,31 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 
-  InputDecoration _fieldDecoration({
+  InputDecoration _fieldDecoration(
+    BuildContext context, {
     String? hint,
     Widget? prefixIcon,
     Widget? suffixIcon,
   }) {
+    final colors = context.appColors;
+
     return InputDecoration(
       hintText: hint,
       hintStyle: AppTextStyles.bodyMedium.copyWith(
-        color: AppColors.textSecondaryLight,
+        color: colors.inputHint,
       ),
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
       filled: true,
-      fillColor: const Color(0xFFF8FAFC),
+      fillColor: colors.inputFill,
       counterText: '',
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(
-          color: AppColors.primaryContainer.withValues(alpha: 0.12),
-        ),
+        borderSide: BorderSide(color: colors.inputBorder),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(
-          color: AppColors.primaryContainer.withValues(alpha: 0.12),
-        ),
+        borderSide: BorderSide(color: colors.inputBorder),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -398,12 +412,14 @@ class _PasswordStrengthBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     return Row(
       children: List.generate(4, (index) {
         final filled = index < strength;
         Color color;
         if (!filled) {
-          color = const Color(0xFFE2E8F0);
+          color = colors.inputBorder;
         } else if (strength <= 2) {
           color = AppColors.warning;
         } else if (strength == 3) {
@@ -423,33 +439,6 @@ class _PasswordStrengthBar extends StatelessWidget {
           ),
         );
       }),
-    );
-  }
-}
-
-/// Blue-to-green gradient background for reset password screen.
-class _ResetPasswordBackground extends StatelessWidget {
-  const _ResetPasswordBackground({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFFE8F0FF),
-            Color(0xFFF5FAF7),
-            Color(0xFFEAF8F0),
-          ],
-        ),
-      ),
-      child: child,
     );
   }
 }

@@ -45,9 +45,25 @@ abstract final class TransactionIconStyles {
     );
   }
 
+  static TransactionIconStyle forGoalDeposit() {
+    return const TransactionIconStyle(
+      icon: Icons.savings_outlined,
+      color: AppColors.success,
+    );
+  }
+
+  static TransactionIconStyle forGoalWithdraw() {
+    return const TransactionIconStyle(
+      icon: Icons.savings_outlined,
+      color: AppColors.expense,
+    );
+  }
+
   static TransactionIconStyle forKind(TransactionListKind kind) {
     return switch (kind) {
       TransactionListKind.transfer => forTransfer(),
+      TransactionListKind.goalDeposit => forGoalDeposit(),
+      TransactionListKind.goalWithdraw => forGoalWithdraw(),
       TransactionListKind.debtor => forDebt(isDebtor: true),
       TransactionListKind.creditor => forDebt(isDebtor: false),
       TransactionListKind.income => forCategory(
@@ -66,6 +82,8 @@ abstract final class TransactionIconStyles {
   static Color amountColorForKind(TransactionListKind kind) {
     return switch (kind) {
       TransactionListKind.transfer => AppColors.dashboardPrimary,
+      TransactionListKind.goalDeposit => AppColors.success,
+      TransactionListKind.goalWithdraw => AppColors.expense,
       TransactionListKind.debtor => AppColors.success,
       TransactionListKind.creditor => AppColors.debtAccent,
       TransactionListKind.income => AppColors.success,

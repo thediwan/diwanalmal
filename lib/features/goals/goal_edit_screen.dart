@@ -9,13 +9,16 @@ import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_formatter.dart';
 import '../../core/helpers/currency_uniqueness.dart';
+import '../../core/helpers/date_only.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_theme_colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/brand_logo.dart';
+import '../../database/daos/finance_dao.dart';
 import '../../providers/currency_provider.dart';
+import '../../services/goal_planning_service.dart';
 import '../../services/goal_service.dart';
 import '../../services/lazarus_database_service.dart';
 import 'models/goal_draft.dart';
@@ -38,11 +41,15 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _targetAmountController = TextEditingController();
-  final _savedAmountController = TextEditingController();
 
   String _selectedIconStyle = GoalIconStyles.defaultStyle;
   String? _selectedCurrencyId;
   String? _currencySymbol;
+  String? _walletId;
+  double _savedAmount = 0;
+  double _monthlyRequired = 0;
+  double _monthlyNet = 0;
+  List<TransferWithMeta> _transfers = [];
   DateTime? _targetDate;
   bool _isLoading = true;
   bool _isSaving = false;
@@ -52,7 +59,6 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
   void initState() {
     super.initState();
     _targetAmountController.addListener(_refreshProgressPreview);
-    _savedAmountController.addListener(_refreshProgressPreview);
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadGoal());
   }
 
@@ -72,8 +78,8 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
         await currencyProvider.loadCurrencies();
       }
 
-      final goal = await GoalService(LazarusDatabaseService.instance)
-          .getById(widget.goalId);
+      final goalService = GoalService(LazarusDatabaseService.instance);
+      final goal = await goalService.getById(widget.goalId);
 
       if (!mounted) return;
 
@@ -89,13 +95,38 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
           .where((c) => c.id == goal.currencyId)
           .firstOrNull;
 
+      var transfers = <TransferWithMeta>[];
+      final userId = await LazarusDatabaseService.instance.getActiveUserId();
+      if (userId != null && goal.walletId != null) {
+        transfers = await LazarusDatabaseService.instance.database.financeDao
+            .getTransfersForWallet(
+          userId: userId,
+          walletId: goal.walletId!,
+          limit: 20,
+        );
+      }
+
+      final monthlyNet = await goalService.netContributionsThisMonth(goal);
+      final monthlyRequired = goal.targetDate == null
+          ? 0.0
+          : GoalPlanningService.monthlyRequiredFor(
+              targetAmount: goal.targetAmount,
+              savedAmount: goal.savedAmount,
+              targetDate: goal.targetDate!,
+            );
+
       _titleController.text = goal.title;
       _targetAmountController.text = _formatNumber(goal.targetAmount);
-      _savedAmountController.text = _formatNumber(goal.savedAmount);
+      _savedAmount = goal.savedAmount;
+      _walletId = goal.walletId;
+      _monthlyNet = monthlyNet;
+      _monthlyRequired = monthlyRequired;
+      _transfers = transfers;
       _selectedIconStyle = goal.icon ?? GoalIconStyles.defaultStyle;
       _selectedCurrencyId = goal.currencyId;
       _currencySymbol = currency?.symbol ?? '';
-      _targetDate = goal.targetDate;
+      _targetDate =
+          goal.targetDate == null ? null : dateOnly(goal.targetDate!);
 
       setState(() => _isLoading = false);
     } catch (e) {
@@ -130,7 +161,7 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
     );
 
     if (picked != null && mounted) {
-      setState(() => _targetDate = picked);
+      setState(() => _targetDate = dateOnly(picked));
     }
   }
 
@@ -156,9 +187,8 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
     }
 
     final targetAmount = double.parse(_targetAmountController.text.trim());
-    final savedAmount = double.tryParse(_savedAmountController.text.trim()) ?? 0;
 
-    if (savedAmount > targetAmount) {
+    if (_savedAmount > targetAmount) {
       context.showWarningFeedback(l10n.goalFormSavedExceedsTarget);
       return null;
     }
@@ -166,12 +196,12 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
     return GoalDraft(
       title: _titleController.text.trim(),
       targetAmount: targetAmount,
-      savedAmount: savedAmount,
+      savedAmount: _savedAmount,
       currencyId: currency.id,
       currencyCode: currency.code,
       currencySymbol: currency.symbol,
       rateToBase: currency.rateToBase,
-      targetDate: _targetDate!,
+      targetDate: dateOnly(_targetDate!),
       iconStyle: _selectedIconStyle,
     );
   }
@@ -233,9 +263,25 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
       }
     } catch (e) {
       if (mounted) {
-        context.showOperationError(e);
+        if (e is StateError && e.message == 'goal_wallet_has_balance') {
+          context.showWarningFeedback(l10n.goalDeleteHasBalance);
+        } else {
+          context.showOperationError(e);
+        }
       }
     }
+  }
+
+  Future<void> _openDeposit() async {
+    if (_walletId == null) return;
+    await context.push('/goals/${widget.goalId}/deposit');
+    if (mounted) await _loadGoal();
+  }
+
+  Future<void> _openWithdraw() async {
+    if (_walletId == null) return;
+    await context.push('/goals/${widget.goalId}/withdraw');
+    if (mounted) await _loadGoal();
   }
 
   String? _validateRequiredAmount(String? value) {
@@ -250,21 +296,10 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
     return null;
   }
 
-  String? _validateSavedAmount(String? value) {
-    final l10n = context.l10n;
-    if (value == null || value.trim().isEmpty) return null;
-    final parsed = double.tryParse(value.trim());
-    if (parsed == null || parsed < 0) {
-      return l10n.goalFormInvalidAmount;
-    }
-    return null;
-  }
-
   @override
   void dispose() {
     _titleController.dispose();
     _targetAmountController.dispose();
-    _savedAmountController.dispose();
     super.dispose();
   }
 
@@ -324,8 +359,7 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
 
     final targetAmount =
         double.tryParse(_targetAmountController.text.trim()) ?? 0;
-    final savedAmount =
-        double.tryParse(_savedAmountController.text.trim()) ?? 0;
+    final savedAmount = _savedAmount;
     final symbol = currencies
             .where((c) => c.id == _selectedCurrencyId)
             .firstOrNull
@@ -376,6 +410,41 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
                 CurrencyFormatter.format(targetAmount, symbol: symbol),
               ),
             ),
+            if (_walletId != null) ...[
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _openDeposit,
+                      icon: const Icon(Icons.add_circle_outline),
+                      label: Text(l10n.goalDeposit),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _openWithdraw,
+                      icon: const Icon(Icons.remove_circle_outline),
+                      label: Text(l10n.goalWithdraw),
+                    ),
+                  ),
+                ],
+              ),
+              if (_monthlyRequired > 0) ...[
+                const SizedBox(height: 12),
+                Text(
+                  l10n.goalThisMonthProgress(
+                    CurrencyFormatter.format(_monthlyNet, symbol: symbol),
+                    CurrencyFormatter.format(_monthlyRequired, symbol: symbol),
+                  ),
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ],
+            ],
             const SizedBox(height: 24),
             Align(
               alignment: AlignmentDirectional.centerStart,
@@ -420,25 +489,22 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
             const SizedBox(height: 18),
             Align(
               alignment: AlignmentDirectional.centerStart,
-              child: GoalFormLabel(text: l10n.goalFormSavedAmount),
+              child: GoalFormLabel(text: l10n.goalSavedAmountReadOnly),
             ),
             const SizedBox(height: 8),
-            TextFormField(
-              controller: _savedAmountController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              style: inputStyle,
-              onChanged: (_) => setState(() {}),
+            InputDecorator(
               decoration: AppFormFields.decoration(
                 context,
-                hintText: '0',
                 suffixIcon: const Icon(
                   Icons.savings_outlined,
                   color: AppColors.dashboardPrimary,
                   size: 20,
                 ),
               ),
-              validator: _validateSavedAmount,
+              child: Text(
+                CurrencyFormatter.format(savedAmount, symbol: symbol),
+                style: inputStyle,
+              ),
             ),
             const SizedBox(height: 18),
             Align(
@@ -479,6 +545,28 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
               onStyleSelected: (style) =>
                   setState(() => _selectedIconStyle = style),
             ),
+            if (_walletId != null) ...[
+              const SizedBox(height: 24),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: GoalFormLabel(text: l10n.goalTransferHistory),
+              ),
+              const SizedBox(height: 8),
+              if (_transfers.isEmpty)
+                Text(
+                  l10n.goalNoTransfersYet,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                )
+              else
+                ..._transfers.map(
+                  (row) => _GoalTransferRow(
+                    row: row,
+                    goalWalletId: _walletId!,
+                  ),
+                ),
+            ],
           ],
         ),
       ),
@@ -522,6 +610,70 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
                   Icon(Icons.check_rounded, color: colors.onPrimary, size: 22),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+class _GoalTransferRow extends StatelessWidget {
+  const _GoalTransferRow({
+    required this.row,
+    required this.goalWalletId,
+  });
+
+  final TransferWithMeta row;
+  final String goalWalletId;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final locale = Localizations.localeOf(context).toString();
+    final isDeposit = row.transfer.toWalletId == goalWalletId;
+    final date = DateFormat.yMMMd(locale).format(row.transfer.transactionDate);
+    final displayAmount = isDeposit
+        ? (row.transfer.toAmount ?? row.transfer.amount)
+        : row.transfer.amount;
+    final code = isDeposit ? row.toCurrencyCode : row.currencyCode;
+    final amount = CurrencyFormatter.formatWithCode(displayAmount, code);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(
+            isDeposit ? Icons.arrow_downward : Icons.arrow_upward,
+            size: 18,
+            color: isDeposit ? AppColors.success : AppColors.expense,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${row.fromWalletName} → ${row.toWalletName}',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                Text(
+                  date,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            amount,
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w700,
+              color: colors.textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }

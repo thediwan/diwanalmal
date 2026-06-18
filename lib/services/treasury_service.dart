@@ -20,6 +20,7 @@ class TreasuryService {
     if (userId == null) return [];
 
     final rows = await _db.financeDao.getActiveTreasuries(userId);
+    final goalWalletIds = await _db.financeDao.getGoalWalletIds(userId);
     final treasuries = <Treasury>[];
 
     for (final row in rows) {
@@ -54,6 +55,7 @@ class TreasuryService {
           iconStyle: row.wallet.iconStyle,
           createdAt: row.wallet.createdAt,
           accounts: accounts,
+          isGoalWallet: goalWalletIds.contains(row.wallet.id),
         ),
       );
     }

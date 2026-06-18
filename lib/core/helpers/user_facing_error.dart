@@ -73,6 +73,20 @@ abstract final class UserFacingError {
     return message(l10n, error);
   }
 
+  /// Goal savings transfer business error codes.
+  static String goalMessage(AppLocalizations l10n, Object error) {
+    if (error is StateError) {
+      return switch (error.message) {
+        'insufficient_wallet_balance' => l10n.goalInsufficientBalance,
+        'insufficient_goal_balance' => l10n.goalInsufficientBalance,
+        'source_wallet_currency_mismatch' => l10n.goalSavingsWalletCurrencyMismatch,
+        'goal_wallet_missing' => l10n.goalEditNotFound,
+        _ => message(l10n, error),
+      };
+    }
+    return message(l10n, error);
+  }
+
   static bool _looksTechnical(String value) {
     return value.contains('SqliteException') ||
         value.contains('SQL logic error') ||

@@ -10,6 +10,7 @@ class GoalDraft {
     required this.rateToBase,
     required this.targetDate,
     required this.iconStyle,
+    this.sourceWalletId,
   });
 
   final String title;
@@ -21,6 +22,9 @@ class GoalDraft {
   final double rateToBase;
   final DateTime targetDate;
   final String iconStyle;
+
+  /// Treasury to fund the initial saved amount via transfer.
+  final String? sourceWalletId;
 
   /// Remaining amount the user still needs to save.
   double get remainingAmount =>
@@ -36,6 +40,7 @@ class GoalDraft {
     double? rateToBase,
     DateTime? targetDate,
     String? iconStyle,
+    String? sourceWalletId,
   }) {
     return GoalDraft(
       title: title ?? this.title,
@@ -47,6 +52,7 @@ class GoalDraft {
       rateToBase: rateToBase ?? this.rateToBase,
       targetDate: targetDate ?? this.targetDate,
       iconStyle: iconStyle ?? this.iconStyle,
+      sourceWalletId: sourceWalletId ?? this.sourceWalletId,
     );
   }
 }

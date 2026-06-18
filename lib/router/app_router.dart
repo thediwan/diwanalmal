@@ -30,7 +30,9 @@ import '../features/settings/settings_screen.dart';
 import '../features/goals/goal_edit_screen.dart';
 import '../features/goals/goal_form_screen.dart';
 import '../features/goals/goal_plan_screen.dart';
+import '../features/goals/goal_savings_form_screen.dart';
 import '../features/goals/models/goal_draft.dart';
+import '../features/goals/models/goal_savings_mode.dart';
 import '../features/wallets/wallet_form_screen.dart';
 import '../features/wallets/wallets_screen.dart';
 import '../providers/settings_provider.dart';
@@ -181,6 +183,28 @@ class AppRouter {
               final id = state.pathParameters['id']!;
               return GoalEditScreen(goalId: id);
             },
+            routes: [
+              GoRoute(
+                path: 'deposit',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return GoalSavingsFormScreen(
+                    goalId: id,
+                    mode: GoalSavingsMode.deposit,
+                  );
+                },
+              ),
+              GoRoute(
+                path: 'withdraw',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return GoalSavingsFormScreen(
+                    goalId: id,
+                    mode: GoalSavingsMode.withdraw,
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/transactions',

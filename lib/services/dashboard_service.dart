@@ -47,6 +47,7 @@ class DashboardService {
       debtType: DatabaseConstants.debtIOwe,
     );
 
+    await _dao.syncAllGoalSavedAmounts(userId);
     final goalRows = await _dao.getGoals(userId);
     final goals = goalRows
         .map(

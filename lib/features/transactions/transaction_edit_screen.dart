@@ -12,6 +12,7 @@ import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_formatter.dart';
 import '../../core/helpers/number_format_preferences.dart';
 import '../../core/helpers/currency_uniqueness.dart';
+import '../../core/helpers/treasury_filters.dart';
 import '../../core/helpers/user_facing_error.dart';
 import '../../core/theme/app_theme_colors.dart';
 import '../../core/theme/app_form_fields.dart';
@@ -88,6 +89,11 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
   List<TransactionCategory> _expenseCategories = [];
   List<TransactionCategory> _incomeCategories = [];
 
+  bool get _isTransferLike =>
+      widget.kind == TransactionListKind.transfer ||
+      widget.kind == TransactionListKind.goalDeposit ||
+      widget.kind == TransactionListKind.goalWithdraw;
+
   @override
   void initState() {
     super.initState();
@@ -111,7 +117,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
     _expenseCategories = await categoryService.getExpenseCategories();
     _incomeCategories = await categoryService.getIncomeCategories();
 
-    if (widget.kind == TransactionListKind.transfer) {
+    if (_isTransferLike) {
       final row = await lazarus.database.financeDao.getTransferById(widget.id);
       if (row == null || !mounted) {
         context.pop();
@@ -184,14 +190,14 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
   Currency? _currencyById(String? id) =>
       _currencies.where((c) => c.id == id).firstOrNull;
 
-  List<Treasury> _walletsForCurrency(String? currencyId) {
+  List<Treasury> _walletsForCurrency(String? currencyId, {String? keepWalletId}) {
     final currency = _currencyById(currencyId);
     if (currency == null) return [];
-    return context.read<WalletProvider>().treasuries.where((treasury) {
-      return treasury.accounts.any(
-        (a) => a.currencyCode.toUpperCase() == currency.code.toUpperCase(),
-      );
-    }).toList();
+    return regularTreasuriesForCurrency(
+      treasuries: context.read<WalletProvider>().treasuries,
+      currencyCode: currency.code,
+      selectedWalletId: keepWalletId,
+    );
   }
 
   List<TransactionCategory> get _activeCategories {
@@ -240,6 +246,8 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       TransactionListKind.income => l10n.transactionFormIncome,
       TransactionListKind.expense => l10n.transactionFormExpense,
       TransactionListKind.transfer => l10n.transactionFormCurrencyTransfer,
+      TransactionListKind.goalDeposit => l10n.goalSavingsDepositTitle,
+      TransactionListKind.goalWithdraw => l10n.goalSavingsWithdrawTitle,
       TransactionListKind.debtor => l10n.transactionFormDebtor,
       TransactionListKind.creditor => l10n.transactionFormCreditor,
     };
@@ -392,7 +400,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       return;
     }
 
-    if (widget.kind == TransactionListKind.transfer) {
+    if (_isTransferLike) {
       final amount = _parsePositiveDouble(_transferAmountController.text);
       final crossRate = _parsePositiveDouble(_exchangeRateController.text);
       if (amount == null) {
@@ -425,7 +433,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
     setState(() => _isSaving = true);
 
     try {
-      if (widget.kind == TransactionListKind.transfer) {
+      if (_isTransferLike) {
         final source = _currencyById(_sourceCurrencyId);
         final target = _currencyById(_targetCurrencyId);
         if (source == null || target == null) return;
@@ -529,14 +537,12 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
     );
 
     final sourceCurrency = _currencyById(
-      widget.kind == TransactionListKind.transfer
-          ? _sourceCurrencyId
-          : _currencyId,
+      _isTransferLike ? _sourceCurrencyId : _currencyId,
     );
     final targetCurrency = _currencyById(_targetCurrencyId);
     final transferAmount = _parsePositiveDouble(_transferAmountController.text);
     final crossRate = _parsePositiveDouble(_exchangeRateController.text);
-    final convertedPreview = widget.kind == TransactionListKind.transfer &&
+    final convertedPreview = _isTransferLike &&
             sourceCurrency != null &&
             targetCurrency != null &&
             transferAmount != null &&
@@ -608,7 +614,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                     ),
                   ],
                   const SizedBox(height: 20),
-                  if (widget.kind == TransactionListKind.transfer) ...[
+                  if (_isTransferLike) ...[
                     Text(
                       l10n.transactionFormAmountLabel,
                       style: AppFormFields.sectionLabelStyleOf(context),
@@ -646,7 +652,10 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                     ),
                     const SizedBox(height: 10),
                     TransactionWalletCarousel(
-                      treasuries: _walletsForCurrency(_sourceCurrencyId),
+                      treasuries: _walletsForCurrency(
+                        _sourceCurrencyId,
+                        keepWalletId: _sourceWalletId,
+                      ),
                       currencyCode: sourceCurrency?.code ?? '',
                       selectedWalletId: _sourceWalletId,
                       onSelected: (id) => setState(() => _sourceWalletId = id),
@@ -669,7 +678,10 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                     ),
                     const SizedBox(height: 10),
                     TransactionWalletCarousel(
-                      treasuries: _walletsForCurrency(_targetCurrencyId),
+                      treasuries: _walletsForCurrency(
+                        _targetCurrencyId,
+                        keepWalletId: _targetWalletId,
+                      ),
                       currencyCode: targetCurrency?.code ?? '',
                       selectedWalletId: _targetWalletId,
                       onSelected: (id) => setState(() => _targetWalletId = id),
@@ -752,7 +764,10 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                     ),
                     const SizedBox(height: 10),
                     TransactionWalletCarousel(
-                      treasuries: _walletsForCurrency(_currencyId),
+                      treasuries: _walletsForCurrency(
+                        _currencyId,
+                        keepWalletId: _walletId,
+                      ),
                       currencyCode: sourceCurrency?.code ?? '',
                       selectedWalletId: _walletId,
                       onSelected: (id) => setState(() => _walletId = id),
@@ -904,7 +919,10 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                     ),
                     const SizedBox(height: 8),
                     TransactionWalletCarousel(
-                      treasuries: _walletsForCurrency(_currencyId),
+                      treasuries: _walletsForCurrency(
+                        _currencyId,
+                        keepWalletId: _walletId,
+                      ),
                       currencyCode: sourceCurrency?.code ?? '',
                       selectedWalletId: _walletId,
                       onSelected: (id) => setState(() => _walletId = id),

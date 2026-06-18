@@ -317,6 +317,30 @@
       "to": { "type": "String" }
     }
   },
+  "transactionsListGoalDepositTitle": "إيداع في {goal}",
+  "@transactionsListGoalDepositTitle": {
+    "placeholders": {
+      "goal": { "type": "String" }
+    }
+  },
+  "transactionsListGoalDepositDetail": "من محفظة {wallet}",
+  "@transactionsListGoalDepositDetail": {
+    "placeholders": {
+      "wallet": { "type": "String" }
+    }
+  },
+  "transactionsListGoalWithdrawTitle": "سحب من {goal}",
+  "@transactionsListGoalWithdrawTitle": {
+    "placeholders": {
+      "goal": { "type": "String" }
+    }
+  },
+  "transactionsListGoalWithdrawDetail": "إلى محفظة {wallet}",
+  "@transactionsListGoalWithdrawDetail": {
+    "placeholders": {
+      "wallet": { "type": "String" }
+    }
+  },
   "transactionsListNotesTitle": "ملاحظات",
   "transactionsListNoNotes": "لا توجد ملاحظات",
   "transactionsListFilterTitle": "تصفية العمليات",
@@ -537,5 +561,33 @@
   "goalEditDeleteError": "تعذر حذف الهدف: {error}",
   "@goalEditDeleteError": {
     "placeholders": { "error": { "type": "String" } }
-  }
+  },
+  "goalDeposit": "إيداع",
+  "goalWithdraw": "سحب",
+  "goalTransferHistory": "سجل التحويلات",
+  "goalThisMonthProgress": "هذا الشهر: {saved} / {required} مطلوب",
+  "@goalThisMonthProgress": {
+    "placeholders": {
+      "saved": { "type": "String" },
+      "required": { "type": "String" }
+    }
+  },
+  "goalWalletBadge": "هدف",
+  "goalSelectSourceWallet": "محفظة المصدر للمبلغ الافتتاحي",
+  "goalSelectSourceWalletRequired": "اختر محفظة المصدر للمبلغ المدخر الافتتاحي",
+  "goalInsufficientBalance": "رصيد المحفظة غير كافٍ",
+  "goalDeleteHasBalance": "لا يمكن حذف الهدف طالما يحتوي على مدخرات. اسحب المبلغ أولاً.",
+  "goalSavedAmountReadOnly": "المبلغ المدخر (من محفظة الهدف)",
+  "goalTransferDeposit": "إيداع للهدف",
+  "goalTransferWithdraw": "سحب من الهدف",
+  "goalNoTransfersYet": "لا توجد تحويلات بعد",
+  "goalSavingsDepositTitle": "إيداع للهدف",
+  "goalSavingsWithdrawTitle": "سحب من الهدف",
+  "goalSavingsSelectWallet": "اختر المحفظة",
+  "goalSavingsAmount": "المبلغ",
+  "goalSavingsSuccess": "تمت العملية بنجاح",
+  "goalSavingsWalletCurrencyMismatch": "المحفظة المختارة لا تدعم عملة الهدف",
+  "goalSavingsGoalWallet": "محفظة الهدف",
+  "goalSavingsSourceWallet": "محفظة المصدر",
+  "goalSavingsDestinationWallet": "محفظة الوجهة"
 }

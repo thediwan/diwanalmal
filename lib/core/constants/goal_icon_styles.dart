@@ -23,6 +23,20 @@ abstract final class GoalIconStyles {
   /// Default icon when the user does not pick one.
   static const String defaultStyle = car;
 
+  /// Legacy emoji stored on treasury rows for goal wallets.
+  static String legacyEmoji(String? style) {
+    return switch (style) {
+      car => '🚗',
+      house => '🏠',
+      plane => '✈️',
+      graduation => '🎓',
+      laptop => '💻',
+      savings => '💰',
+      gift => '🎁',
+      _ => '🎯',
+    };
+  }
+
   /// Resolves a persisted key to a display icon.
   static IconData iconFor(String? style) {
     return switch (style) {

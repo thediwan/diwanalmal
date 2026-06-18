@@ -5,6 +5,8 @@ enum TransactionListKind {
   expense,
   income,
   transfer,
+  goalDeposit,
+  goalWithdraw,
   debtor,
   creditor,
 }
