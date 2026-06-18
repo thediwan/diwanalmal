@@ -10,23 +10,34 @@ class TransactionNumericKeypad extends StatelessWidget {
     super.key,
     required this.onDigit,
     required this.onDecimal,
+    required this.onThousandsSeparator,
     required this.onDoubleZero,
     required this.onBackspace,
     this.decimalLabel,
+    this.thousandsSeparatorLabel,
+    this.showThousandsSeparatorKey = true,
   });
 
   final ValueChanged<int> onDigit;
   final VoidCallback onDecimal;
+  final VoidCallback onThousandsSeparator;
   final VoidCallback onDoubleZero;
   final VoidCallback onBackspace;
 
   /// Label for the decimal key; defaults to user number-format preference.
   final String? decimalLabel;
 
+  /// Label for the optional thousands-separator toggle key.
+  final String? thousandsSeparatorLabel;
+
+  /// When false (e.g. plain format), the separator key is hidden.
+  final bool showThousandsSeparatorKey;
+
   @override
   Widget build(BuildContext context) {
-    final decimalKey =
-        decimalLabel ?? NumberFormatPreferences.current.decimalSeparator;
+    final prefs = NumberFormatPreferences.current;
+    final decimalKey = decimalLabel ?? prefs.decimalSeparator;
+    final thousandsKey = thousandsSeparatorLabel ?? prefs.thousandsSeparator;
 
     return Column(
       children: [
@@ -54,16 +65,25 @@ class TransactionNumericKeypad extends StatelessWidget {
                 onTap: onDoubleZero,
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
+            if (showThousandsSeparatorKey && thousandsKey.isNotEmpty) ...[
+              Expanded(
+                child: _KeyButton(
+                  label: thousandsKey,
+                  onTap: onThousandsSeparator,
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
             Expanded(
               child: _KeyButton(
                 label: decimalKey,
                 onTap: onDecimal,
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Expanded(child: _KeyButton(label: '0', onTap: () => onDigit(0))),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Expanded(
               child: _KeyButton(
                 icon: Icons.backspace_outlined,
@@ -130,8 +150,13 @@ class TransactionAmountInput {
   String _fraction = '';
   bool _editingFraction = false;
 
+  /// When false (default), the whole part is shown without thousand separators.
+  bool _showThousandsSeparators = false;
+
   static const int _maxWholeDigits = 9;
   static const int _maxFractionDigits = 2;
+
+  bool get showThousandsSeparators => _showThousandsSeparators;
 
   double get value {
     if (_whole.isEmpty && _fraction.isEmpty && !_editingFraction) {
@@ -145,14 +170,37 @@ class TransactionAmountInput {
     return double.tryParse('$wholeText.$fractionText') ?? 0;
   }
 
-  /// Live display while typing (respects user decimal separator).
+  /// Live display while typing — plain digits by default; optional grouping.
   String get display {
     final decimalSep = NumberFormatPreferences.current.decimalSeparator;
     if (_whole.isEmpty && !_editingFraction) return '0';
     final wholeText = _whole.isEmpty ? '0' : _whole;
-    if (!_editingFraction) return wholeText;
-    if (_fraction.isEmpty) return '$wholeText$decimalSep';
-    return '$wholeText$decimalSep$_fraction';
+    final displayWhole = _showThousandsSeparators
+        ? _applyThousandsGrouping(wholeText)
+        : wholeText;
+    if (!_editingFraction) return displayWhole;
+    if (_fraction.isEmpty) return '$displayWhole$decimalSep';
+    return '$displayWhole$decimalSep$_fraction';
+  }
+
+  /// Toggles thousand-separator display for the whole part (value unchanged).
+  void toggleThousandsSeparators() {
+    _showThousandsSeparators = !_showThousandsSeparators;
+  }
+
+  static String _applyThousandsGrouping(String digits) {
+    if (digits.isEmpty) return '0';
+    final sep = NumberFormatPreferences.current.thousandsSeparator;
+    if (sep.isEmpty) return digits;
+
+    final buffer = StringBuffer();
+    for (var i = 0; i < digits.length; i++) {
+      if (i > 0 && (digits.length - i) % 3 == 0) {
+        buffer.write(sep);
+      }
+      buffer.write(digits[i]);
+    }
+    return buffer.toString();
   }
 
   void appendDigit(int digit) {
@@ -216,6 +264,7 @@ class TransactionAmountInput {
     _whole = '';
     _fraction = '';
     _editingFraction = false;
+    _showThousandsSeparators = false;
   }
 
   /// Sets amount from an existing record (edit screen).

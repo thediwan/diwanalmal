@@ -56,7 +56,8 @@ The numeric keypad enters amounts in **whole currency units**, not cents.
 | `2` → `0` → `.` → `1` | `20.1` | `20.1` |
 | `00` on `2` | `200` | `200.0` |
 
-- Bottom row: `00` · decimal · `0` · backspace  
+- Bottom row: `00` · **thousands separator** (toggle display grouping, default off) · **decimal separator** · `0` · backspace  
+- Default entry display is plain digits (`5000` not `5,000`); tap the separator key to toggle grouping (`5,000`) without changing the stored value.
 - Decimal key label follows the user's format (`.` or `,`).  
 - Up to 2 fraction digits.
 

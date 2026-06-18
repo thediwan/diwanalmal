@@ -10,6 +10,7 @@ import '../../core/constants/database_constants.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_formatter.dart';
+import '../../core/helpers/number_format_preferences.dart';
 import '../../core/helpers/currency_uniqueness.dart';
 import '../../core/helpers/user_facing_error.dart';
 import '../../core/theme/app_theme_colors.dart';
@@ -870,9 +871,17 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                     TransactionNumericKeypad(
                       onDigit: (d) => setState(() => _amountInput.appendDigit(d)),
                       onDecimal: () => setState(() => _amountInput.startDecimal()),
+                      onThousandsSeparator: () => setState(
+                        () => _amountInput.toggleThousandsSeparators(),
+                      ),
                       onDoubleZero: () =>
                           setState(() => _amountInput.appendDoubleZero()),
                       onBackspace: () => setState(() => _amountInput.backspace()),
+                      showThousandsSeparatorKey:
+                          NumberFormatPreferences
+                              .current
+                              .thousandsSeparator
+                              .isNotEmpty,
                     ),
                     const SizedBox(height: 20),
                     Text(

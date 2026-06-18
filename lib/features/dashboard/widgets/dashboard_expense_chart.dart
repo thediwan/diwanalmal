@@ -81,8 +81,6 @@ class _DashboardExpenseChartState extends State<DashboardExpenseChart> {
             points: points,
             currencyCode: widget.currencyCode,
             colors: colors,
-            maxLabel: l10n.dashboardChartMax,
-            minLabel: l10n.dashboardChartMin,
           ),
         ],
       ),
@@ -95,15 +93,11 @@ class _ExpenseBarChart extends StatelessWidget {
     required this.points,
     required this.currencyCode,
     required this.colors,
-    required this.maxLabel,
-    required this.minLabel,
   });
 
   final List<DashboardChartPoint> points;
   final String currencyCode;
   final AppThemeColors colors;
-  final String maxLabel;
-  final String minLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -120,11 +114,22 @@ class _ExpenseBarChart extends StatelessWidget {
     }
 
     final amounts = points.map((p) => p.amount).toList();
+    final positiveAmounts = amounts.where((a) => a > 0).toList();
     final maxAmount = amounts.reduce((a, b) => a > b ? a : b);
-    final minAmount = amounts.reduce((a, b) => a < b ? a : b);
+    final minAmount = positiveAmounts.isEmpty
+        ? 0.0
+        : positiveAmounts.reduce((a, b) => a < b ? a : b);
     final maxIndex = amounts.indexOf(maxAmount);
-    final minIndex = amounts.indexOf(minAmount);
+    final minIndex = positiveAmounts.isEmpty
+        ? -1
+        : amounts.indexOf(minAmount);
     final scaleMax = maxAmount <= 0 ? 1.0 : maxAmount;
+    final scaleTicks = _buildScaleTicks(minAmount, scaleMax);
+
+    double normalizeAmount(double amount) {
+      if (scaleMax <= 0 || amount <= 0) return 0;
+      return (amount / scaleMax).clamp(0.0, 1.0);
+    }
 
     return SizedBox(
       height: 248,
@@ -133,47 +138,65 @@ class _ExpenseBarChart extends StatelessWidget {
         children: [
           SizedBox(
             width: 72,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  maxLabel,
-                  style: AppTextStyles.captionOnSurface(colors).copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                const bottomLabelReserve = 36.0;
+                const topPadding = 8.0;
+                final plotHeight =
+                    constraints.maxHeight - bottomLabelReserve - topPadding;
+
+                return Padding(
+                  padding: const EdgeInsets.only(top: topPadding, bottom: bottomLabelReserve),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      for (final tick in scaleTicks)
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          top: _tickTopForAmount(
+                            amount: tick,
+                            scaleMax: scaleMax,
+                            plotHeight: plotHeight,
+                          ),
+                          child: Transform.translate(
+                            offset: const Offset(0, -8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  CurrencyFormatter.formatCodeFirst(
+                                    tick,
+                                    currencyCode,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.captionOnSurface(colors)
+                                      .copyWith(
+                                    fontSize: 10,
+                                    fontWeight: tick == scaleMax
+                                        ? FontWeight.w800
+                                        : tick == minAmount && tick > 0
+                                            ? FontWeight.w700
+                                            : tick == 0
+                                                ? FontWeight.w600
+                                                : FontWeight.w500,
+                                    color: tick == scaleMax
+                                        ? AppColors.expense
+                                        : tick == minAmount && tick > 0
+                                            ? colors.textSecondary
+                                            : colors.textMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  CurrencyFormatter.formatCodeFirst(maxAmount, currencyCode),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.captionOnSurface(colors).copyWith(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.expense,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  minLabel,
-                  style: AppTextStyles.captionOnSurface(colors).copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  CurrencyFormatter.formatCodeFirst(minAmount, currencyCode),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.captionOnSurface(colors).copyWith(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 36),
-              ],
+                );
+              },
             ),
           ),
           const SizedBox(width: 8),
@@ -184,20 +207,35 @@ class _ExpenseBarChart extends StatelessWidget {
                   left: 0,
                   right: 0,
                   top: 8,
-                  child: Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: colors.divider.withValues(alpha: 0.6),
-                  ),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
                   bottom: 36,
-                  child: Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: colors.divider.withValues(alpha: 0.6),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Stack(
+                        children: [
+                          for (final tick in scaleTicks)
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              top: _tickTopForAmount(
+                                amount: tick,
+                                scaleMax: scaleMax,
+                                plotHeight: constraints.maxHeight,
+                              ),
+                              child: Divider(
+                                height: 1,
+                                thickness: 1,
+                                color: colors.divider.withValues(
+                                  alpha: tick == scaleMax ||
+                                          tick == 0 ||
+                                          (tick == minAmount && tick > 0)
+                                      ? 0.55
+                                      : 0.28,
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 ),
                 Row(
@@ -215,11 +253,11 @@ class _ExpenseBarChart extends StatelessWidget {
                                 ),
                                 child: _ChartBarSlot(
                                   amount: points[i].amount,
-                                  scaleMax: scaleMax,
-                                  isMax: i == maxIndex &&
-                                      points[i].amount > 0,
-                                  isMin: i == minIndex &&
-                                      points.length > 1,
+                                  normalizedHeight: normalizeAmount(
+                                    points[i].amount,
+                                  ),
+                                  isMax: i == maxIndex && points[i].amount > 0,
+                                  isMin: i == minIndex && minIndex >= 0,
                                 ),
                               ),
                             ),
@@ -254,37 +292,56 @@ class _ExpenseBarChart extends StatelessWidget {
       ),
     );
   }
+
+  /// Y-axis ticks: starts at 0, first step is [minPositive], up to [max].
+  static List<double> _buildScaleTicks(double minPositive, double max) {
+    if (max <= 0) return [0];
+    if (minPositive <= 0 || minPositive >= max) {
+      return [0, max];
+    }
+
+    final mid = minPositive + (max - minPositive) / 2;
+    return [0, minPositive, mid, max];
+  }
+
+  /// Maps an amount to a vertical offset within the plot (0 = top/max).
+  static double _tickTopForAmount({
+    required double amount,
+    required double scaleMax,
+    required double plotHeight,
+  }) {
+    if (plotHeight <= 0 || scaleMax <= 0) return 0;
+    final ratio = (amount / scaleMax).clamp(0.0, 1.0);
+    return plotHeight * (1 - ratio);
+  }
 }
 
 /// Single bar column — shares the same [Expanded] slot as its date label below.
 class _ChartBarSlot extends StatelessWidget {
   const _ChartBarSlot({
     required this.amount,
-    required this.scaleMax,
+    required this.normalizedHeight,
     required this.isMax,
     required this.isMin,
   });
 
   final double amount;
-  final double scaleMax;
+  final double normalizedHeight;
   final bool isMax;
   final bool isMin;
 
   @override
   Widget build(BuildContext context) {
-    final normalized =
-        scaleMax <= 0 ? 0.0 : (amount / scaleMax).clamp(0.0, 1.0);
-
-    final fillColor = isMax
+    final baseColor = isMax
         ? AppColors.expense
         : isMin
-            ? AppColors.dashboardPrimary.withValues(alpha: 0.65)
-            : AppColors.dashboardPrimary.withValues(alpha: 0.35);
+            ? AppColors.dashboardPrimary.withValues(alpha: 0.85)
+            : AppColors.dashboardPrimary.withValues(alpha: 0.45);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final barWidth = constraints.maxWidth * 0.55;
-        final barHeight = constraints.maxHeight * normalized;
+        final barHeight = constraints.maxHeight * normalizedHeight;
 
         return Align(
           alignment: Alignment.bottomCenter,
@@ -292,10 +349,17 @@ class _ChartBarSlot extends StatelessWidget {
             width: barWidth,
             height: barHeight,
             decoration: BoxDecoration(
-              color: fillColor,
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  baseColor.withValues(alpha: 0.55),
+                  baseColor,
+                ],
+              ),
               borderRadius: BorderRadius.circular(6),
               border: amount > 0 && barHeight >= 4
-                  ? Border.all(color: fillColor.withValues(alpha: 0.15))
+                  ? Border.all(color: baseColor.withValues(alpha: 0.2))
                   : null,
             ),
           ),

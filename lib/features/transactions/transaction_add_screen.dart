@@ -10,6 +10,7 @@ import '../../core/constants/database_constants.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_formatter.dart';
+import '../../core/helpers/number_format_preferences.dart';
 import '../../core/helpers/currency_uniqueness.dart';
 import '../../core/helpers/user_facing_error.dart';
 import '../../core/theme/app_form_fields.dart';
@@ -45,13 +46,15 @@ class TransactionAddScreen extends StatefulWidget {
   State<TransactionAddScreen> createState() => _TransactionAddScreenState();
 }
 
-class _TransactionAddScreenState extends State<TransactionAddScreen> {
+class _TransactionAddScreenState extends State<TransactionAddScreen>
+    with WidgetsBindingObserver {
   static const _logoAsset = 'assets/images/logo.png';
+  static const _saveButtonAreaHeight = 78.0;
 
   final _amountInput = TransactionAmountInput();
   final _scrollController = ScrollController();
   final _notesFocusNode = FocusNode();
-  final _notesSectionKey = GlobalKey();
+  final _notesFieldKey = GlobalKey();
   final _notesController = TextEditingController();
   final _transferAmountController = TextEditingController();
   final _exchangeRateController = TextEditingController();
@@ -66,6 +69,8 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   FormFeedbackType? _feedbackType;
   String? _feedbackMessage;
   Timer? _feedbackDismissTimer;
+  Timer? _notesScrollDebounce;
+  bool _notesScrollAnimating = false;
 
   String? _selectedCurrencyId;
   String? _selectedWalletId;
@@ -83,36 +88,84 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _notesFocusNode.addListener(_onNotesFocusChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _initialize());
   }
 
-  /// Scrolls notes and date into view when the system keyboard opens.
-  void _onNotesFocusChanged() {
-    if (!_notesFocusNode.hasFocus) return;
-    _scheduleNotesSectionScroll();
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (_notesFocusNode.hasFocus) {
+      _scheduleNotesFieldScroll();
+    }
   }
 
-  void _scheduleNotesSectionScroll() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  /// Waits for the keyboard to settle, then runs one smooth scroll.
+  void _onNotesFocusChanged() {
+    if (!_notesFocusNode.hasFocus) return;
+    _scheduleNotesFieldScroll();
+  }
+
+  void _scheduleNotesFieldScroll() {
+    _notesScrollDebounce?.cancel();
+    _notesScrollDebounce = Timer(const Duration(milliseconds: 260), () {
       if (!mounted || !_notesFocusNode.hasFocus) return;
-      _scrollNotesSectionIntoView();
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (!mounted || !_notesFocusNode.hasFocus) return;
-        _scrollNotesSectionIntoView();
-      });
+      _scrollNotesFieldIntoViewSmooth();
     });
   }
 
-  void _scrollNotesSectionIntoView() {
-    final sectionContext = _notesSectionKey.currentContext;
-    if (sectionContext == null) return;
-    Scrollable.ensureVisible(
-      sectionContext,
-      alignment: 0.05,
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
+  Future<void> _scrollNotesFieldIntoViewSmooth() async {
+    if (!mounted || !_notesFocusNode.hasFocus || _notesScrollAnimating) return;
+    if (!_scrollController.hasClients) return;
+
+    final fieldContext = _notesFieldKey.currentContext;
+    if (fieldContext == null) return;
+
+    final fieldBox = fieldContext.findRenderObject();
+    if (fieldBox is! RenderBox || !fieldBox.hasSize) return;
+
+    final scrollable = Scrollable.maybeOf(fieldContext);
+    if (scrollable == null) return;
+
+    final scrollBox = scrollable.context.findRenderObject();
+    if (scrollBox is! RenderBox || !scrollBox.hasSize) return;
+
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final visibleBottom =
+        scrollBox.size.height - keyboardInset - _saveButtonAreaHeight - 12;
+    final fieldTop =
+        fieldBox.localToGlobal(Offset.zero, ancestor: scrollBox).dy;
+    final fieldBottom = fieldTop + fieldBox.size.height;
+
+    const topMargin = 20.0;
+    var targetOffset = _scrollController.offset;
+
+    if (fieldBottom > visibleBottom) {
+      targetOffset += fieldBottom - visibleBottom;
+    } else if (fieldTop < topMargin) {
+      targetOffset -= topMargin - fieldTop;
+    } else {
+      return;
+    }
+
+    targetOffset = targetOffset.clamp(
+      _scrollController.position.minScrollExtent,
+      _scrollController.position.maxScrollExtent,
     );
+
+    if ((_scrollController.offset - targetOffset).abs() < 6) return;
+
+    _notesScrollAnimating = true;
+    try {
+      await _scrollController.animateTo(
+        targetOffset,
+        duration: const Duration(milliseconds: 380),
+        curve: Curves.easeOutCubic,
+      );
+    } finally {
+      _notesScrollAnimating = false;
+    }
   }
 
   Future<void> _initialize() async {
@@ -369,6 +422,10 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
 
   void _onDecimal() {
     setState(() => _amountInput.startDecimal());
+  }
+
+  void _onThousandsSeparator() {
+    setState(() => _amountInput.toggleThousandsSeparators());
   }
 
   void _onBackspace() {
@@ -707,6 +764,8 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
   @override
   void dispose() {
     _feedbackDismissTimer?.cancel();
+    _notesScrollDebounce?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _notesFocusNode.removeListener(_onNotesFocusChanged);
     _notesFocusNode.dispose();
     _scrollController.dispose();
@@ -744,10 +803,17 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : SingleChildScrollView(
                     controller: _scrollController,
-                    physics: const AlwaysScrollableScrollPhysics(),
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
                     keyboardDismissBehavior:
                         ScrollViewKeyboardDismissBehavior.onDrag,
-                    padding: EdgeInsets.fromLTRB(20, 0, 20, 16 + keyboardInset),
+                    padding: EdgeInsets.fromLTRB(
+                      20,
+                      0,
+                      20,
+                      16 + keyboardInset + _saveButtonAreaHeight,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -956,8 +1022,14 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                           TransactionNumericKeypad(
                             onDigit: _onDigit,
                             onDecimal: _onDecimal,
+                            onThousandsSeparator: _onThousandsSeparator,
                             onDoubleZero: _onDoubleZero,
                             onBackspace: _onBackspace,
+                            showThousandsSeparatorKey:
+                                NumberFormatPreferences
+                                    .current
+                                    .thousandsSeparator
+                                    .isNotEmpty,
                           ),
                           const SizedBox(height: 22),
                           _SectionHeader(
@@ -992,34 +1064,29 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                           ],
                         ],
                         const SizedBox(height: 22),
-                        Column(
-                          key: _notesSectionKey,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _SectionHeader(
-                              title: l10n.transactionFormNotes,
-                              icon: Icons.notes_outlined,
-                            ),
-                            const SizedBox(height: 10),
-                            TextFormField(
-                              controller: _notesController,
-                              focusNode: _notesFocusNode,
-                              maxLines: 3,
-                              textInputAction: TextInputAction.done,
-                              style: AppFormFields.inputTextStyleOf(context),
-                              decoration: AppFormFields.decoration(
-                                context,
-                                hintText: l10n.transactionFormNotesHint,
-                              ),
-                              onTap: _scheduleNotesSectionScroll,
-                            ),
-                            const SizedBox(height: 16),
-                            _DateBar(
-                              dateLabel: _formatDateLabel(l10n, locale),
-                              changeLabel: l10n.transactionFormChangeDate,
-                              onChange: _pickDate,
-                            ),
-                          ],
+                        _SectionHeader(
+                          title: l10n.transactionFormNotes,
+                          icon: Icons.notes_outlined,
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          key: _notesFieldKey,
+                          controller: _notesController,
+                          focusNode: _notesFocusNode,
+                          maxLines: 3,
+                          textInputAction: TextInputAction.done,
+                          style: AppFormFields.inputTextStyleOf(context),
+                          scrollPadding: EdgeInsets.zero,
+                          decoration: AppFormFields.decoration(
+                            context,
+                            hintText: l10n.transactionFormNotesHint,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _DateBar(
+                          dateLabel: _formatDateLabel(l10n, locale),
+                          changeLabel: l10n.transactionFormChangeDate,
+                          onChange: _pickDate,
                         ),
                       ],
                     ),
