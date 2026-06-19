@@ -16,6 +16,7 @@ import '../../core/helpers/treasury_filters.dart';
 import '../../core/helpers/user_facing_error.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/layouts/form_page_layout.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/brand_logo.dart';
 import '../../l10n/app_localizations.dart';
@@ -806,7 +807,9 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
+                : FormPageLayout(
+                    padding: EdgeInsetsDirectional.zero,
+                    child: SingleChildScrollView(
                     controller: _scrollController,
                     physics: const BouncingScrollPhysics(
                       parent: AlwaysScrollableScrollPhysics(),
@@ -1096,6 +1099,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                       ],
                     ),
                   ),
+                ),
           ),
           if (_feedbackMessage != null && _feedbackType != null)
             Padding(

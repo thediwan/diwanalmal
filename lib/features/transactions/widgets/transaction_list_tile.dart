@@ -14,6 +14,7 @@ class TransactionListTile extends StatelessWidget {
     required this.item,
     required this.onLongPress,
     required this.deleteLabel,
+    this.onTap,
     this.onEdit,
     this.onDismissDelete,
   });
@@ -21,6 +22,7 @@ class TransactionListTile extends StatelessWidget {
   final TransactionListItem item;
   final VoidCallback onLongPress;
   final String deleteLabel;
+  final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final Future<bool> Function()? onDismissDelete;
 
@@ -31,7 +33,7 @@ class TransactionListTile extends StatelessWidget {
       color: colors.scaffoldBackground,
       child: InkWell(
         onLongPress: onLongPress,
-        onTap: item.canEdit ? onEdit : null,
+        onTap: onTap ?? (item.canEdit ? onEdit : null),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           child: Row(

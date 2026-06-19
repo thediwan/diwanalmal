@@ -813,6 +813,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionsListAdd => 'Add transaction';
 
   @override
+  String get transactionsListSelectDetail =>
+      'Select a transaction to view details';
+
+  @override
   String transactionsListTransferTitle(String from, String to) {
     return 'Transfer from $from to $to';
   }

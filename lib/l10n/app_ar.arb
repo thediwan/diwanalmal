@@ -310,6 +310,7 @@
   "transactionsListLoadMore": "عرض المزيد",
   "transactionsListThisMonthHint": "يعرض عمليات الشهر الحالي فقط — أوقف «هذا الشهر» لعرض الكل",
   "transactionsListAdd": "إضافة عملية",
+  "transactionsListSelectDetail": "اختر عملية لعرض التفاصيل",
   "transactionsListTransferTitle": "تحويل من {from} إلى {to}",
   "@transactionsListTransferTitle": {
     "placeholders": {

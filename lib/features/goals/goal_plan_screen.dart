@@ -10,6 +10,7 @@ import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_formatter.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_theme_colors.dart';
+import '../../core/layouts/form_page_layout.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/goal_planning_service.dart';
@@ -113,7 +114,10 @@ class _GoalPlanScreenState extends State<GoalPlanScreen> {
             onClose: () => context.pop(),
           ),
           Expanded(
-            child: _buildBody(colors, l10n, locale),
+            child: FormPageLayout(
+              padding: EdgeInsetsDirectional.zero,
+              child: _buildBody(colors, l10n, locale),
+            ),
           ),
           if (_plan != null) _buildActions(colors, l10n),
         ],

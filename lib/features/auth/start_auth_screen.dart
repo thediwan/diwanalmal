@@ -9,6 +9,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
+import '../../core/widgets/split_auth_background.dart';
 import '../../core/widgets/auth_form_card.dart';
 import '../../core/widgets/auth_header.dart';
 import '../../providers/settings_provider.dart';
@@ -66,7 +67,8 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
     return Scaffold(
       body: AuthBackground(
         child: SafeArea(
-          child: Padding(
+          child: ResponsiveAuthLayout(
+            child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: Column(
               children: [
@@ -239,6 +241,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                 const SizedBox(height: 12),
               ],
             ),
+          ),
           ),
         ),
       ),

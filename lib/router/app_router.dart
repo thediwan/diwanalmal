@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/extensions/context_l10n.dart';
-import '../core/widgets/app_scaffold_shell.dart';
+import '../core/layouts/adaptive_app_shell.dart';
 import '../features/auth/auth_splash_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/register_screen.dart';
@@ -150,119 +150,154 @@ class AppRouter {
           return TransactionEditScreen(id: id, kind: kind);
         },
       ),
-      ShellRoute(
-        builder: (context, state, child) {
-          return AppScaffoldShell(
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return AdaptiveAppShell(
+            navigationShell: navigationShell,
             location: state.uri.path,
-            child: child,
           );
         },
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (context, state) => const DashboardScreen(),
-          ),
-          GoRoute(
-            path: '/goals/add',
-            builder: (context, state) {
-              final draft = state.extra is GoalDraft ? state.extra as GoalDraft : null;
-              return GoalFormScreen(initialDraft: draft);
-            },
-          ),
-          GoRoute(
-            path: '/goals/plan',
-            builder: (context, state) {
-              final draft = state.extra;
-              if (draft is! GoalDraft) {
-                return const GoalFormScreen();
-              }
-              return GoalPlanScreen(draft: draft);
-            },
-          ),
-          GoRoute(
-            path: '/goals/:id',
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              return GoalEditScreen(goalId: id);
-            },
+        branches: [
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: 'deposit',
+                path: '/',
+                builder: (context, state) => const DashboardScreen(),
+              ),
+              GoRoute(
+                path: '/goals/add',
                 builder: (context, state) {
-                  final id = state.pathParameters['id']!;
-                  return GoalSavingsFormScreen(
-                    goalId: id,
-                    mode: GoalSavingsMode.deposit,
-                  );
+                  final draft = state.extra is GoalDraft
+                      ? state.extra as GoalDraft
+                      : null;
+                  return GoalFormScreen(initialDraft: draft);
                 },
               ),
               GoRoute(
-                path: 'withdraw',
+                path: '/goals/plan',
+                builder: (context, state) {
+                  final draft = state.extra;
+                  if (draft is! GoalDraft) {
+                    return const GoalFormScreen();
+                  }
+                  return GoalPlanScreen(draft: draft);
+                },
+              ),
+              GoRoute(
+                path: '/goals/:id',
                 builder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return GoalSavingsFormScreen(
-                    goalId: id,
-                    mode: GoalSavingsMode.withdraw,
-                  );
+                  return GoalEditScreen(goalId: id);
                 },
+                routes: [
+                  GoRoute(
+                    path: 'deposit',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return GoalSavingsFormScreen(
+                        goalId: id,
+                        mode: GoalSavingsMode.deposit,
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: 'withdraw',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return GoalSavingsFormScreen(
+                        goalId: id,
+                        mode: GoalSavingsMode.withdraw,
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
-          GoRoute(
-            path: '/transactions',
-            builder: (context, state) => TransactionsListScreen(
-              initialTab: _activityFeedTabFromQuery(
-                state.uri.queryParameters['tab'],
-              ),
-            ),
-          ),
-          GoRoute(
-            path: '/wallets',
-            builder: (context, state) => const WalletsScreen(),
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: 'add',
-                builder: (context, state) => const WalletFormScreen(),
-              ),
-              GoRoute(
-                path: ':id/edit',
-                builder: (context, state) {
-                  final id = state.pathParameters['id']!;
-                  return WalletFormScreen(walletId: id);
-                },
+                path: '/transactions',
+                builder: (context, state) => TransactionsListScreen(
+                  initialTab: _activityFeedTabFromQuery(
+                    state.uri.queryParameters['tab'],
+                  ),
+                ),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return TransactionsListScreen(
+                        initialTab: _activityFeedTabFromQuery(
+                          state.uri.queryParameters['tab'],
+                        ),
+                        selectedTransactionId: id,
+                        selectedKind: _transactionListKindFromQuery(
+                          state.uri.queryParameters['kind'],
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
-          GoRoute(
-            path: '/settings',
-            builder: (context, state) => const ProfileScreen(),
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: 'personal-info',
-                builder: (context, state) => const PersonalInfoScreen(),
-              ),
-              GoRoute(
-                path: 'security',
-                builder: (context, state) => const SecurityScreen(),
-              ),
-              GoRoute(
-                path: 'appearance',
-                builder: (context, state) => const AppearanceScreen(),
-              ),
-              GoRoute(
-                path: 'currencies',
-                builder: (context, state) => const CurrenciesScreen(),
+                path: '/wallets',
+                builder: (context, state) => const WalletsScreen(),
                 routes: [
                   GoRoute(
                     path: 'add',
-                    builder: (context, state) => const CurrencyFormScreen(),
+                    builder: (context, state) => const WalletFormScreen(),
                   ),
                   GoRoute(
                     path: ':id/edit',
                     builder: (context, state) {
                       final id = state.pathParameters['id']!;
-                      return CurrencyFormScreen(currencyId: id);
+                      return WalletFormScreen(walletId: id);
                     },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                builder: (context, state) => const ProfileScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'personal-info',
+                    builder: (context, state) => const PersonalInfoScreen(),
+                  ),
+                  GoRoute(
+                    path: 'security',
+                    builder: (context, state) => const SecurityScreen(),
+                  ),
+                  GoRoute(
+                    path: 'appearance',
+                    builder: (context, state) => const AppearanceScreen(),
+                  ),
+                  GoRoute(
+                    path: 'currencies',
+                    builder: (context, state) => const CurrenciesScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'add',
+                        builder: (context, state) => const CurrencyFormScreen(),
+                      ),
+                      GoRoute(
+                        path: ':id/edit',
+                        builder: (context, state) {
+                          final id = state.pathParameters['id']!;
+                          return CurrencyFormScreen(currencyId: id);
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -309,6 +344,25 @@ class AppRouter {
     }
 
     return null;
+  }
+}
+
+TransactionListKind? _transactionListKindFromQuery(String? raw) {
+  switch (raw) {
+    case 'expense':
+      return TransactionListKind.expense;
+    case 'income':
+      return TransactionListKind.income;
+    case 'transfer':
+      return TransactionListKind.transfer;
+    case 'debtor':
+      return TransactionListKind.debtor;
+    case 'creditor':
+      return TransactionListKind.creditor;
+    case 'debt':
+      return TransactionListKind.debtor;
+    default:
+      return null;
   }
 }
 

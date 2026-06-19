@@ -9,6 +9,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
+import '../../core/widgets/split_auth_background.dart';
 import '../../core/widgets/auth_form_card.dart';
 import '../../core/widgets/pin_keypad.dart';
 import '../../providers/settings_provider.dart';
@@ -159,7 +160,8 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
     return Scaffold(
       body: AuthBackground(
         child: SafeArea(
-          child: Column(
+          child: ResponsiveAuthLayout(
+            child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -348,6 +350,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                 ),
               ),
             ],
+          ),
           ),
         ),
       ),

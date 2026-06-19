@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/extensions/context_l10n.dart';
-import '../../core/extensions/context_theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/dashboard_refresh_provider.dart';
 import '../../providers/currency_provider.dart';
@@ -12,15 +10,7 @@ import '../../providers/wallet_provider.dart';
 import '../../services/dashboard_service.dart';
 import '../../providers/settings_provider.dart';
 import '../../services/lazarus_database_service.dart';
-import 'data/dashboard_currency_balances.dart';
-import 'widgets/dashboard_currency_carousel.dart';
-import 'widgets/dashboard_expense_chart.dart';
-import 'widgets/dashboard_goals_section.dart';
-import 'widgets/dashboard_header.dart';
-import 'widgets/dashboard_monthly_summary.dart';
-import 'widgets/dashboard_recent_transactions.dart';
-import 'widgets/dashboard_section_divider.dart';
-import 'widgets/dashboard_total_balance.dart';
+import 'widgets/dashboard_screen_view.dart';
 
 /// Main dashboard — layout and colors match client mockup.
 class DashboardScreen extends StatefulWidget {
@@ -101,123 +91,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await context.push('/transactions/add');
-          if (mounted) await _loadDashboard(silent: true);
-        },
-        elevation: 6,
-        backgroundColor: AppColors.dashboardPrimary,
-        foregroundColor: context.appColors.onPrimary,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add, size: 32),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      body: _buildBody(l10n),
-    );
-  }
-
-  Widget _buildBody(AppLocalizations l10n) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (_error != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                _error!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.expense),
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: _loadDashboard,
-                child: Text(l10n.dashboardRetry),
-              ),
-            ],
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _error!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: AppColors.expense),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: _loadDashboard,
+                  child: Text(l10n.dashboardRetry),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
-    final data = _snapshot ?? DashboardSnapshot.empty();
-
-    return Consumer2<WalletProvider, CurrencyProvider>(
-      builder: (context, walletProvider, currencyProvider, _) {
-        final baseCode = currencyProvider.baseCurrency?.code ?? 'USD';
-        final totalBalance = walletProvider.totalBalanceInBase;
-        final currencyBalances = buildDashboardCurrencyBalances(
-          walletProvider: walletProvider,
-          currencyProvider: currencyProvider,
-        );
-
-        return RefreshIndicator(
-          onRefresh: _loadDashboard,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const DashboardHeader(),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: DashboardTotalBalance(
-                        label: l10n.dashboardTotalBalance(baseCode),
-                        amount: totalBalance,
-                        currencyCode: baseCode,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    DashboardCurrencyBalancesRow(
-                      balances: currencyBalances,
-                      baseCode: baseCode,
-                    ),
-                    const DashboardSectionDivider(),
-                    DashboardMonthlySummary(
-                      baseCode: baseCode,
-                      monthlyIncome: data.monthlyIncome,
-                      monthlyExpense: data.monthlyExpense,
-                      debts: data.debts,
-                      onDebtsTap: () => context.go('/transactions?tab=debt'),
-                    ),
-                    const DashboardSectionDivider(),
-                    DashboardGoalsSection(
-                      goals: data.goals,
-                      onAddGoal: () async {
-                        await context.push('/goals/add');
-                        if (mounted) await _loadDashboard();
-                      },
-                      onGoalTap: (goalId) async {
-                        await context.push('/goals/$goalId');
-                        if (mounted) await _loadDashboard();
-                      },
-                    ),
-                    const DashboardSectionDivider(),
-                    DashboardExpenseChart(
-                      dailyPoints: data.dailyChart,
-                      weeklyPoints: data.weeklyChart,
-                      currencyCode: data.baseCurrencyCode,
-                    ),
-                    const DashboardSectionDivider(),
-                    DashboardRecentTransactions(
-                      transactions: data.transactions,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+    return DashboardScreenView(
+      l10n: l10n,
+      data: _snapshot ?? DashboardSnapshot.empty(),
+      onRefresh: _loadDashboard,
+      onReloadAfterNavigation: () => _loadDashboard(silent: true),
     );
   }
 }

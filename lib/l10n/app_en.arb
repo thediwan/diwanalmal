@@ -310,6 +310,7 @@
   "transactionsListLoadMore": "Load more",
   "transactionsListThisMonthHint": "Showing this month only — turn off \"This month\" to see all",
   "transactionsListAdd": "Add transaction",
+  "transactionsListSelectDetail": "Select a transaction to view details",
   "transactionsListTransferTitle": "Transfer from {from} to {to}",
   "@transactionsListTransferTitle": {
     "placeholders": {

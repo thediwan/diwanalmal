@@ -12,6 +12,7 @@ import '../../core/helpers/date_only.dart';
 import '../../core/helpers/treasury_filters.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/layouts/form_page_layout.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/brand_logo.dart';
 import '../../models/treasury.dart';
@@ -238,8 +239,10 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
           Expanded(
             child: _isLoadingCurrencies
                 ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                : FormPageLayout(
+                    padding: EdgeInsetsDirectional.zero,
+                    child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 24),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -403,6 +406,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                       ),
                     ),
                   ),
+                ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),

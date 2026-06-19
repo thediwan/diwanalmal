@@ -1598,6 +1598,12 @@ abstract class AppLocalizations {
   /// **'إضافة عملية'**
   String get transactionsListAdd;
 
+  /// No description provided for @transactionsListSelectDetail.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر عملية لعرض التفاصيل'**
+  String get transactionsListSelectDetail;
+
   /// No description provided for @transactionsListTransferTitle.
   ///
   /// In ar, this message translates to:

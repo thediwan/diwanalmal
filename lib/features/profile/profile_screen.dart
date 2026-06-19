@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/responsive/responsive_content.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/extensions/context_l10n.dart';
@@ -132,11 +133,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: profileProvider.isLoading && profileProvider.profile == null
             ? const Center(child: CircularProgressIndicator())
-            : RefreshIndicator(
-                onRefresh: () => profileProvider.load(),
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-                  children: [
+            : ResponsiveContent(
+                child: RefreshIndicator(
+                  onRefresh: () => profileProvider.load(),
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(0, 16, 0, 32),
+                    children: [
                     if (profileProvider.profile != null)
                       ProfileHeader(
                         profile: profileProvider.profile!,
@@ -246,7 +248,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: colors.textMuted,
                         ),
                       ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
       ),

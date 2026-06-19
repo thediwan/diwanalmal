@@ -1,10 +1,32 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/context_theme.dart';
+import '../responsive/app_breakpoints.dart';
+import '../responsive/responsive_layout.dart';
+import 'auth_background.dart';
 
-/// Split background for the security code screen.
+/// Split background for auth screens — split panel only on expanded widths.
 class SplitAuthBackground extends StatelessWidget {
   const SplitAuthBackground({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      builder: (context, sizeClass) {
+        if (!isExpandedOrWider(sizeClass)) {
+          return AuthBackground(child: child);
+        }
+
+        return _SplitPanelBackground(child: child);
+      },
+    );
+  }
+}
+
+class _SplitPanelBackground extends StatelessWidget {
+  const _SplitPanelBackground({required this.child});
 
   final Widget child;
 
@@ -62,9 +84,7 @@ class _DiagonalStreaksPainter extends CustomPainter {
     final highlight = isDark
         ? Colors.white.withValues(alpha: 0.06)
         : Colors.white.withValues(alpha: 0.22);
-    final mid = isDark
-        ? Colors.transparent
-        : Colors.transparent;
+    final mid = Colors.transparent;
     final low = isDark
         ? Colors.white.withValues(alpha: 0.03)
         : Colors.white.withValues(alpha: 0.08);
@@ -81,6 +101,38 @@ class _DiagonalStreaksPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _DiagonalStreaksPainter oldDelegate) =>
-      oldDelegate.isDark != isDark;
+  bool shouldRepaint(covariant _DiagonalStreaksPainter oldDelegate) {
+    return oldDelegate.isDark != isDark;
+  }
+}
+
+/// Centers auth form content with a readable max width on wide screens.
+class ResponsiveAuthLayout extends StatelessWidget {
+  const ResponsiveAuthLayout({
+    super.key,
+    required this.child,
+    this.maxWidth = AppBreakpoints.formMaxWidth,
+  });
+
+  final Widget child;
+  final double maxWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      builder: (context, sizeClass) {
+        if (sizeClass == WindowSizeClass.compact) {
+          return child;
+        }
+
+        return Align(
+          alignment: AlignmentDirectional.center,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
 }

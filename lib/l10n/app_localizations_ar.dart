@@ -807,6 +807,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get transactionsListAdd => 'إضافة عملية';
 
   @override
+  String get transactionsListSelectDetail => 'اختر عملية لعرض التفاصيل';
+
+  @override
   String transactionsListTransferTitle(String from, String to) {
     return 'تحويل من $from إلى $to';
   }

@@ -7,8 +7,14 @@ import '../../core/constants/app_colors.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/theme/app_form_fields.dart';
+import '../../core/theme/app_theme_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/empty_state.dart';
+import '../../core/layouts/master_detail_layout.dart';
+import '../../core/responsive/app_breakpoints.dart';
+import '../../core/responsive/responsive_content.dart';
+import '../../core/responsive/responsive_layout.dart';
 import '../../database/daos/finance_dao.dart';
 import '../../models/transaction_category.dart';
 import '../../providers/currency_provider.dart';
@@ -21,16 +27,25 @@ import '../../services/debt_service.dart';
 import '../../services/transaction_list_service.dart';
 import '../../services/transaction_service.dart';
 import '../../services/transfer_service.dart';
+import 'transaction_edit_screen.dart';
 import 'models/transaction_list_item.dart';
+import 'widgets/transaction_detail_placeholder.dart';
 import 'widgets/transaction_list_filter_sheet.dart';
 import 'widgets/transaction_list_tile.dart';
 import '../../core/extensions/context_feedback.dart';
 
 /// Paginated transactions list with tabs, filters, search, and grouped dates.
 class TransactionsListScreen extends StatefulWidget {
-  const TransactionsListScreen({super.key, this.initialTab});
+  const TransactionsListScreen({
+    super.key,
+    this.initialTab,
+    this.selectedTransactionId,
+    this.selectedKind,
+  });
 
   final ActivityFeedTab? initialTab;
+  final String? selectedTransactionId;
+  final TransactionListKind? selectedKind;
 
   @override
   State<TransactionsListScreen> createState() => _TransactionsListScreenState();
@@ -216,8 +231,40 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
     );
   }
 
-  void _openEdit(TransactionListItem item) {
+
+  void _openTransaction(TransactionListItem item, {required WindowSizeClass sizeClass}) {
+
+    if (isExpandedOrWider(sizeClass)) {
+      context.go(
+        '/transactions/${item.id}?kind=${_kindQueryValue(item.kind)}',
+      );
+      return;
+    }
+
     context.push('/transactions/${item.id}/edit', extra: item.kind);
+  }
+
+  String _kindQueryValue(TransactionListKind kind) {
+    return switch (kind) {
+      TransactionListKind.expense => 'expense',
+      TransactionListKind.income => 'income',
+      TransactionListKind.transfer => 'transfer',
+      TransactionListKind.debtor => 'debtor',
+      TransactionListKind.creditor => 'creditor',
+      TransactionListKind.goalDeposit => 'transfer',
+      TransactionListKind.goalWithdraw => 'transfer',
+    };
+  }
+
+  void _redirectCompactSelectionIfNeeded(WindowSizeClass sizeClass) {
+    final selectedId = widget.selectedTransactionId;
+    if (selectedId == null || isExpandedOrWider(sizeClass)) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final kind = widget.selectedKind ?? TransactionListKind.expense;
+      context.replace('/transactions/$selectedId/edit', extra: kind);
+    });
   }
 
   Future<bool> _confirmDelete(TransactionListItem item) async {
@@ -426,197 +473,265 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
       localeName: localeName,
     );
 
-    return Scaffold(
-      backgroundColor: colors.scaffoldBackground,
-      appBar: AppBar(
-        title: Text(
-          l10n.transactionsListTitle,
-          style: AppTextStyles.headingSmall.copyWith(
-            fontWeight: FontWeight.w800,
-            color: AppColors.dashboardPrimary,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(
-              _searchVisible ? Icons.close : CupertinoIcons.search,
-              color: AppColors.dashboardPrimary,
+    return ResponsiveLayout(
+      builder: (context, sizeClass) {
+        _redirectCompactSelectionIfNeeded(sizeClass);
+        final wide = isExpandedOrWider(sizeClass);
+        final showFab = sizeClass == WindowSizeClass.compact;
+
+        final listBody = _buildListBody(
+          context,
+          l10n: l10n,
+          colors: colors,
+          groups: groups,
+          sizeClass: sizeClass,
+        );
+
+        final detailPane = widget.selectedTransactionId != null
+            ? TransactionEditScreen(
+                id: widget.selectedTransactionId!,
+                kind: widget.selectedKind ?? TransactionListKind.expense,
+              )
+            : const TransactionDetailPlaceholder();
+
+        return Scaffold(
+          backgroundColor: colors.scaffoldBackground,
+          appBar: AppBar(
+            title: Text(
+              l10n.transactionsListTitle,
+              style: AppTextStyles.headingSmall.copyWith(
+                fontWeight: FontWeight.w800,
+                color: AppColors.dashboardPrimary,
+              ),
             ),
-            onPressed: _toggleSearch,
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: Icon(
+                  _searchVisible ? Icons.close : CupertinoIcons.search,
+                  color: AppColors.dashboardPrimary,
+                ),
+                onPressed: _toggleSearch,
+              ),
+              if (wide)
+                IconButton(
+                  icon: const Icon(
+                    Icons.add,
+                    color: AppColors.dashboardPrimary,
+                  ),
+                  onPressed: _openAddTransaction,
+                  tooltip: l10n.transactionsListAdd,
+                ),
+            ],
+          ),
+          floatingActionButton: showFab
+              ? FloatingActionButton(
+                  onPressed: _openAddTransaction,
+                  backgroundColor: AppColors.dashboardPrimary,
+                  foregroundColor: colors.onPrimary,
+                  child: const Icon(Icons.add),
+                )
+              : null,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.startFloat,
+          body: wide
+              ? MasterDetailLayout(
+                  master: listBody,
+                  detail: detailPane,
+                )
+              : ResponsiveContent(
+                  padding: EdgeInsetsDirectional.zero,
+                  child: listBody,
+                ),
+        );
+      },
+    );
+  }
+
+  Widget _buildListBody(
+    BuildContext context, {
+    required AppLocalizations l10n,
+    required AppThemeColors colors,
+    required List<TransactionListDateGroup> groups,
+    required WindowSizeClass sizeClass,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_searchVisible) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: TextField(
+              controller: _searchController,
+              autofocus: true,
+              style: AppFormFields.inputTextStyleOf(context),
+              decoration: AppFormFields.decoration(
+                context,
+                hintText: l10n.transactionsListSearchHint,
+                fillColor: colors.searchFieldFill,
+                prefixIcon: Icon(
+                  CupertinoIcons.search,
+                  color: colors.textSecondary,
+                ),
+              ).copyWith(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openAddTransaction,
-        backgroundColor: AppColors.dashboardPrimary,
-        foregroundColor: colors.onPrimary,
-        child: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (_searchVisible) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: TextField(
-                controller: _searchController,
-                autofocus: true,
-                style: AppFormFields.inputTextStyleOf(context),
-                decoration: AppFormFields.decoration(
-                  context,
-                  hintText: l10n.transactionsListSearchHint,
-                  fillColor: colors.searchFieldFill,
-                  prefixIcon: Icon(
-                    CupertinoIcons.search,
-                    color: colors.textSecondary,
-                  ),
-                ).copyWith(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+        _TypeTabs(
+          selected: _filter.tab,
+          onSelected: _setTab,
+        ),
+        const SizedBox(height: 8),
+        _FilterChips(
+          thisMonthSelected: _filter.thisMonthOnly &&
+              _filter.dateFrom == null &&
+              _filter.dateTo == null,
+          walletLabel: _selectedWalletName ?? l10n.transactionsListAllWallets,
+          onFilterTap: _openFilterSheet,
+          onThisMonthTap: _toggleThisMonth,
+          onWalletTap: _openWalletPicker,
+        ),
+        if (_showThisMonthHint)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Text(
+              l10n.transactionsListThisMonthHint,
+              style: AppTextStyles.captionOnSurface(colors).copyWith(
+                fontSize: 11,
               ),
             ),
-          ],
-          _TypeTabs(
-            selected: _filter.tab,
-            onSelected: _setTab,
           ),
-          const SizedBox(height: 8),
-          _FilterChips(
-            thisMonthSelected: _filter.thisMonthOnly &&
-                _filter.dateFrom == null &&
-                _filter.dateTo == null,
-            walletLabel: _selectedWalletName ?? l10n.transactionsListAllWallets,
-            onFilterTap: _openFilterSheet,
-            onThisMonthTap: _toggleThisMonth,
-            onWalletTap: _openWalletPicker,
-          ),
-          if (_showThisMonthHint)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Text(
-                l10n.transactionsListThisMonthHint,
-                style: AppTextStyles.captionOnSurface(colors).copyWith(
-                  fontSize: 11,
-                ),
-              ),
-            ),
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _items.isEmpty
-                    ? EmptyState(
-                        message: _searchQuery.isNotEmpty
-                            ? l10n.transactionsListNoData
-                            : l10n.transactionsListEmpty,
-                        icon: _searchQuery.isNotEmpty
-                            ? Icons.search_off_outlined
-                            : Icons.receipt_long_outlined,
-                        actionLabel: _searchQuery.isNotEmpty
-                            ? null
-                            : l10n.transactionsListAdd,
-                        onAction: _searchQuery.isNotEmpty
-                            ? null
-                            : _openAddTransaction,
-                      )
-                    : RefreshIndicator(
-                        onRefresh: _reload,
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: const EdgeInsets.only(bottom: 88),
-                          itemCount: _listItemCount(groups) +
-                              (_isLoadingMore ? 1 : 0) +
-                              (_hasMore && !_isLoadingMore ? 1 : 0),
-                          itemBuilder: (context, index) {
-                            final dataCount = _listItemCount(groups);
+        Expanded(
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _items.isEmpty
+                  ? EmptyState(
+                      message: _searchQuery.isNotEmpty
+                          ? l10n.transactionsListNoData
+                          : l10n.transactionsListEmpty,
+                      icon: _searchQuery.isNotEmpty
+                          ? Icons.search_off_outlined
+                          : Icons.receipt_long_outlined,
+                      actionLabel: _searchQuery.isNotEmpty
+                          ? null
+                          : l10n.transactionsListAdd,
+                      onAction: _searchQuery.isNotEmpty
+                          ? null
+                          : _openAddTransaction,
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _reload,
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: 88),
+                        itemCount: _listItemCount(groups) +
+                            (_isLoadingMore ? 1 : 0) +
+                            (_hasMore && !_isLoadingMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          final dataCount = _listItemCount(groups);
 
-                            if (_isLoadingMore && index == dataCount) {
-                              return const Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
+                          if (_isLoadingMore && index == dataCount) {
+                            return const Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
 
-                            if (_hasMore &&
-                                !_isLoadingMore &&
-                                index == dataCount + (_isLoadingMore ? 1 : 0)) {
-                              return Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  16,
-                                  8,
-                                  16,
-                                  24,
-                                ),
-                                child: OutlinedButton(
-                                  onPressed: _loadNextPage,
-                                  child: Text(l10n.transactionsListLoadMore),
-                                ),
-                              );
-                            }
+                          if (_hasMore &&
+                              !_isLoadingMore &&
+                              index == dataCount + (_isLoadingMore ? 1 : 0)) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                8,
+                                16,
+                                24,
+                              ),
+                              child: OutlinedButton(
+                                onPressed: _loadNextPage,
+                                child: Text(l10n.transactionsListLoadMore),
+                              ),
+                            );
+                          }
 
-                            final resolved = _resolveListIndex(groups, index);
-                            if (resolved.isHeader) {
-                              return Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  16,
-                                  16,
-                                  16,
-                                  4,
+                          final resolved = _resolveListIndex(groups, index);
+                          if (resolved.isHeader) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                16,
+                                16,
+                                4,
+                              ),
+                              child: Text(
+                                resolved.header!,
+                                style: AppTextStyles.captionOnSurface(colors)
+                                    .copyWith(
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                child: Text(
-                                  resolved.header!,
-                                  style: AppTextStyles.captionOnSurface(colors)
-                                      .copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              );
-                            }
+                              ),
+                            );
+                          }
 
-                            final item = resolved.item!;
-                            return Column(
-                              children: [
-                                TransactionListTile(
+                          final item = resolved.item!;
+                          final isSelected =
+                              widget.selectedTransactionId == item.id;
+
+                          return Column(
+                            children: [
+                              Material(
+                                color: isSelected
+                                    ? colors.accentSurface
+                                    : Colors.transparent,
+                                child: TransactionListTile(
                                   item: item,
                                   deleteLabel: l10n.transactionDelete,
                                   onLongPress: () => _showNotes(item),
+                                  onTap: () => _openTransaction(
+                                    item,
+                                    sizeClass: sizeClass,
+                                  ),
                                   onEdit: item.canEdit
-                                      ? () => _openEdit(item)
+                                      ? () => _openTransaction(
+                                            item,
+                                            sizeClass: sizeClass,
+                                          )
                                       : null,
                                   onDismissDelete: item.canDelete
                                       ? () => _confirmDelete(item)
                                       : null,
                                 ),
-                                Divider(
-                                  height: 1,
-                                  thickness: 1,
-                                  color: colors.divider,
-                                  indent: 16,
-                                  endIndent: 16,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
+                              ),
+                              Divider(
+                                height: 1,
+                                thickness: 1,
+                                color: colors.divider,
+                                indent: 16,
+                                endIndent: 16,
+                              ),
+                            ],
+                          );
+                        },
                       ),
-          ),
-        ],
-      ),
+                    ),
+        ),
+      ],
     );
   }
 

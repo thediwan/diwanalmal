@@ -9,6 +9,7 @@ import '../../core/theme/app_form_fields.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
+import '../../core/widgets/split_auth_background.dart';
 import '../../core/widgets/auth_header.dart';
 import '../../providers/settings_provider.dart';
 import '../../core/extensions/context_feedback.dart';
@@ -77,7 +78,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       body: AuthBackground(
         child: SafeArea(
-          child: Stack(
+          child: ResponsiveAuthLayout(
+            child: Stack(
             children: [
               SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 80),
@@ -263,6 +265,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ],
+          ),
           ),
         ),
       ),

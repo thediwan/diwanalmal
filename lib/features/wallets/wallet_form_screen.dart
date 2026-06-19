@@ -11,6 +11,7 @@ import '../../core/helpers/currency_uniqueness.dart';
 import '../../core/helpers/uuid_helper.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/layouts/form_page_layout.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/brand_logo.dart';
 import '../../models/opening_balance_input.dart';
@@ -338,8 +339,10 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
           Expanded(
             child: _isLoadingWallet
                 ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                : FormPageLayout(
+                    padding: EdgeInsetsDirectional.zero,
+                    child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -431,6 +434,7 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                 ),
               ),
             ),
+                ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),

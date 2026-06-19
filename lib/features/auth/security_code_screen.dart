@@ -50,7 +50,8 @@ class SecurityCodeScreen extends StatelessWidget {
     return Scaffold(
       body: SplitAuthBackground(
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: ResponsiveAuthLayout(
+            child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
             child: Column(
               children: [
@@ -291,6 +292,7 @@ class SecurityCodeScreen extends StatelessWidget {
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),

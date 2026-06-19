@@ -3,11 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/extensions/context_l10n.dart';
-import '../../core/extensions/context_theme.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../providers/wallet_provider.dart';
-import 'widgets/wallet_list_card.dart';
 import 'widgets/wallets_header.dart';
+import 'widgets/wallets_screen_body.dart';
 import 'widgets/wallets_summary_section.dart';
 
 /// Treasuries list with summary, search, and currency breakdown per card.
@@ -78,44 +77,18 @@ class _WalletsScreenState extends State<WalletsScreen> {
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: _refresh,
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: WalletsHeader(
-                    searchController: _searchController,
-                    onSearchChanged: _onSearchChanged,
-                    onAddWallet: _openAddWallet,
-                  ),
-                ),
-                if (summary != null)
-                  SliverToBoxAdapter(
-                    child: WalletsSummarySection(summary: summary),
-                  ),
-                if (filtered.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(
-                      child: Text(
-                        l10n.walletsSearchHint,
-                        style: TextStyle(color: context.appColors.textMuted),
-                      ),
-                    ),
-                  )
-                else
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                    sliver: SliverToBoxAdapter(
-                      child: WalletsGroupedCard(
-                        treasuries: filtered,
-                        onEdit: _openEditWallet,
-                      ),
-                    ),
-                  ),
-              ],
+          return WalletsScreenBody(
+            header: WalletsHeader(
+              searchController: _searchController,
+              onSearchChanged: _onSearchChanged,
+              onAddWallet: _openAddWallet,
             ),
+            summary:
+                summary != null ? WalletsSummarySection(summary: summary) : null,
+            treasuries: filtered,
+            emptySearchMessage: l10n.walletsSearchHint,
+            onRefresh: _refresh,
+            onEdit: _openEditWallet,
           );
         },
       ),

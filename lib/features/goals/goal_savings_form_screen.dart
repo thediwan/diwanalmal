@@ -16,6 +16,7 @@ import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_theme_colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/layouts/form_page_layout.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../database/lazarus_database.dart';
 import '../../models/treasury.dart';
@@ -254,7 +255,12 @@ class _GoalSavingsFormScreenState extends State<GoalSavingsFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _TopBar(title: title, onClose: () => context.pop()),
-          Expanded(child: _buildBody(colors, l10n)),
+          Expanded(
+            child: FormPageLayout(
+              padding: EdgeInsetsDirectional.zero,
+              child: _buildBody(colors, l10n),
+            ),
+          ),
           if (!_isLoading && _error == null)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),

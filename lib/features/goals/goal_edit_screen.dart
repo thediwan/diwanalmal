@@ -14,6 +14,7 @@ import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_theme_colors.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/layouts/form_page_layout.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../core/widgets/brand_logo.dart';
 import '../../database/daos/finance_dao.dart';
@@ -317,7 +318,12 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
             onClose: () => context.pop(),
             onDelete: _delete,
           ),
-          Expanded(child: _buildBody(l10n, colors)),
+          Expanded(
+            child: FormPageLayout(
+              padding: EdgeInsetsDirectional.zero,
+              child: _buildBody(l10n, colors),
+            ),
+          ),
           if (!_isLoading && _error == null) _buildSaveButton(l10n, colors),
         ],
       ),
