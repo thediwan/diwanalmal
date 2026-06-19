@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import '../../../core/helpers/number_format_preferences.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_theme.dart';
+import '../../../core/helpers/number_format_preferences.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 /// Calculator-style numeric keypad for transaction amounts.
@@ -98,7 +102,7 @@ class TransactionNumericKeypad extends StatelessWidget {
   }
 }
 
-class _KeyButton extends StatelessWidget {
+class _KeyButton extends StatefulWidget {
   const _KeyButton({
     this.label,
     this.icon,
@@ -110,26 +114,79 @@ class _KeyButton extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_KeyButton> createState() => _KeyButtonState();
+}
+
+class _KeyButtonState extends State<_KeyButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: AppMotion.micro,
+      reverseDuration: const Duration(milliseconds: 180),
+    );
+    _scale = Tween<double>(begin: 1.0, end: AppMotion.pressScaleButton)
+        .animate(CurvedAnimation(
+      parent: _controller,
+      curve: AppMotion.easeStandard,
+      reverseCurve: AppMotion.easeSpring,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails _) {
+    if (AppMotion.shouldAnimate(context)) _controller.forward();
+    HapticFeedback.lightImpact();
+  }
+
+  void _onTapUp(TapUpDetails _) {
+    if (AppMotion.shouldAnimate(context)) _controller.reverse();
+    widget.onTap();
+  }
+
+  void _onTapCancel() {
+    if (AppMotion.shouldAnimate(context)) _controller.reverse();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final colors = context.appColors;
 
-    return Material(
-      color: colors.surface,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: AnimatedBuilder(
+        animation: _scale,
+        builder: (context, child) => Transform.scale(
+          scale: _scale.value,
+          child: child,
+        ),
         child: Container(
           height: 52,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: colors.cardBorder),
+            color: isDark
+                ? AppColors.surfaceElevatedDark
+                : AppColors.surfaceElevatedLight,
+            borderRadius: AppRadius.inputBorderRadius,
+            boxShadow: isDark ? AppShadow.clayDark : AppShadow.clayLight,
           ),
-          child: icon != null
-              ? Icon(icon, color: colors.textPrimary, size: 22)
+          child: widget.icon != null
+              ? Icon(widget.icon, color: colors.textPrimary, size: 22)
               : Text(
-                  label!,
+                  widget.label!,
                   style: AppTextStyles.headingSmall.copyWith(
                     color: colors.textPrimary,
                     fontWeight: FontWeight.w600,

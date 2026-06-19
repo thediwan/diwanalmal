@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/constants/transaction_policy.dart';
 import '../core/helpers/currency_formatter.dart';
+import '../core/theme/palettes/app_color_palette.dart';
 import '../models/amount_format_style.dart';
 import '../models/app_settings.dart';
 import '../services/auth_service.dart';
@@ -45,6 +46,7 @@ class SettingsProvider extends ChangeNotifier {
   bool get isSetupComplete => _settings.isSetupComplete;
   String get baseCurrencyCode => _settings.baseCurrencyCode;
   ThemeMode get themeMode => _settings.themeMode;
+  AppColorPaletteId get colorPaletteId => _settings.colorPaletteId;
   Locale get locale => Locale(_settings.localeCode);
   bool get hasAccount => _settings.hasAccount;
   bool get isSecuritySetupComplete => _settings.isSecuritySetupComplete;
@@ -88,6 +90,12 @@ class SettingsProvider extends ChangeNotifier {
 
   Future<void> setThemeMode(ThemeMode mode) async {
     _settings = _settings.copyWith(themeMode: mode);
+    await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> setColorPalette(AppColorPaletteId paletteId) async {
+    _settings = _settings.copyWith(colorPaletteKey: paletteId.storageKey);
     await _hiveService.saveSettings(_settings);
     notifyListeners();
   }

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/category_icon_styles.dart';
 import '../../core/constants/database_constants.dart';
 import '../../core/extensions/context_feedback.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/helpers/category_localization.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/widgets/clay_card.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../models/transaction_category.dart';
 import '../../services/category_service.dart';
@@ -205,72 +207,78 @@ class _CategoryListTile extends StatelessWidget {
     final l10n = context.l10n;
     final accent = CategoryIconStyles.colorFor(category.colorHex);
 
-    return Card(
-      child: ListTile(
-        onTap: onTap,
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: accent.withValues(alpha: 0.14),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: accent.withValues(alpha: 0.35)),
+    return ClayCard(
+      elevation: ClayElevation.low,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(AppRadius.iconBadge),
+            ),
+            child: Icon(
+              CategoryIconStyles.iconFor(category.iconKey),
+              color: accent,
+            ),
           ),
-          child: Icon(
-            CategoryIconStyles.iconFor(category.iconKey),
-            color: accent,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    category.localizedName(l10n),
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                if (category.isSystem) ...[
+                  const SizedBox(width: 6),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(AppRadius.chip),
+                    ),
+                    child: Text(
+                      l10n.categoryFormSystemBadge,
+                      style: AppTextStyles.labelSmall.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
-        ),
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(
-                category.localizedName(l10n),
-                style: AppTextStyles.bodyLarge.copyWith(
-                  fontWeight: FontWeight.w700,
+          if (onDelete != null) ...[
+            const SizedBox(width: 8),
+            IconButton(
+              tooltip: l10n.commonDelete,
+              onPressed: onDelete,
+              icon: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: AppColors.expense.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  size: 18,
+                  color: AppColors.expense,
                 ),
               ),
             ),
-            if (category.isSystem)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.dashboardPrimary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  l10n.categoryFormSystemBadge,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.dashboardPrimary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 11,
-                  ),
-                ),
-              ),
           ],
-        ),
-        trailing: onDelete == null
-            ? null
-            : IconButton(
-                tooltip: l10n.commonDelete,
-                onPressed: onDelete,
-                icon: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: AppColors.expense.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.expense.withValues(alpha: 0.45),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.close_rounded,
-                    size: 18,
-                    color: AppColors.expense,
-                  ),
-                ),
-              ),
+        ],
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_colors.dart';
+import '../extensions/context_theme.dart';
 import '../theme/app_text_styles.dart';
 
 /// Reusable summary card for dashboard metrics.
@@ -10,19 +10,22 @@ class SummaryCard extends StatelessWidget {
     required this.title,
     required this.value,
     this.subtitle,
-    this.accentColor = AppColors.primary,
+    this.accentColor,
     this.icon,
   });
 
   final String title;
   final String value;
   final String? subtitle;
-  final Color accentColor;
+
+  /// Accent color for icon and value. Defaults to [ColorScheme.primary].
+  final Color? accentColor;
   final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final effectiveAccent =
+        accentColor ?? Theme.of(context).colorScheme.primary;
 
     return Card(
       child: Padding(
@@ -33,17 +36,15 @@ class SummaryCard extends StatelessWidget {
             Row(
               children: [
                 if (icon != null) ...[
-                  Icon(icon, color: accentColor, size: 20),
+                  Icon(icon, color: effectiveAccent, size: 20),
                   const SizedBox(width: 8),
                 ],
                 Expanded(
                   child: Text(
                     title,
-                    style: isDark
-                        ? AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textSecondaryDark,
-                          )
-                        : AppTextStyles.labelOnLight,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: context.appColors.textSecondary,
+                    ),
                   ),
                 ),
               ],
@@ -51,17 +52,15 @@ class SummaryCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               value,
-              style: AppTextStyles.headingSmall.copyWith(color: accentColor),
+              style: AppTextStyles.headingSmall.copyWith(color: effectiveAccent),
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 4),
               Text(
                 subtitle!,
-                style: isDark
-                    ? AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondaryDark,
-                      )
-                    : AppTextStyles.captionOnLight,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: context.appColors.textMuted,
+                ),
               ),
             ],
           ],

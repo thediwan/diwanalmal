@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/goal_icon_styles.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
@@ -279,9 +278,9 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                             decoration: AppFormFields.decoration(
                               context,
                               hintText: l10n.goalFormNameHint,
-                              suffixIcon: const Icon(
+                              suffixIcon: Icon(
                                 Icons.flag_outlined,
-                                color: AppColors.dashboardPrimary,
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 20,
                               ),
                             ),
@@ -303,9 +302,9 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                             onCurrencyChanged: (id) =>
                                 setState(() => _selectedCurrencyId = id),
                             validator: _validateRequiredAmount,
-                            suffixIcon: const Icon(
+                            suffixIcon: Icon(
                               Icons.payments_outlined,
-                              color: AppColors.dashboardPrimary,
+                              color: Theme.of(context).colorScheme.primary,
                               size: 20,
                             ),
                           ),
@@ -323,9 +322,9 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                             decoration: AppFormFields.decoration(
                               context,
                               hintText: '0',
-                              suffixIcon: const Icon(
+                              suffixIcon: Icon(
                                 Icons.savings_outlined,
-                                color: AppColors.dashboardPrimary,
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 20,
                               ),
                             ),
@@ -375,9 +374,9 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                             child: InputDecorator(
                               decoration: AppFormFields.decoration(
                                 context,
-                                suffixIcon: const Icon(
+                                suffixIcon: Icon(
                                   Icons.calendar_month_outlined,
-                                  color: AppColors.dashboardPrimary,
+                                  color: Theme.of(context).colorScheme.primary,
                                   size: 20,
                                 ),
                               ),
@@ -413,7 +412,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
             child: FilledButton(
               onPressed: _submit,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.dashboardPrimary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: colors.onPrimary,
                 minimumSize: const Size.fromHeight(54),
                 shape: RoundedRectangleBorder(
@@ -470,7 +469,7 @@ class _GoalFormTopBar extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: AppTextStyles.headingSmall.copyWith(
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w800,
                 fontSize: 20,
               ),
@@ -507,9 +506,9 @@ class _GoalHeroLogo extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       child: BrandLogoImage(
         fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const Icon(
+        errorBuilder: (_, __, ___) => Icon(
           Icons.account_balance,
-          color: AppColors.dashboardPrimary,
+          color: Theme.of(context).colorScheme.primary,
           size: 32,
         ),
       ),

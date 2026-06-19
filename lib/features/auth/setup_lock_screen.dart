@@ -205,7 +205,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: AppColors.primaryContainer
+                                    color: Theme.of(context).colorScheme.primary
                                         .withValues(alpha: 0.35),
                                     width: 2,
                                     strokeAlign: BorderSide.strokeAlignOutside,
@@ -216,7 +216,7 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                                   size: 44,
                                   color: _biometricEnabled
                                       ? AppColors.success
-                                      : AppColors.primaryContainer,
+                                      : Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -242,11 +242,11 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                                 height: 48,
                                 child: FilledButton(
                                   style: FilledButton.styleFrom(
-                                    backgroundColor: AppColors.primaryContainer,
-                                    foregroundColor: colors.onPrimary,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
+                                  backgroundColor: Theme.of(context).colorScheme.primary,
+                                  foregroundColor: colors.onPrimary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                   ),
                                   onPressed:
                                       _checkingBiometric ? null : _setupBiometric,
@@ -266,7 +266,10 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                       AuthFormCard(
                         child: Column(
                           children: [
-                            PinDots(length: pinLength),
+                            PinDots(
+                              length: pinLength,
+                              hasError: _error != null,
+                            ),
                             const SizedBox(height: 16),
                             Text(
                               _isConfirmStep
@@ -315,9 +318,9 @@ class _SetupLockScreenState extends State<SetupLockScreen> {
                               height: 48,
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.primaryContainer,
+                                  foregroundColor: Theme.of(context).colorScheme.primary,
                                   side: BorderSide(
-                                    color: AppColors.primaryContainer
+                                    color: Theme.of(context).colorScheme.primary
                                         .withValues(alpha: 0.6),
                                     width: 1.5,
                                   ),

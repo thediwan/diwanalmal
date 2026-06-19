@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/category_icon_styles.dart';
 import '../../core/constants/database_constants.dart';
 import '../../core/extensions/context_feedback.dart';
@@ -195,7 +194,7 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
                   FilledButton(
                     onPressed: _isSaving ? null : _save,
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.dashboardPrimary,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       minimumSize: const Size.fromHeight(50),
                     ),
                     child: _isSaving

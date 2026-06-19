@@ -5,6 +5,7 @@ import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/helpers/currency_formatter.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/clay_card.dart';
 
 /// Three-column monthly income, expense, and debts row (RTL: income → expense → debts).
 class DashboardMonthlySummary extends StatelessWidget {
@@ -28,52 +29,56 @@ class DashboardMonthlySummary extends StatelessWidget {
     final l10n = context.l10n;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: IntrinsicHeight(
-        child: Row(
-          children: [
-            Expanded(
-              child: _SummaryCell(
-                title: l10n.dashboardMonthlyIncome,
-                value: CurrencyFormatter.formatCodeFirst(
-                  monthlyIncome,
-                  baseCode,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ClayCard(
+        elevation: ClayElevation.standard,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              Expanded(
+                child: _SummaryCell(
+                  title: l10n.dashboardMonthlyIncome,
+                  value: CurrencyFormatter.formatCodeFirst(
+                    monthlyIncome,
+                    baseCode,
+                  ),
+                  valueColor: AppColors.success,
+                  changeText: l10n.dashboardIncomeChange(12),
+                  changeColor: AppColors.success,
                 ),
-                valueColor: AppColors.success,
-                changeText: l10n.dashboardIncomeChange(12),
-                changeColor: AppColors.success,
               ),
-            ),
-            const _SectionDivider(),
-            Expanded(
-              child: _SummaryCell(
-                title: l10n.dashboardMonthlyExpense,
-                value: CurrencyFormatter.formatCodeFirst(
-                  monthlyExpense,
-                  baseCode,
+              const _SectionDivider(),
+              Expanded(
+                child: _SummaryCell(
+                  title: l10n.dashboardMonthlyExpense,
+                  value: CurrencyFormatter.formatCodeFirst(
+                    monthlyExpense,
+                    baseCode,
+                  ),
+                  valueColor: AppColors.expense,
+                  changeText: monthlyExpense > 0
+                      ? l10n.dashboardExpenseChange(5)
+                      : null,
+                  changeColor: AppColors.expense,
                 ),
-                valueColor: AppColors.expense,
-                changeText: monthlyExpense > 0
-                    ? l10n.dashboardExpenseChange(5)
-                    : null,
-                changeColor: AppColors.expense,
               ),
-            ),
-            const _SectionDivider(),
-            Expanded(
-              child: _SummaryCell(
-                title: l10n.dashboardDebts,
-                value: CurrencyFormatter.formatCodeFirst(
-                  debts,
-                  baseCode,
+              const _SectionDivider(),
+              Expanded(
+                child: _SummaryCell(
+                  title: l10n.dashboardDebts,
+                  value: CurrencyFormatter.formatCodeFirst(
+                    debts,
+                    baseCode,
+                  ),
+                  valueColor: AppColors.debtAccent,
+                  subtitle: l10n.dashboardDebtsOwedToOthers,
+                  subtitleColor: AppColors.debtAccent,
+                  onTap: onDebtsTap,
                 ),
-                valueColor: AppColors.debtAccent,
-                subtitle: l10n.dashboardDebtsOwedToOthers,
-                subtitleColor: AppColors.debtAccent,
-                onTap: onDebtsTap,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

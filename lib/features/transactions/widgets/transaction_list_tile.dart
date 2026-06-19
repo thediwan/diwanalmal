@@ -56,10 +56,10 @@ class TransactionListTile extends StatelessWidget {
                     minWidth: 32,
                     minHeight: 32,
                   ),
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.edit_outlined,
                     size: 18,
-                    color: AppColors.dashboardPrimary,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: onEdit,
                 ),

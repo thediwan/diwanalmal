@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'core/constants/app_constants.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/palettes/app_color_palette.dart';
 import 'l10n/app_localizations.dart';
 import 'core/widgets/app_lifecycle_observer.dart';
 import 'providers/dashboard_refresh_provider.dart';
@@ -98,10 +99,13 @@ class BaytAlmalApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Rebuild only when theme changes — not on every auth state update.
+    // Rebuild only when theme/palette changes — not on every auth state update.
     // Watching the whole provider here caused a white screen after PIN save.
     final themeMode = context.select<SettingsProvider, ThemeMode>(
       (settings) => settings.themeMode,
+    );
+    final paletteId = context.select<SettingsProvider, AppColorPaletteId>(
+      (settings) => settings.colorPaletteId,
     );
     final locale = context.select<SettingsProvider, Locale>(
       (settings) => settings.locale,
@@ -111,8 +115,8 @@ class BaytAlmalApp extends StatelessWidget {
       child: MaterialApp.router(
         title: AppConstants.appName,
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.light(),
-        darkTheme: AppTheme.dark(),
+        theme: AppTheme.build(palette: paletteId, brightness: Brightness.light),
+        darkTheme: AppTheme.build(palette: paletteId, brightness: Brightness.dark),
         themeMode: themeMode,
         locale: locale,
         supportedLocales: AppLocalizations.supportedLocales,

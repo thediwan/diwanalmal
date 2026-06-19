@@ -23,7 +23,8 @@ class WalletsTreasuryList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       builder: (context, sizeClass) {
-        final useGrid = isExpandedOrWider(sizeClass);
+        // Use grid for medium (2-col) and wider (3-col+)
+        final useGrid = sizeClass != WindowSizeClass.compact;
 
         if (!useGrid) {
           return WalletsGroupedCard(
@@ -34,6 +35,8 @@ class WalletsTreasuryList extends StatelessWidget {
 
         return ResponsiveGrid(
           itemCount: treasuries.length,
+          spacing: 14,
+          runSpacing: 14,
           itemBuilder: (context, index) => WalletGridCard(
             treasury: treasuries[index],
             onEdit: onEdit,

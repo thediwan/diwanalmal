@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/extensions/context_l10n.dart';
-import '../../l10n/app_localizations.dart';
 import '../../providers/dashboard_refresh_provider.dart';
 import '../../providers/currency_provider.dart';
 import '../../providers/wallet_provider.dart';

@@ -68,6 +68,7 @@ Business logic stays in providers/services; layout files only arrange widgets.
 - Use `ResponsiveGrid` for card collections — never hardcode column counts in features.
 - Use directional APIs (`EdgeInsetsDirectional`, `AlignmentDirectional`) for RTL.
 - All user-facing strings via `context.l10n`.
+- **Theme colors:** use `Theme.of(context).colorScheme.primary` and `context.appColors` — not `AppColors.primary` (see `docs/modules/color-palettes-and-theming.md`).
 
 ## Testing
 
@@ -78,6 +79,7 @@ Manual QA checklist:
 - [ ] Resize web/desktop window through all breakpoints
 - [ ] Arabic RTL at each breakpoint
 - [ ] Dark mode per layout variant
+- [ ] **Each color palette** in light and dark (see `docs/modules/color-palettes-and-theming.md` § QA)
 - [ ] Tab state preserved when switching tabs and resizing
 
 ## Adding a new screen

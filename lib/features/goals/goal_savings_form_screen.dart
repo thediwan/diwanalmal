@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/goal_icon_styles.dart';
 import '../../core/extensions/context_feedback.dart';
 import '../../core/extensions/context_l10n.dart';
@@ -267,7 +266,7 @@ class _GoalSavingsFormScreenState extends State<GoalSavingsFormScreen> {
               child: FilledButton(
                 onPressed: _isSaving ? null : _save,
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.dashboardPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: colors.onPrimary,
                   minimumSize: const Size.fromHeight(54),
                   shape: RoundedRectangleBorder(
@@ -340,7 +339,7 @@ class _GoalSavingsFormScreenState extends State<GoalSavingsFormScreen> {
               children: [
                 Icon(
                   GoalIconStyles.iconFor(goal.icon),
-                  color: AppColors.dashboardPrimary,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 28,
                 ),
                 const SizedBox(width: 12),
@@ -368,9 +367,9 @@ class _GoalSavingsFormScreenState extends State<GoalSavingsFormScreen> {
               selectedCurrencyId: goal.currencyId,
               onCurrencyChanged: (_) {},
               validator: _validateAmount,
-              suffixIcon: const Icon(
+              suffixIcon: Icon(
                 Icons.payments_outlined,
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
                 size: 20,
               ),
             ),
@@ -399,9 +398,9 @@ class _GoalSavingsFormScreenState extends State<GoalSavingsFormScreen> {
               child: InputDecorator(
                 decoration: AppFormFields.decoration(
                   context,
-                  suffixIcon: const Icon(
+                  suffixIcon: Icon(
                     Icons.calendar_month_outlined,
-                    color: AppColors.dashboardPrimary,
+                    color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
                 ),
@@ -463,7 +462,7 @@ class _TopBar extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: AppTextStyles.headingSmall.copyWith(
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w800,
                 fontSize: 20,
               ),

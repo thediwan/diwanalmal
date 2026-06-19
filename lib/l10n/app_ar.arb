@@ -111,6 +111,14 @@
   "@dashboardTotalBalance": {
     "placeholders": { "code": { "type": "String" } }
   },
+  "dashboardBalanceCardType": "محفظة رقمية",
+  "dashboardBalanceCardHolder": "الحامل",
+  "dashboardBalanceCardExpDate": "تاريخ الصلاحية",
+  "dashboardCardMenuTitle": "خيارات البطاقة",
+  "dashboardCardMenuViewWallets": "عرض المحافظ",
+  "dashboardCardMenuAddTransaction": "إضافة معاملة",
+  "dashboardCardMenuTransfer": "تحويل",
+  "dashboardCardMenuViewStats": "الإحصائيات",
   "dashboardApproxBase": "≈ {amount}",
   "@dashboardApproxBase": {
     "placeholders": { "amount": { "type": "String" } }
@@ -430,6 +438,12 @@
   "settingsThemeLight": "فاتح",
   "settingsThemeDark": "داكن",
   "settingsThemeSystem": "تلقائي",
+  "settingsColorPalette": "لوحة الألوان",
+  "paletteOriginal": "الأصلي",
+  "paletteDeepSea": "أعماق البحر",
+  "paletteGothicGlam": "الجلامور القوطي",
+  "palettePurpleHaze": "الضباب البنفسجي",
+  "paletteTurquoiseHarmony": "الانسجام الفيروزي",
   "settingsAmountFormat": "تنسيق الأرقام",
   "settingsAmountFormatSubtitle": "فاصل الآلاف والكسور العشرية",
   "settingsAmountFormatWestern": "1,234.56",
@@ -636,5 +650,15 @@
   "profileRecoveryCodeHint": "احفظ هذا الرمز في مكان آمن",
   "profileAppLock": "قفل التطبيق الآن",
   "profileAppLockSubtitle": "يتطلب PIN أو البصمة للدخول مجدداً",
-  "profileSelectLanguage": "اختر اللغة"
+  "profileSelectLanguage": "اختر اللغة",
+  "quickActionAddTransaction": "إضافة",
+  "quickActionTransfer": "تحويل",
+  "quickActionViewAll": "الكل",
+  "statusOffline": "غير متصل",
+  "statusOfflineData": "بياناتك محفوظة على جهازك",
+  "transactionConfirmTitle": "تأكيد العملية",
+  "transactionConfirmSubtitle": "راجع التفاصيل قبل الحفظ",
+  "transactionConfirmSave": "حفظ",
+  "goalAchievedTitle": "أحسنت!",
+  "goalAchievedSubtitle": "لقد حققت هدفك المالي"
 }

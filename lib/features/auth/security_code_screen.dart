@@ -111,7 +111,7 @@ class SecurityCodeScreen extends StatelessWidget {
                       Text(
                         l10n.authYourSecurityCode,
                         style: AppTextStyles.bodyLarge.copyWith(
-                          color: AppColors.primaryContainer,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
                         ),
@@ -158,7 +158,7 @@ class SecurityCodeScreen extends StatelessWidget {
                                     chars[i],
                                     style:
                                         AppTextStyles.headingSmall.copyWith(
-                                      color: AppColors.primaryContainer,
+                                      color: Theme.of(context).colorScheme.primary,
                                       fontWeight: FontWeight.w800,
                                       fontSize: fontSize,
                                     ),
@@ -247,7 +247,7 @@ class SecurityCodeScreen extends StatelessWidget {
                   height: 54,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primaryContainer,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: colors.onPrimary,
                       elevation: 0,
                       shape: RoundedRectangleBorder(

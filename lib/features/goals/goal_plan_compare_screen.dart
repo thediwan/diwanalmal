@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../core/constants/app_colors.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/currency_formatter.dart';
@@ -102,7 +101,7 @@ class _CompareTopBar extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: AppTextStyles.headingSmall.copyWith(
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w800,
                 fontSize: 20,
               ),
@@ -145,7 +144,7 @@ class _CompareCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isRecommended
-              ? AppColors.dashboardPrimary
+              ? Theme.of(context).colorScheme.primary
               : colors.cardBorder,
           width: isRecommended ? 2 : 1,
         ),
@@ -176,13 +175,13 @@ class _CompareCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.dashboardPrimary.withValues(alpha: 0.12),
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     recommendedLabel,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.dashboardPrimary,
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),

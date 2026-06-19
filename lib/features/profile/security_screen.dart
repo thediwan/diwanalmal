@@ -160,7 +160,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   Text(
                     _pinStepLabel,
                     style: AppTextStyles.headingSmall.copyWith(
-                      color: AppColors.dashboardPrimary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -189,8 +189,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   title: Text(l10n.profileBiometric),
                   value: settings.biometricEnabled,
                   activeTrackColor:
-                      AppColors.dashboardPrimary.withValues(alpha: 0.5),
-                  activeThumbColor: AppColors.dashboardPrimary,
+                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                  activeThumbColor: Theme.of(context).colorScheme.primary,
                   onChanged: (v) => _toggleBiometric(v, settings),
                 ),
                 const Divider(),

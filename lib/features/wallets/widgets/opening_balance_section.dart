@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/helpers/currency_uniqueness.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_form_fields.dart';
@@ -105,7 +104,7 @@ class OpeningBalanceSection extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: canAddMoreRows ? onAddRow : null,
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.dashboardPrimary,
+              foregroundColor: Theme.of(context).colorScheme.primary,
               side: BorderSide(color: context.appColors.accentSurfaceBorder),
               backgroundColor: context.appColors.accentSurface,
               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -118,7 +117,7 @@ class OpeningBalanceSection extends StatelessWidget {
               l10n.walletFormAddOpeningBalance,
               style: AppTextStyles.bodyMedium.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ),

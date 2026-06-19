@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_form_fields.dart';
@@ -203,7 +202,7 @@ class _TransactionListFilterSheetState extends State<TransactionListFilterSheet>
               Expanded(
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.dashboardPrimary,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: _apply,
                   child: Text(l10n.transactionsListFilterApply),

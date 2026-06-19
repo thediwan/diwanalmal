@@ -5,6 +5,7 @@ import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/helpers/currency_formatter.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/clay_card.dart';
 import '../../../models/treasury.dart';
 import 'treasury_icon.dart';
 
@@ -23,21 +24,9 @@ class WalletsGroupedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (treasuries.isEmpty) return const SizedBox.shrink();
 
-    final colors = context.appColors;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.cardBorder),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow,
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return ClayCard(
+      elevation: ClayElevation.standard,
+      padding: EdgeInsets.zero,
       child: Column(
         children: [
           for (var i = 0; i < treasuries.length; i++) ...[
@@ -107,7 +96,7 @@ class WalletListItem extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.dashboardPrimary.withValues(
+                              color: Theme.of(context).colorScheme.primary.withValues(
                                 alpha: 0.12,
                               ),
                               borderRadius: BorderRadius.circular(8),
@@ -115,7 +104,7 @@ class WalletListItem extends StatelessWidget {
                             child: Text(
                               l10n.goalWalletBadge,
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.dashboardPrimary,
+                                color: Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 10,
                               ),
@@ -132,7 +121,7 @@ class WalletListItem extends StatelessWidget {
                               child: Icon(
                                 Icons.edit_outlined,
                                 size: 18,
-                                color: AppColors.dashboardPrimary,
+                                color: Theme.of(context).colorScheme.primary,
                                 semanticLabel: l10n.walletsEditWallet,
                               ),
                             ),

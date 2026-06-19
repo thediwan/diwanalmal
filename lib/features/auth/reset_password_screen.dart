@@ -114,7 +114,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         AppConstants.appName,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.headingSmall.copyWith(
-                          color: AppColors.primaryContainer,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -134,14 +134,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           width: 88,
                           height: 88,
                           decoration: BoxDecoration(
-                            color: AppColors.primaryContainer
+                            color: Theme.of(context).colorScheme.primary
                                 .withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             CupertinoIcons.lock_rotation,
                             size: 44,
-                            color: AppColors.primaryContainer,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 22),
@@ -195,15 +195,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                     UpperCaseTextFormatter(),
                                   ],
                                   style: AppTextStyles.headingSmall.copyWith(
-                                    color: AppColors.primaryContainer,
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 4,
                                   ),
                                   decoration: _fieldDecoration(
                                     context,
-                                    suffixIcon: const Icon(
+                                    suffixIcon: Icon(
                                       CupertinoIcons.shield_fill,
-                                      color: AppColors.primaryContainer,
+                                      color: Theme.of(context).colorScheme.primary,
                                       size: 22,
                                     ),
                                   ),
@@ -295,7 +295,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           height: 54,
                           child: FilledButton(
                             style: FilledButton.styleFrom(
-                              backgroundColor: AppColors.primaryContainer,
+                              backgroundColor: Theme.of(context).colorScheme.primary,
                               foregroundColor: colors.onPrimary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
@@ -398,8 +398,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: AppColors.primaryContainer,
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
           width: 1.5,
         ),
       ),
@@ -426,7 +426,7 @@ class _PasswordStrengthBar extends StatelessWidget {
         } else if (strength <= 2) {
           color = AppColors.warning;
         } else if (strength == 3) {
-          color = AppColors.primaryContainer;
+          color = Theme.of(context).colorScheme.primary;
         } else {
           color = AppColors.success;
         }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/helpers/currency_formatter.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -45,14 +44,14 @@ class DashboardTotalBalance extends StatelessWidget {
                 style: AppTextStyles.bodyLarge.copyWith(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.dashboardPrimaryMuted,
+                  color: Theme.of(context).colorScheme.tertiary,
                 ),
               ),
               Text(
                 CurrencyFormatter.formatAmountOnly(amount),
                 style: AppTextStyles.headingLarge.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.dashboardPrimary,
+                  color: Theme.of(context).colorScheme.primary,
                   fontSize: 36,
                   letterSpacing: -0.5,
                   height: 1.1,

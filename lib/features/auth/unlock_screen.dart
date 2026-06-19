@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/extensions/context_l10n.dart';
-import '../../core/extensions/context_theme.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/extensions/context_l10n.dart';
+import '../../core/extensions/context_theme.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/auth_background.dart';
-import '../../core/widgets/split_auth_background.dart';
 import '../../core/widgets/auth_form_card.dart';
 import '../../core/widgets/brand_logo.dart';
 import '../../core/widgets/pin_keypad.dart';
+import '../../core/widgets/split_auth_background.dart';
 import '../../providers/settings_provider.dart';
 
 /// App lock screen — requires PIN or biometric to continue.
@@ -27,11 +27,13 @@ class _UnlockScreenState extends State<UnlockScreen> {
   String _pin = '';
   String? _error;
   bool _loading = false;
+  bool _hasError = false;
 
   void _onDigit(String digit) {
     if (_loading) return;
     setState(() {
       _error = null;
+      _hasError = false;
       if (_pin.length < 4) _pin += digit;
     });
 
@@ -43,6 +45,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
     setState(() {
       _pin = _pin.substring(0, _pin.length - 1);
       _error = null;
+      _hasError = false;
     });
   }
 
@@ -56,6 +59,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
 
     setState(() {
       _error = context.l10n.authPinInvalid;
+      _hasError = true;
       _pin = '';
     });
   }
@@ -116,14 +120,24 @@ class _UnlockScreenState extends State<UnlockScreen> {
                   ),
                 ),
                 const SizedBox(height: 28),
-                PinDots(length: _pin.length),
-                if (_error != null) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    _error!,
-                    style: AppTextStyles.bodySmall.copyWith(color: AppColors.expense),
+                PinDots(
+                  length: _pin.length,
+                  hasError: _hasError,
+                ),
+                const SizedBox(height: 12),
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: _error != null ? 1.0 : 0.0,
+                  child: Text(
+                    _error ?? '',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.expense,
+                    ),
                   ),
-                ],
+                ),
+                // Offline trust badge
+                const SizedBox(height: 8),
+                _OfflineTrustBadge(),
                 const SizedBox(height: 24),
                 Expanded(
                   child: AuthFormCard(
@@ -142,8 +156,8 @@ class _UnlockScreenState extends State<UnlockScreen> {
                     child: OutlinedButton.icon(
                       onPressed: _loading ? null : _tryBiometric,
                       icon: Icon(
-                        CupertinoIcons.hand_raised,
-                        color: colors.textPrimary,
+                        CupertinoIcons.hand_raised_fill,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                       label: Text(
                         l10n.authUseBiometric,
@@ -155,9 +169,11 @@ class _UnlockScreenState extends State<UnlockScreen> {
                   ),
                 ],
                 if (_loading)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(top: 16),
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
               ],
             ),
@@ -165,6 +181,33 @@ class _UnlockScreenState extends State<UnlockScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Small offline trust indicator — communicates offline-first data safety.
+class _OfflineTrustBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final l10n = context.l10n;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.lock_outline_rounded,
+          size: 12,
+          color: AppColors.success,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          l10n.statusOfflineData,
+          style: AppTextStyles.labelSmall.copyWith(
+            color: colors.textMuted,
+          ),
+        ),
+      ],
     );
   }
 }

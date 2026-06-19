@@ -13,6 +13,8 @@ import '../../core/theme/app_theme_colors.dart';
 import '../../core/layouts/form_page_layout.dart';
 import '../../core/widgets/auth_background.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/widgets/clay_card.dart';
 import '../../services/goal_planning_service.dart';
 import '../../services/goal_service.dart';
 import '../../services/lazarus_database_service.dart';
@@ -165,10 +167,18 @@ class _GoalPlanScreenState extends State<GoalPlanScreen> {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
       child: Column(
         children: [
-          Icon(
-            GoalIconStyles.iconFor(draft.iconStyle),
-            size: 48,
-            color: AppColors.dashboardPrimary,
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              GoalIconStyles.iconFor(draft.iconStyle),
+              size: 36,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -189,47 +199,12 @@ class _GoalPlanScreenState extends State<GoalPlanScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: colors.cardBorder),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.cardShadow,
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _PlanRow(
-                  icon: Icons.savings_outlined,
-                  text: monthlyLabel,
-                ),
-                const SizedBox(height: 14),
-                _PlanRow(
-                  icon: Icons.event_outlined,
-                  text: dateLabel,
-                ),
-                if (plan.isLargeAmountWarning) ...[
-                  const SizedBox(height: 16),
-                  _WarningBanner(
-                    text: l10n.goalPlanWarningLargeAmount,
-                  ),
-                ],
-                if (plan.isUnrealisticDateWarning) ...[
-                  const SizedBox(height: 12),
-                  _WarningBanner(
-                    text: l10n.goalPlanWarningUnrealisticDate,
-                  ),
-                ],
-              ],
-            ),
+          // Animated reveal using staggered FadeTransition
+          _AnimatedPlanCard(
+            plan: plan,
+            monthlyLabel: monthlyLabel,
+            dateLabel: dateLabel,
+            l10n: l10n,
           ),
         ],
       ),
@@ -244,7 +219,7 @@ class _GoalPlanScreenState extends State<GoalPlanScreen> {
           FilledButton(
             onPressed: _accepting ? null : _acceptPlan,
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.dashboardPrimary,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: colors.onPrimary,
               minimumSize: const Size.fromHeight(52),
               shape: RoundedRectangleBorder(
@@ -290,8 +265,8 @@ class _GoalPlanScreenState extends State<GoalPlanScreen> {
                   onPressed: _comparePlans,
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(48),
-                    side: const BorderSide(color: AppColors.dashboardPrimary),
-                    foregroundColor: AppColors.dashboardPrimary,
+                    side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                    foregroundColor: Theme.of(context).colorScheme.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
@@ -334,7 +309,7 @@ class _PlanTopBar extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: AppTextStyles.headingSmall.copyWith(
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w800,
                 fontSize: 20,
               ),
@@ -342,6 +317,101 @@ class _PlanTopBar extends StatelessWidget {
           ),
           const SizedBox(width: 48),
         ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Animated plan card — staggered fade-in for financial trust feel
+// ---------------------------------------------------------------------------
+
+class _AnimatedPlanCard extends StatefulWidget {
+  const _AnimatedPlanCard({
+    required this.plan,
+    required this.monthlyLabel,
+    required this.dateLabel,
+    required this.l10n,
+  });
+
+  final GoalPlanResult plan;
+  final String monthlyLabel;
+  final String dateLabel;
+  final AppLocalizations l10n;
+
+  @override
+  State<_AnimatedPlanCard> createState() => _AnimatedPlanCardState();
+}
+
+class _AnimatedPlanCardState extends State<_AnimatedPlanCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: AppMotion.emphasized,
+    );
+    _fade = CurvedAnimation(parent: _controller, curve: AppMotion.easeEnter);
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.12),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: AppMotion.easeEnter,
+    ));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (AppMotion.shouldAnimate(context)) {
+        _controller.forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fade,
+      child: SlideTransition(
+        position: _slide,
+        child: ClayCard(
+          elevation: ClayElevation.standard,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _PlanRow(
+                icon: Icons.savings_outlined,
+                text: widget.monthlyLabel,
+              ),
+              const SizedBox(height: 14),
+              _PlanRow(
+                icon: Icons.event_outlined,
+                text: widget.dateLabel,
+              ),
+              if (widget.plan.isLargeAmountWarning) ...[
+                const SizedBox(height: 16),
+                _WarningBanner(text: widget.l10n.goalPlanWarningLargeAmount),
+              ],
+              if (widget.plan.isUnrealisticDateWarning) ...[
+                const SizedBox(height: 12),
+                _WarningBanner(
+                    text: widget.l10n.goalPlanWarningUnrealisticDate),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -362,7 +432,7 @@ class _PlanRow extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(icon, color: AppColors.dashboardPrimary, size: 22),
+        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 22),
         const SizedBox(width: 10),
         Expanded(
           child: Text(

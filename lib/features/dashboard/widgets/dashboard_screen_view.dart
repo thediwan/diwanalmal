@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/responsive/app_breakpoints.dart';
 import '../../../core/responsive/responsive_layout.dart';
@@ -41,7 +40,7 @@ class DashboardScreenView extends StatelessWidget {
                     await onReloadAfterNavigation();
                   },
                   elevation: 6,
-                  backgroundColor: AppColors.dashboardPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: context.appColors.onPrimary,
                   shape: const CircleBorder(),
                   child: const Icon(Icons.add, size: 32),

@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/database_constants.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
@@ -541,15 +541,109 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
     }
   }
 
+  /// Shows a bottom-sheet confirmation for financially significant actions
+  /// (transfers and debts). Returns [true] if the user confirms.
+  Future<bool> _showConfirmSheet() async {
+    final l10n = context.l10n;
+    final colors = context.appColors;
+
+    final result = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          margin: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: AppRadius.bottomSheetBorderRadius,
+            boxShadow: Theme.of(context).brightness == Brightness.dark
+                ? AppShadow.clayHeroDark
+                : AppShadow.clayHeroLight,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius:
+                          BorderRadius.circular(AppRadius.iconBadge),
+                    ),
+                    child: Icon(
+                      Icons.check_circle_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.transactionConfirmTitle,
+                          style: AppTextStyles.headingSmall.copyWith(
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          l10n.transactionConfirmSubtitle,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: colors.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                      child: Text(l10n.commonCancel),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: FilledButton(
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                      child: Text(l10n.transactionConfirmSave),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    return result ?? false;
+  }
+
   Future<void> _save() async {
     final l10n = context.l10n;
 
     if (_isDebtMode) {
+      final confirmed = await _showConfirmSheet();
+      if (!confirmed) return;
       await _saveDebt(l10n);
       return;
     }
 
     if (_isTransferMode) {
+      final confirmed = await _showConfirmSheet();
+      if (!confirmed) return;
       await _saveTransfer(l10n);
       return;
     }
@@ -1014,7 +1108,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                             _amountInput.display,
                             textAlign: TextAlign.center,
                             style: AppTextStyles.headingLarge.copyWith(
-                              color: AppColors.dashboardPrimary,
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w800,
                               fontSize: 42,
                               height: 1.1,
@@ -1115,7 +1209,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
             child: FilledButton(
               onPressed: _isSaving ? null : _save,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.dashboardPrimary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: colors.onPrimary,
                 minimumSize: const Size.fromHeight(54),
                 shape: RoundedRectangleBorder(
@@ -1175,7 +1269,7 @@ class _TransactionTopBar extends StatelessWidget {
           Text(
             title,
             style: AppTextStyles.bodyLarge.copyWith(
-              color: AppColors.dashboardPrimary,
+              color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -1218,7 +1312,7 @@ class _SectionHeader extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        Icon(icon, color: AppColors.dashboardPrimary, size: 22),
+        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 22),
       ],
     );
   }
@@ -1253,7 +1347,7 @@ class _DateBar extends StatelessWidget {
             child: Text(
               changeLabel,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -1267,9 +1361,9 @@ class _DateBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(
+          Icon(
             Icons.calendar_month_outlined,
-            color: AppColors.dashboardPrimary,
+            color: Theme.of(context).colorScheme.primary,
             size: 20,
           ),
         ],

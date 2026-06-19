@@ -38,10 +38,10 @@ abstract final class TransactionIconStyles {
     );
   }
 
-  static TransactionIconStyle forTransfer() {
-    return const TransactionIconStyle(
+  static TransactionIconStyle forTransfer({Color? primary}) {
+    return TransactionIconStyle(
       icon: Icons.swap_horiz_rounded,
-      color: AppColors.dashboardPrimary,
+      color: primary ?? AppColors.primary,
     );
   }
 
@@ -79,9 +79,9 @@ abstract final class TransactionIconStyles {
     };
   }
 
-  static Color amountColorForKind(TransactionListKind kind) {
+  static Color amountColorForKind(TransactionListKind kind, {Color? primary}) {
     return switch (kind) {
-      TransactionListKind.transfer => AppColors.dashboardPrimary,
+      TransactionListKind.transfer => primary ?? AppColors.primary,
       TransactionListKind.goalDeposit => AppColors.success,
       TransactionListKind.goalWithdraw => AppColors.expense,
       TransactionListKind.debtor => AppColors.success,

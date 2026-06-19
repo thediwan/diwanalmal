@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/category_icon_styles.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
@@ -87,18 +86,18 @@ class _CategoryTile extends StatelessWidget {
               height: 56,
               decoration: BoxDecoration(
                 color: selected
-                    ? AppColors.dashboardPrimary.withValues(alpha: 0.12)
+                    ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.12)
                     : colors.inputFill,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color:
-                      selected ? AppColors.dashboardPrimary : colors.cardBorder,
+                      selected ? Theme.of(context).colorScheme.primary : colors.cardBorder,
                   width: selected ? 2 : 1,
                 ),
               ),
               child: Icon(
                 CategoryIconStyles.iconFor(category.iconKey),
-                color: selected ? AppColors.dashboardPrimary : accent,
+                color: selected ? Theme.of(context).colorScheme.primary : accent,
                 size: 26,
               ),
             ),
@@ -110,7 +109,7 @@ class _CategoryTile extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTextStyles.bodySmall.copyWith(
                 color:
-                    selected ? AppColors.dashboardPrimary : colors.textPrimary,
+                    selected ? Theme.of(context).colorScheme.primary : colors.textPrimary,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 fontSize: 12,
               ),

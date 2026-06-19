@@ -95,12 +95,12 @@ class _SelectBaseCurrencyScreenState extends State<SelectBaseCurrencyScreen> {
 
                     return Card(
                       color: isSelected
-                          ? AppColors.primary.withOpacity(0.08)
+                          ? Theme.of(context).colorScheme.primary.withOpacity(0.08)
                           : null,
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: isSelected
-                              ? AppColors.primary
+                              ? Theme.of(context).colorScheme.primary
                               : Colors.grey.shade200,
                           child: Text(
                             currency['symbol']!,
@@ -115,7 +115,7 @@ class _SelectBaseCurrencyScreenState extends State<SelectBaseCurrencyScreen> {
                         ),
                         subtitle: Text(code),
                         trailing: isSelected
-                            ? const Icon(Icons.check_circle, color: AppColors.primary)
+                            ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary)
                             : null,
                         onTap: () => setState(() => _selectedCode = code),
                       ),

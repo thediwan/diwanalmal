@@ -316,6 +316,30 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get dashboardBalanceCardType => 'Digital Wallet';
+
+  @override
+  String get dashboardBalanceCardHolder => 'Holder';
+
+  @override
+  String get dashboardBalanceCardExpDate => 'Exp Date';
+
+  @override
+  String get dashboardCardMenuTitle => 'Card Options';
+
+  @override
+  String get dashboardCardMenuViewWallets => 'View Wallets';
+
+  @override
+  String get dashboardCardMenuAddTransaction => 'Add Transaction';
+
+  @override
+  String get dashboardCardMenuTransfer => 'Transfer';
+
+  @override
+  String get dashboardCardMenuViewStats => 'Statistics';
+
+  @override
   String dashboardApproxBase(String amount) {
     return '≈ $amount';
   }
@@ -1070,6 +1094,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsThemeSystem => 'System';
 
   @override
+  String get settingsColorPalette => 'Color palette';
+
+  @override
+  String get paletteOriginal => 'Original';
+
+  @override
+  String get paletteDeepSea => 'Deep Sea';
+
+  @override
+  String get paletteGothicGlam => 'Gothic Glam';
+
+  @override
+  String get palettePurpleHaze => 'Purple Haze';
+
+  @override
+  String get paletteTurquoiseHarmony => 'Turquoise Harmony';
+
+  @override
   String get settingsAmountFormat => 'Number format';
 
   @override
@@ -1551,4 +1593,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSelectLanguage => 'Select language';
+
+  @override
+  String get quickActionAddTransaction => 'Add';
+
+  @override
+  String get quickActionTransfer => 'Transfer';
+
+  @override
+  String get quickActionViewAll => 'All';
+
+  @override
+  String get statusOffline => 'Offline';
+
+  @override
+  String get statusOfflineData => 'Your data is stored on this device';
+
+  @override
+  String get transactionConfirmTitle => 'Confirm Transaction';
+
+  @override
+  String get transactionConfirmSubtitle => 'Review details before saving';
+
+  @override
+  String get transactionConfirmSave => 'Save';
+
+  @override
+  String get goalAchievedTitle => 'Well done!';
+
+  @override
+  String get goalAchievedSubtitle => 'You\'ve reached your financial goal';
 }

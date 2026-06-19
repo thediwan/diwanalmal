@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/clay_card.dart';
 import '../models/dashboard_models.dart';
 
 /// Financial goals block — title right, add-goal link left (RTL mockup).
@@ -50,7 +53,7 @@ class DashboardGoalsSection extends StatelessWidget {
                 child: Text(
                   l10n.dashboardAddGoal,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.dashboardPrimary,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -98,15 +101,17 @@ class _EmptyGoalsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surfaceVariant,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.cardBorder),
-      ),
+    return ClayCard(
+      elevation: ClayElevation.low,
+      padding: const EdgeInsets.all(20),
       child: Column(
         children: [
+          Icon(
+            Icons.track_changes_rounded,
+            size: 36,
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.40),
+          ),
+          const SizedBox(height: 10),
           Text(
             message,
             textAlign: TextAlign.center,
@@ -115,15 +120,9 @@ class _EmptyGoalsCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          TextButton(
+          FilledButton(
             onPressed: onAddGoal,
-            child: Text(
-              actionLabel,
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.dashboardPrimary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            child: Text(actionLabel),
           ),
         ],
       ),
@@ -131,7 +130,7 @@ class _EmptyGoalsCard extends StatelessWidget {
   }
 }
 
-class _GoalCard extends StatelessWidget {
+class _GoalCard extends StatefulWidget {
   const _GoalCard({
     required this.goal,
     required this.onTap,
@@ -141,60 +140,115 @@ class _GoalCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_GoalCard> createState() => _GoalCardState();
+}
+
+class _GoalCardState extends State<_GoalCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _progressAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: AppMotion.emphasized,
+    );
+    _progressAnim = Tween<double>(
+      begin: 0,
+      end: widget.goal.progressPercent / 100.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: AppMotion.easeEmphasized,
+    ));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (AppMotion.shouldAnimate(context)) {
+        _controller.forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final isComplete = widget.goal.progressPercent >= 100;
+    final progressColor =
+        isComplete ? AppColors.success : Theme.of(context).colorScheme.primary;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  goal.icon,
-                  color: AppColors.dashboardPrimary,
-                  size: 28,
+    return ClayCard(
+      elevation: ClayElevation.standard,
+      padding: const EdgeInsets.all(16),
+      onTap: widget.onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: progressColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.iconBadge),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    goal.title,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
-                    ),
-                  ),
-                ),
-                Text(
-                  '${goal.progressPercent}%',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.dashboardPrimary,
-                    fontSize: 15,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: LinearProgressIndicator(
-                  value: goal.progressPercent / 100,
-                  minHeight: 10,
-                  backgroundColor: colors.divider,
-                  color: AppColors.dashboardPrimary,
+                child: Icon(
+                  widget.goal.icon,
+                  color: progressColor,
+                  size: 22,
                 ),
               ),
-            ),
-          ],
-        ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  widget.goal.title,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colors.textPrimary,
+                  ),
+                ),
+              ),
+              Text(
+                '${widget.goal.progressPercent}%',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: progressColor,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          AnimatedBuilder(
+            animation: _progressAnim,
+            builder: (context, _) {
+              final value = AppMotion.shouldAnimate(context)
+                  ? _progressAnim.value
+                  : widget.goal.progressPercent / 100.0;
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: LinearProgressIndicator(
+                    value: value,
+                    minHeight: 8,
+                    backgroundColor: colors.divider,
+                    color: progressColor,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

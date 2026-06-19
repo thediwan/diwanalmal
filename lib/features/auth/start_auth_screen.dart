@@ -87,12 +87,12 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                             height: 112,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppColors.primaryContainer.withValues(alpha: 0.1),
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               CupertinoIcons.hand_raised,
                               size: 52,
-                              color: AppColors.primaryContainer,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           Positioned(
@@ -100,7 +100,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                             left: -4,
                             child: Container(
                               padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 color: AppColors.success,
                                 shape: BoxShape.circle,
                               ),
@@ -137,7 +137,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                         height: 52,
                         child: FilledButton.icon(
                           style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.primaryContainer,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
                             foregroundColor: colors.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -166,9 +166,9 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                         height: 52,
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.primaryContainer,
+                            foregroundColor: Theme.of(context).colorScheme.primary,
                             side: BorderSide(
-                              color: AppColors.primaryContainer.withValues(alpha: 0.4),
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -195,7 +195,7 @@ class _StartAuthScreenState extends State<StartAuthScreen> {
                           child: Text(
                             l10n.authCreateAccountNew,
                             style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.primaryContainer,
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),

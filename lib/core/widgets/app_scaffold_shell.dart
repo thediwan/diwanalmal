@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../constants/app_colors.dart';
 import '../extensions/context_l10n.dart';
 import '../extensions/context_theme.dart';
 
@@ -40,6 +39,7 @@ class AppScaffoldShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.appColors;
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
       backgroundColor: colors.scaffoldBackground,
@@ -49,40 +49,28 @@ class AppScaffoldShell extends StatelessWidget {
       ),
       bottomNavigationBar: NavigationBar(
         backgroundColor: colors.navBarBackground,
-        indicatorColor: AppColors.primaryContainer.withValues(alpha: 0.12),
+        indicatorColor: primary.withValues(alpha: 0.12),
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) => _onDestinationSelected(context, index),
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.grid_view_outlined),
-            selectedIcon: const Icon(
-              Icons.grid_view,
-              color: AppColors.primaryContainer,
-            ),
+            selectedIcon: Icon(Icons.grid_view, color: primary),
             label: l10n.navHome,
           ),
           NavigationDestination(
             icon: const Icon(Icons.receipt_long_outlined),
-            selectedIcon: const Icon(
-              Icons.receipt_long,
-              color: AppColors.primaryContainer,
-            ),
+            selectedIcon: Icon(Icons.receipt_long, color: primary),
             label: l10n.navTransactions,
           ),
           NavigationDestination(
             icon: const Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: const Icon(
-              Icons.account_balance_wallet,
-              color: AppColors.primaryContainer,
-            ),
+            selectedIcon: Icon(Icons.account_balance_wallet, color: primary),
             label: l10n.navWallets,
           ),
           NavigationDestination(
             icon: const Icon(Icons.settings_outlined),
-            selectedIcon: const Icon(
-              Icons.settings,
-              color: AppColors.primaryContainer,
-            ),
+            selectedIcon: Icon(Icons.settings, color: primary),
             label: l10n.navSettings,
           ),
         ],

@@ -316,6 +316,30 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get dashboardBalanceCardType => 'محفظة رقمية';
+
+  @override
+  String get dashboardBalanceCardHolder => 'الحامل';
+
+  @override
+  String get dashboardBalanceCardExpDate => 'تاريخ الصلاحية';
+
+  @override
+  String get dashboardCardMenuTitle => 'خيارات البطاقة';
+
+  @override
+  String get dashboardCardMenuViewWallets => 'عرض المحافظ';
+
+  @override
+  String get dashboardCardMenuAddTransaction => 'إضافة معاملة';
+
+  @override
+  String get dashboardCardMenuTransfer => 'تحويل';
+
+  @override
+  String get dashboardCardMenuViewStats => 'الإحصائيات';
+
+  @override
   String dashboardApproxBase(String amount) {
     return '≈ $amount';
   }
@@ -1062,6 +1086,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsThemeSystem => 'تلقائي';
 
   @override
+  String get settingsColorPalette => 'لوحة الألوان';
+
+  @override
+  String get paletteOriginal => 'الأصلي';
+
+  @override
+  String get paletteDeepSea => 'أعماق البحر';
+
+  @override
+  String get paletteGothicGlam => 'الجلامور القوطي';
+
+  @override
+  String get palettePurpleHaze => 'الضباب البنفسجي';
+
+  @override
+  String get paletteTurquoiseHarmony => 'الانسجام الفيروزي';
+
+  @override
   String get settingsAmountFormat => 'تنسيق الأرقام';
 
   @override
@@ -1539,4 +1581,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profileSelectLanguage => 'اختر اللغة';
+
+  @override
+  String get quickActionAddTransaction => 'إضافة';
+
+  @override
+  String get quickActionTransfer => 'تحويل';
+
+  @override
+  String get quickActionViewAll => 'الكل';
+
+  @override
+  String get statusOffline => 'غير متصل';
+
+  @override
+  String get statusOfflineData => 'بياناتك محفوظة على جهازك';
+
+  @override
+  String get transactionConfirmTitle => 'تأكيد العملية';
+
+  @override
+  String get transactionConfirmSubtitle => 'راجع التفاصيل قبل الحفظ';
+
+  @override
+  String get transactionConfirmSave => 'حفظ';
+
+  @override
+  String get goalAchievedTitle => 'أحسنت!';
+
+  @override
+  String get goalAchievedSubtitle => 'لقد حققت هدفك المالي';
 }

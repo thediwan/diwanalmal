@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/transaction_icon_styles.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
@@ -26,7 +25,7 @@ class DashboardRecentTransactions extends StatelessWidget {
     if (transactions.isEmpty) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -50,7 +49,7 @@ class DashboardRecentTransactions extends StatelessWidget {
                 child: Text(
                   l10n.dashboardMore,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.dashboardPrimary,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
