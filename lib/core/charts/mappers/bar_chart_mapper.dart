@@ -15,6 +15,7 @@ abstract final class BarChartMapper {
   /// [rodWidthFraction] controls the bar width relative to each group slot
   /// (0.0–1.0). Default 0.55 matches the previous custom implementation.
   static BarChartData build({
+    required BuildContext context,
     required List<ChartSeriesPoint> points,
     required String currencyCode,
     required bool isRtl,
@@ -52,6 +53,7 @@ abstract final class BarChartMapper {
       gridData: AppChartTheme.gridData(colors),
       borderData: AppChartTheme.borderData(),
       titlesData: AppChartTheme.titlesData(
+        context: context,
         points: points,
         currencyCode: currencyCode,
         isRtl: isRtl,

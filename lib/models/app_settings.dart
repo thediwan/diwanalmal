@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import '../core/constants/transaction_policy.dart';
 import '../core/theme/palettes/app_color_palette.dart';
 import 'amount_format_style.dart';
+import 'font_size_preference.dart';
 
 /// Application-wide settings stored locally.
 class AppSettings extends HiveObject {
@@ -22,6 +23,7 @@ class AppSettings extends HiveObject {
     int? transactionDeleteWindowHours,
     int? transactionEditWindowDays,
     int? amountFormatStyleIndex,
+    int? fontSizePreferenceIndex,
     this.localeCode = 'ar',
     this.colorPaletteKey,
     this.backupHour = 2,
@@ -30,7 +32,8 @@ class AppSettings extends HiveObject {
     this.lastBackupAt,
   })  : _transactionDeleteWindowHours = transactionDeleteWindowHours,
         _transactionEditWindowDays = transactionEditWindowDays,
-        _amountFormatStyleIndex = amountFormatStyleIndex;
+        _amountFormatStyleIndex = amountFormatStyleIndex,
+        _fontSizePreferenceIndex = fontSizePreferenceIndex;
 
   final bool isSetupComplete;
   final String baseCurrencyCode;
@@ -68,6 +71,7 @@ class AppSettings extends HiveObject {
   final int? _transactionDeleteWindowHours;
   final int? _transactionEditWindowDays;
   final int? _amountFormatStyleIndex;
+  final int? _fontSizePreferenceIndex;
 
   /// Never null — safe after Hive migrations or hot reload.
   int get transactionDeleteWindowHours =>
@@ -81,6 +85,9 @@ class AppSettings extends HiveObject {
   /// Number grouping / decimal separator for amounts (settings UI later).
   AmountFormatStyle get amountFormatStyle =>
       AmountFormatStyle.fromStorageIndex(_amountFormatStyleIndex);
+
+  FontSizePreference get fontSizePreference =>
+      FontSizePreference.fromStorageIndex(_fontSizePreferenceIndex);
 
   AppSettings copyWith({
     bool? isSetupComplete,
@@ -97,6 +104,7 @@ class AppSettings extends HiveObject {
     int? transactionDeleteWindowHours,
     int? transactionEditWindowDays,
     int? amountFormatStyleIndex,
+    int? fontSizePreferenceIndex,
     String? localeCode,
     String? colorPaletteKey,
     int? backupHour,
@@ -125,6 +133,8 @@ class AppSettings extends HiveObject {
           transactionEditWindowDays ?? _transactionEditWindowDays,
       amountFormatStyleIndex:
           amountFormatStyleIndex ?? _amountFormatStyleIndex,
+      fontSizePreferenceIndex:
+          fontSizePreferenceIndex ?? _fontSizePreferenceIndex,
       localeCode: localeCode ?? this.localeCode,
       colorPaletteKey: colorPaletteKey ?? this.colorPaletteKey,
       backupHour: backupHour ?? this.backupHour,
@@ -182,6 +192,7 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       amountFormatStyleIndex: _readOptionalInt(reader),
       localeCode: _readOptionalString(reader) ?? 'ar',
       colorPaletteKey: _readOptionalString(reader),
+      fontSizePreferenceIndex: _readOptionalInt(reader),
       backupHour: _readOptionalInt(reader) ?? 2,
       backupMinute: _readOptionalInt(reader) ?? 0,
       backupEnabled: _readOptionalBool(reader, defaultValue: true),
@@ -235,6 +246,7 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeInt(obj.amountFormatStyle.storageIndex)
       ..writeString(obj.localeCode)
       ..writeString(obj.colorPaletteKey ?? '')
+      ..writeInt(obj.fontSizePreference.storageIndex)
       ..writeInt(obj.backupHour)
       ..writeInt(obj.backupMinute)
       ..writeBool(obj.backupEnabled)

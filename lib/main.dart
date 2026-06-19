@@ -131,6 +131,9 @@ class BaytAlmalApp extends StatelessWidget {
     final locale = context.select<SettingsProvider, Locale>(
       (settings) => settings.locale,
     );
+    final fontScaleFactor = context.select<SettingsProvider, double>(
+      (settings) => settings.fontSizePreference.scaleFactor,
+    );
 
     return AppLifecycleObserver(
       child: MaterialApp.router(
@@ -147,6 +150,14 @@ class BaytAlmalApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
+        builder: (context, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(fontScaleFactor),
+            ),
+            child: child!,
+          );
+        },
         routerConfig: router,
       ),
     );

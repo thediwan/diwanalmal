@@ -1104,6 +1104,32 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paletteTurquoiseHarmony => 'الانسجام الفيروزي';
 
   @override
+  String get settingsFontSize => 'حجم الخط';
+
+  @override
+  String get settingsFontSizeSubtitle =>
+      'يُطبَّق على النصوص في التطبيق بالكامل';
+
+  @override
+  String get settingsFontSizeDefault => 'افتراضي';
+
+  @override
+  String get settingsFontSizeLarge => 'كبير';
+
+  @override
+  String get settingsFontSizeExtraLarge => 'كبير جداً';
+
+  @override
+  String get settingsFontSizePreviewHeading => 'معاينة العنوان';
+
+  @override
+  String get settingsFontSizePreviewBody =>
+      'هذا نص تجريبي لمعاينة حجم الخط في الواجهة.';
+
+  @override
+  String get settingsFontSizePreviewAmount => '١٢٬٣٤٥٫٦٧ ر.س';
+
+  @override
   String get settingsAmountFormat => 'تنسيق الأرقام';
 
   @override

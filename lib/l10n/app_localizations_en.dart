@@ -1112,6 +1112,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paletteTurquoiseHarmony => 'Turquoise Harmony';
 
   @override
+  String get settingsFontSize => 'Font size';
+
+  @override
+  String get settingsFontSizeSubtitle => 'Applies to text throughout the app';
+
+  @override
+  String get settingsFontSizeDefault => 'Default';
+
+  @override
+  String get settingsFontSizeLarge => 'Large';
+
+  @override
+  String get settingsFontSizeExtraLarge => 'Extra large';
+
+  @override
+  String get settingsFontSizePreviewHeading => 'Preview heading';
+
+  @override
+  String get settingsFontSizePreviewBody =>
+      'Sample body text to preview font size in the interface.';
+
+  @override
+  String get settingsFontSizePreviewAmount => 'SAR 12,345.67';
+
+  @override
   String get settingsAmountFormat => 'Number format';
 
   @override

@@ -53,27 +53,24 @@ abstract final class AppTextStyles {
   static TextStyle captionOnSurface(AppThemeColors colors) => bodySmall.copyWith(
         color: colors.textMuted,
         fontWeight: FontWeight.w500,
-        fontSize: AppTypography.scaled(AppTypography.sizeBodySmall),
       );
 
   /// Section labels on surfaces (form field group titles).
   static TextStyle labelOnSurface(AppThemeColors colors) => label.copyWith(
         color: colors.textSecondary,
         fontWeight: FontWeight.w600,
-        fontSize: AppTypography.scaled(AppTypography.sizeLabel),
       );
 
   /// Typed text inside form fields and dropdowns.
   static TextStyle inputTextStyleFor(AppThemeColors colors) => bodyLarge.copyWith(
         color: colors.inputText,
         fontWeight: FontWeight.w600,
-        fontSize: AppTypography.scaled(AppTypography.sizeInput),
+        fontSize: AppTypography.sizeInput,
       );
 
   /// Dropdown menu item text.
   static TextStyle dropdownItemFor(AppThemeColors colors) => bodyMedium.copyWith(
         color: colors.textPrimary,
-        fontSize: AppTypography.scaled(AppTypography.sizeBodyMedium),
       );
 
   /// Placeholder / hint text inside form fields.
@@ -92,20 +89,18 @@ abstract final class AppTextStyles {
   static TextStyle get captionOnLight => bodySmall.copyWith(
         color: AppColors.textSecondaryLight,
         fontWeight: FontWeight.w500,
-        fontSize: AppTypography.scaled(AppTypography.sizeBodySmall),
       );
 
   /// @deprecated Use [labelOnSurface] with theme colors.
   static TextStyle get labelOnLight => label.copyWith(
         color: AppColors.textSecondaryLight,
         fontWeight: FontWeight.w600,
-        fontSize: AppTypography.scaled(AppTypography.sizeLabel),
       );
 
   /// @deprecated Use [inputTextStyleFor].
   static TextStyle get inputText => bodyLarge.copyWith(
         color: AppColors.inputTextLight,
         fontWeight: FontWeight.w600,
-        fontSize: AppTypography.scaled(AppTypography.sizeInput),
+        fontSize: AppTypography.sizeInput,
       );
 }

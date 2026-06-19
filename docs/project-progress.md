@@ -71,6 +71,7 @@ docs/
 ├── modules/auth.md                  ← وحدة المصادقة
 ├── modules/number-formatting.md     ← تنسيق الأرقام
 ├── modules/color-palettes-and-theming.md ← لوحات الألوان والثيم الديناميكي
+├── modules/font-size-preferences.md     ← أحجام الخط (3 مستويات)
 └── seeds/dashboard-mockup.json      ← بيانات العرض المرجعية
 ```
 
@@ -239,6 +240,25 @@ docs/
 - إضافة لوحة = ملف في `lib/core/theme/palettes/` + سطر في السجل + مفاتيح l10n.
 
 **التفاصيل الكاملة:** `docs/modules/color-palettes-and-theming.md`
+
+### 4.10 تخصيص حجم الخط (يونيو 2026)
+
+| البند | الحالة |
+|-------|--------|
+| `FontSizePreference` — 3 مستويات (افتراضي / كبير / كبير جداً) | ✅ |
+| حفظ الاختيار في Hive (`fontSizePreferenceIndex`) + ترحيل متوافق | ✅ |
+| تطبيق عالمي عبر `MaterialApp.builder` + `TextScaler.linear` | ✅ |
+| إزالة التوسيع المزدوج من `AppTypography` | ✅ |
+| واجهة الاختيار + معاينة حية في `/settings/appearance` | ✅ |
+| QA Extra Large: بطاقة الرصيد، مبلغ المعاملة، لوحة PIN، محاور الرسوم | ✅ |
+
+**المستويات:** Default (1.0) · Large (1.15) · Extra Large (1.25).
+
+**قواعد للمطورين:**
+- لا تضف طبقة توسيع ثانية — التوسيع مرة واحدة عبر `MediaQuery`.
+- للواجهات ذات الارتفاع الثابت: `FittedBox` أو `textScaler.scale()` للمسافات.
+
+**التفاصيل الكاملة:** `docs/modules/font-size-preferences.md`
 
 ---
 
@@ -432,6 +452,7 @@ flutter build apk --debug
 - [ ] تعريب أي نص جديد في `app_ar.arb` + `app_en.arb`
 - [ ] اختبار RTL
 - [ ] إن مسّت الألوان: التحقق من اللوحة النشطة + الوضع الداكن (راجع `docs/modules/color-palettes-and-theming.md`)
+- [ ] إن مسّت النصوص: التحقق من Extra Large (راجع `docs/modules/font-size-preferences.md`)
 - [ ] تحديث هذه الوثيقة أو الوثيقة الفرعية المناسبة
 - [ ] اختبار على جهاز حقيقي (بصمة + notch)
 
@@ -455,6 +476,7 @@ flutter build apk --debug
 | التخطيط المتجاوب | `docs/responsive-architecture.md` |
 | تنسيق الأرقام | `docs/modules/number-formatting.md` |
 | لوحات الألوان والثيم | `docs/modules/color-palettes-and-theming.md` |
+| أحجام الخط | `docs/modules/font-size-preferences.md` |
 | بيانات البذور المرجعية | `docs/seeds/dashboard-mockup.json` |
 | قواعد Cursor للمشروع | `.cursor/rules/` |
 
@@ -472,6 +494,7 @@ flutter build apk --debug
 | 2026-06-10 | تنسيق أرقام قابل للإعداد + إصلاح إدخال المبلغ في المعاملات |
 | 2026-06-10 | فئات النظام + شاشة إدارة الفئات + تعطيل البذور التجريبية |
 | 2026-06-19 | لوحات ألوان قابلة للاختيار (5) + ثيم Original داكن برمادي محايد + `AppTheme.build` |
+| 2026-06-19 | تخصيص حجم الخط (3 مستويات) + `TextScaler` عالمي + واجهة في `/settings/appearance` |
 
 ---
 

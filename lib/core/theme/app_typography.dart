@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 
 /// Central typography tokens — single place to adjust fonts app-wide.
 ///
-/// Wire [textScaleFactor] and font family overrides from settings later.
+/// User font-size presets apply once via [MaterialApp.builder] and
+/// [TextScaler.linear] — do not scale sizes here.
 abstract final class AppTypography {
-  /// Multiplier applied to all font sizes (settings hook).
-  static double textScaleFactor = 1.0;
-
   /// Heading font (titles, app bar, section headers).
   static const String headingFontFamily = 'Qomra';
 
   /// Body font (paragraphs, labels, inputs, buttons).
   static const String bodyFontFamily = 'Alyamama';
 
-  // --- Size tokens (before scale) ---
+  // --- Size tokens (design baseline; scaled by MediaQuery TextScaler) ---
 
   /// Hero balance display — largest text in the app.
   static const double sizeBalanceDisplay = 40;
@@ -31,9 +29,6 @@ abstract final class AppTypography {
 
   static const double sizeInput = 15;
 
-  /// Scales a raw font size by [textScaleFactor].
-  static double scaled(double size) => size * textScaleFactor;
-
   /// Builds a heading [TextStyle] using [headingFontFamily].
   static TextStyle heading({
     required double size,
@@ -44,7 +39,7 @@ abstract final class AppTypography {
   }) {
     return _font(
       family: headingFontFamily,
-      fontSize: scaled(size),
+      fontSize: size,
       fontWeight: fontWeight,
       color: color,
       height: height,
@@ -62,7 +57,7 @@ abstract final class AppTypography {
   }) {
     return _font(
       family: bodyFontFamily,
-      fontSize: scaled(size),
+      fontSize: size,
       fontWeight: fontWeight,
       color: color,
       height: height,

@@ -55,11 +55,13 @@ abstract final class AppChartTheme {
   /// [isRtl] controls which side the axis labels appear on so they always
   /// sit on the leading edge in both LTR and RTL layouts.
   static SideTitles yTitles({
+    required BuildContext context,
     required List<ChartSeriesPoint> points,
     required String currencyCode,
     required bool isRtl,
     required AppThemeColors colors,
   }) {
+    final textScaler = MediaQuery.textScalerOf(context);
     final maxVal = points.fold(0.0, (m, p) => p.value > m ? p.value : m);
 
     String formatTick(double v) {
@@ -69,7 +71,7 @@ abstract final class AppChartTheme {
 
     return SideTitles(
       showTitles: true,
-      reservedSize: 64,
+      reservedSize: textScaler.scale(64),
       interval: maxVal > 0 ? maxVal / 3 : 1,
       getTitlesWidget: (value, meta) {
         if (value < 0) return const SizedBox.shrink();
@@ -95,12 +97,15 @@ abstract final class AppChartTheme {
 
   /// X-axis (date / week labels).
   static SideTitles xTitles({
+    required BuildContext context,
     required List<ChartSeriesPoint> points,
     required AppThemeColors colors,
   }) {
+    final textScaler = MediaQuery.textScalerOf(context);
+
     return SideTitles(
       showTitles: true,
-      reservedSize: 36,
+      reservedSize: textScaler.scale(36),
       getTitlesWidget: (value, meta) {
         final idx = value.toInt();
         if (idx < 0 || idx >= points.length) return const SizedBox.shrink();
@@ -132,18 +137,20 @@ abstract final class AppChartTheme {
 
   /// Builds [FlTitlesData] with RTL-aware Y-axis side placement.
   static FlTitlesData titlesData({
+    required BuildContext context,
     required List<ChartSeriesPoint> points,
     required String currencyCode,
     required bool isRtl,
     required AppThemeColors colors,
   }) {
     final ySide = yTitles(
+      context: context,
       points: points,
       currencyCode: currencyCode,
       isRtl: isRtl,
       colors: colors,
     );
-    final xSide = xTitles(points: points, colors: colors);
+    final xSide = xTitles(context: context, points: points, colors: colors);
 
     return FlTitlesData(
       show: true,
