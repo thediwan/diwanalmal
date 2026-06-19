@@ -27,6 +27,7 @@ import '../features/transactions/transactions_list_screen.dart';
 import '../database/daos/finance_dao.dart';
 import '../core/constants/database_constants.dart';
 import '../features/onboarding/select_base_currency_screen.dart';
+import '../features/settings/backup/backup_screen.dart';
 import '../features/settings/currencies/currencies_screen.dart';
 import '../features/settings/currencies/currency_form_screen.dart';
 import '../features/goals/goal_edit_screen.dart';
@@ -281,6 +282,10 @@ class AppRouter {
                   GoRoute(
                     path: 'appearance',
                     builder: (context, state) => const AppearanceScreen(),
+                  ),
+                  GoRoute(
+                    path: 'backup',
+                    builder: (context, state) => const BackupScreen(),
                   ),
                   GoRoute(
                     path: 'currencies',

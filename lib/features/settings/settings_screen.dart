@@ -76,7 +76,8 @@ class SettingsScreen extends StatelessWidget {
             leading: const Icon(Icons.backup_outlined),
             title: Text(l10n.settingsBackup),
             subtitle: Text(l10n.settingsBackupSubtitle),
-            enabled: false,
+            trailing: const Icon(Icons.chevron_left),
+            onTap: () => context.push('/settings/backup'),
           ),
           const SizedBox(height: 24),
           Padding(

@@ -1137,7 +1137,80 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsBackup => 'Backup';
 
   @override
-  String get settingsBackupSubtitle => 'Available in phase 8';
+  String get settingsBackupSubtitle => 'Daily backup, export and import';
+
+  @override
+  String get backupTitle => 'Backup';
+
+  @override
+  String get backupLastRun => 'Last backup';
+
+  @override
+  String get backupNever => 'Not yet performed';
+
+  @override
+  String get backupAutoEnabled => 'Daily automatic backup';
+
+  @override
+  String get backupAutoEnabledSubtitle =>
+      'Keeps one copy on device; replaces the previous one';
+
+  @override
+  String get backupScheduleTime => 'Daily backup time';
+
+  @override
+  String get backupExportNow => 'Export backup now';
+
+  @override
+  String get backupImport => 'Import backup';
+
+  @override
+  String get backupImportConfirmTitle => 'Import backup?';
+
+  @override
+  String get backupImportConfirmMessage =>
+      'This will replace all current app data (database and settings). This cannot be undone.';
+
+  @override
+  String get backupImportConfirmAction => 'Import';
+
+  @override
+  String get backupSuccess => 'Backup created successfully';
+
+  @override
+  String get backupExportSuccess => 'Backup ready to share';
+
+  @override
+  String get backupImportSuccess => 'Backup imported successfully';
+
+  @override
+  String get backupFailed => 'Could not create backup';
+
+  @override
+  String get backupExportFailed => 'Could not export backup';
+
+  @override
+  String get backupImportFailed => 'Could not import backup';
+
+  @override
+  String get backupInvalidArchive => 'Invalid backup file';
+
+  @override
+  String get backupUnsupportedSchema =>
+      'Database version is newer than this app';
+
+  @override
+  String get backupSecurityWarning =>
+      'Backup files contain sensitive data (PIN and password). Do not share them.';
+
+  @override
+  String get backupNotificationTitle => 'Dewan Almal';
+
+  @override
+  String get backupNotificationBody => 'Backup completed successfully';
+
+  @override
+  String get profileSectionData => 'Data & backup';
 
   @override
   String get currenciesTitle => 'Currencies';

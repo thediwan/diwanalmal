@@ -2189,8 +2189,146 @@ abstract class AppLocalizations {
   /// No description provided for @settingsBackupSubtitle.
   ///
   /// In ar, this message translates to:
-  /// **'متاح في المرحلة 8'**
+  /// **'نسخ يومي، تصدير واستيراد'**
   String get settingsBackupSubtitle;
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'النسخ الاحتياطي'**
+  String get backupTitle;
+
+  /// No description provided for @backupLastRun.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر نسخ احتياطي'**
+  String get backupLastRun;
+
+  /// No description provided for @backupNever.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يُنفَّذ بعد'**
+  String get backupNever;
+
+  /// No description provided for @backupAutoEnabled.
+  ///
+  /// In ar, this message translates to:
+  /// **'النسخ التلقائي اليومي'**
+  String get backupAutoEnabled;
+
+  /// No description provided for @backupAutoEnabledSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُحفظ نسخة واحدة على الجهاز ويُستبدَل السابق'**
+  String get backupAutoEnabledSubtitle;
+
+  /// No description provided for @backupScheduleTime.
+  ///
+  /// In ar, this message translates to:
+  /// **'وقت النسخ اليومي'**
+  String get backupScheduleTime;
+
+  /// No description provided for @backupExportNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصدير نسخة الآن'**
+  String get backupExportNow;
+
+  /// No description provided for @backupImport.
+  ///
+  /// In ar, this message translates to:
+  /// **'استيراد نسخة'**
+  String get backupImport;
+
+  /// No description provided for @backupImportConfirmTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'استيراد النسخة الاحتياطية؟'**
+  String get backupImportConfirmTitle;
+
+  /// No description provided for @backupImportConfirmMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيتم استبدال جميع بيانات التطبيق الحالية (قاعدة البيانات والإعدادات). لا يمكن التراجع.'**
+  String get backupImportConfirmMessage;
+
+  /// No description provided for @backupImportConfirmAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'استيراد'**
+  String get backupImportConfirmAction;
+
+  /// No description provided for @backupSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم إنشاء النسخة الاحتياطية بنجاح'**
+  String get backupSuccess;
+
+  /// No description provided for @backupExportSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تجهيز النسخة للتصدير'**
+  String get backupExportSuccess;
+
+  /// No description provided for @backupImportSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم استيراد النسخة بنجاح'**
+  String get backupImportSuccess;
+
+  /// No description provided for @backupFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر إنشاء النسخة الاحتياطية'**
+  String get backupFailed;
+
+  /// No description provided for @backupExportFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر تصدير النسخة'**
+  String get backupExportFailed;
+
+  /// No description provided for @backupImportFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر استيراد النسخة'**
+  String get backupImportFailed;
+
+  /// No description provided for @backupInvalidArchive.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملف النسخة غير صالح'**
+  String get backupInvalidArchive;
+
+  /// No description provided for @backupUnsupportedSchema.
+  ///
+  /// In ar, this message translates to:
+  /// **'نسخة قاعدة البيانات أحدث من التطبيق'**
+  String get backupUnsupportedSchema;
+
+  /// No description provided for @backupSecurityWarning.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملف النسخة يحتوي على بيانات حساسة (PIN وكلمة المرور). لا تشاركه مع أحد.'**
+  String get backupSecurityWarning;
+
+  /// No description provided for @backupNotificationTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ديوان المال'**
+  String get backupNotificationTitle;
+
+  /// No description provided for @backupNotificationBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم إنشاء نسخة احتياطية بنجاح'**
+  String get backupNotificationBody;
+
+  /// No description provided for @profileSectionData.
+  ///
+  /// In ar, this message translates to:
+  /// **'البيانات والنسخ'**
+  String get profileSectionData;
 
   /// No description provided for @currenciesTitle.
   ///

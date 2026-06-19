@@ -50,4 +50,25 @@ class HiveService {
   Future<void> saveSettings(AppSettings settings) async {
     await _settingsBox!.put(settingsKey, settings);
   }
+
+  /// Closes all open Hive boxes (required before restore).
+  Future<void> closeAllBoxes() async {
+    await _settingsBox?.close();
+    await _currenciesBox?.close();
+    await _walletsBox?.close();
+    _settingsBox = null;
+    _currenciesBox = null;
+    _walletsBox = null;
+  }
+
+  /// Reopens boxes after a restore without re-running adapter registration.
+  Future<void> reopen() async {
+    _settingsBox = await Hive.openBox<AppSettings>(HiveConstants.settingsBox);
+    _currenciesBox = await Hive.openBox<Currency>(HiveConstants.currenciesBox);
+    _walletsBox = await Hive.openBox<Wallet>(HiveConstants.walletsBox);
+
+    if (!_settingsBox!.containsKey(settingsKey)) {
+      await _settingsBox!.put(settingsKey, AppSettings.initial());
+    }
+  }
 }

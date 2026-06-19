@@ -17,6 +17,9 @@ import 'providers/wallet_provider.dart';
 import 'router/app_router.dart';
 import 'services/auth_service.dart';
 import 'services/biometric_service.dart';
+import 'services/backup_notification_service.dart';
+import 'services/backup_scheduler_service.dart';
+import 'services/backup_service.dart';
 import 'services/currency_deduplication_service.dart';
 import 'services/currency_service.dart';
 import 'services/hive_service.dart';
@@ -52,6 +55,15 @@ Future<void> main() async {
 
   final profileService = ProfileService(lazarusService, hiveService);
 
+  final backupService = BackupService(
+    hiveService,
+    database: lazarusService.database,
+  );
+  await backupService.mergeBackgroundBackupMarker();
+  await BackupNotificationService.initialize();
+  await BackupSchedulerService.register();
+  final backupScheduler = BackupSchedulerService(hiveService, backupService);
+
   final settingsProvider = SettingsProvider(
     hiveService,
     authService,
@@ -76,6 +88,13 @@ Future<void> main() async {
     profileProvider.load(),
   ]);
 
+  await backupScheduler.scheduleFromSettings();
+  if (settingsProvider.hasAccount && settingsProvider.isSecuritySetupComplete) {
+    await backupScheduler.runCatchUpIfDue(
+      onSettingsChanged: () => settingsProvider.reloadFromStorage(),
+    );
+  }
+
   final appRouter = AppRouter(settingsProvider);
 
   runApp(
@@ -86,6 +105,8 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: currencyProvider),
         ChangeNotifierProvider.value(value: walletProvider),
         ChangeNotifierProvider.value(value: dashboardRefreshProvider),
+        Provider<BackupService>.value(value: backupService),
+        Provider<BackupSchedulerService>.value(value: backupScheduler),
       ],
       child: BaytAlmalApp(router: appRouter.router),
     ),

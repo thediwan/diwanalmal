@@ -66,6 +66,12 @@ class SettingsProvider extends ChangeNotifier {
   /// Thousands / decimal separators for monetary amounts.
   AmountFormatStyle get amountFormatStyle => _settings.amountFormatStyle;
 
+  bool get backupEnabled => _settings.backupEnabled;
+  TimeOfDay get backupTime => _settings.backupTime;
+  DateTime? get lastBackupAt => _settings.lastBackupAt;
+
+  AppSettings get settingsSnapshot => _settings;
+
   /// Best available code for the security screen (memory, then Hive).
   String get displaySecurityCode =>
       _displaySecurityCode.isNotEmpty ? _displaySecurityCode : securityCode;
@@ -124,6 +130,29 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setAmountFormatStyle(AmountFormatStyle style) async {
     _settings = _settings.copyWith(amountFormatStyleIndex: style.storageIndex);
     CurrencyFormatter.configureFromStyle(style);
+    await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> setBackupEnabled(bool enabled) async {
+    _settings = _settings.copyWith(backupEnabled: enabled);
+    await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> setBackupTime(TimeOfDay time) async {
+    _settings = _settings.copyWith(
+      backupHour: time.hour,
+      backupMinute: time.minute,
+    );
+    await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> setLastBackupAt(DateTime? at) async {
+    _settings = at == null
+        ? _settings.copyWith(clearLastBackupAt: true)
+        : _settings.copyWith(lastBackupAt: at);
     await _hiveService.saveSettings(_settings);
     notifyListeners();
   }

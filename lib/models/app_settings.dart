@@ -24,6 +24,10 @@ class AppSettings extends HiveObject {
     int? amountFormatStyleIndex,
     this.localeCode = 'ar',
     this.colorPaletteKey,
+    this.backupHour = 2,
+    this.backupMinute = 0,
+    this.backupEnabled = true,
+    this.lastBackupAt,
   })  : _transactionDeleteWindowHours = transactionDeleteWindowHours,
         _transactionEditWindowDays = transactionEditWindowDays,
         _amountFormatStyleIndex = amountFormatStyleIndex;
@@ -43,6 +47,20 @@ class AppSettings extends HiveObject {
 
   /// Storage key for the chosen color palette (null → default = original).
   final String? colorPaletteKey;
+
+  /// Daily automatic backup hour (0–23).
+  final int backupHour;
+
+  /// Daily automatic backup minute (0–59).
+  final int backupMinute;
+
+  /// When false, scheduled backups are skipped.
+  final bool backupEnabled;
+
+  /// Timestamp of the last successful backup (local device time).
+  final DateTime? lastBackupAt;
+
+  TimeOfDay get backupTime => TimeOfDay(hour: backupHour, minute: backupMinute);
 
   AppColorPaletteId get colorPaletteId =>
       AppColorPaletteId.fromStorageKey(colorPaletteKey);
@@ -81,6 +99,11 @@ class AppSettings extends HiveObject {
     int? amountFormatStyleIndex,
     String? localeCode,
     String? colorPaletteKey,
+    int? backupHour,
+    int? backupMinute,
+    bool? backupEnabled,
+    DateTime? lastBackupAt,
+    bool clearLastBackupAt = false,
   }) {
     return AppSettings(
       isSetupComplete: isSetupComplete ?? this.isSetupComplete,
@@ -104,6 +127,11 @@ class AppSettings extends HiveObject {
           amountFormatStyleIndex ?? _amountFormatStyleIndex,
       localeCode: localeCode ?? this.localeCode,
       colorPaletteKey: colorPaletteKey ?? this.colorPaletteKey,
+      backupHour: backupHour ?? this.backupHour,
+      backupMinute: backupMinute ?? this.backupMinute,
+      backupEnabled: backupEnabled ?? this.backupEnabled,
+      lastBackupAt:
+          clearLastBackupAt ? null : (lastBackupAt ?? this.lastBackupAt),
     );
   }
 
@@ -154,6 +182,10 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       amountFormatStyleIndex: _readOptionalInt(reader),
       localeCode: _readOptionalString(reader) ?? 'ar',
       colorPaletteKey: _readOptionalString(reader),
+      backupHour: _readOptionalInt(reader) ?? 2,
+      backupMinute: _readOptionalInt(reader) ?? 0,
+      backupEnabled: _readOptionalBool(reader, defaultValue: true),
+      lastBackupAt: _readOptionalDateTime(reader),
     );
   }
 
@@ -164,14 +196,24 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
   }
 
   /// Reads a bool only when at least one byte remains.
-  static bool _readOptionalBool(BinaryReader reader) {
-    return reader.availableBytes > 0 ? reader.readBool() : false;
+  static bool _readOptionalBool(
+    BinaryReader reader, {
+    bool defaultValue = false,
+  }) {
+    return reader.availableBytes > 0 ? reader.readBool() : defaultValue;
   }
 
   /// Reads a Hive-encoded int when any bytes remain.
   static int? _readOptionalInt(BinaryReader reader) {
     if (reader.availableBytes == 0) return null;
     return reader.readInt();
+  }
+
+  /// Reads an ISO-8601 timestamp when bytes remain.
+  static DateTime? _readOptionalDateTime(BinaryReader reader) {
+    final raw = _readOptionalString(reader);
+    if (raw == null || raw.isEmpty) return null;
+    return DateTime.tryParse(raw);
   }
 
   @override
@@ -192,6 +234,10 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeInt(obj.transactionEditWindowDays)
       ..writeInt(obj.amountFormatStyle.storageIndex)
       ..writeString(obj.localeCode)
-      ..writeString(obj.colorPaletteKey ?? '');
+      ..writeString(obj.colorPaletteKey ?? '')
+      ..writeInt(obj.backupHour)
+      ..writeInt(obj.backupMinute)
+      ..writeBool(obj.backupEnabled)
+      ..writeString(obj.lastBackupAt?.toIso8601String() ?? '');
   }
 }

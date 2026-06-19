@@ -43,6 +43,20 @@ class LazarusDatabaseService {
     return service;
   }
 
+  /// Closes the SQLite connection (required before restore).
+  Future<void> close() async {
+    await database.close();
+    _instance = null;
+  }
+
+  /// Reopens after restore.
+  static Future<LazarusDatabaseService> reinitialize(
+    HiveService hiveService,
+  ) async {
+    _instance = null;
+    return initialize(hiveService);
+  }
+
   /// Seeds demo financial data after the user picks a base currency.
   Future<void> seedDemoDataAfterBaseCurrency({
     required String userId,

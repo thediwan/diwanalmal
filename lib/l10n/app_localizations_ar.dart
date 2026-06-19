@@ -1128,7 +1128,79 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsBackup => 'النسخ الاحتياطي';
 
   @override
-  String get settingsBackupSubtitle => 'متاح في المرحلة 8';
+  String get settingsBackupSubtitle => 'نسخ يومي، تصدير واستيراد';
+
+  @override
+  String get backupTitle => 'النسخ الاحتياطي';
+
+  @override
+  String get backupLastRun => 'آخر نسخ احتياطي';
+
+  @override
+  String get backupNever => 'لم يُنفَّذ بعد';
+
+  @override
+  String get backupAutoEnabled => 'النسخ التلقائي اليومي';
+
+  @override
+  String get backupAutoEnabledSubtitle =>
+      'يُحفظ نسخة واحدة على الجهاز ويُستبدَل السابق';
+
+  @override
+  String get backupScheduleTime => 'وقت النسخ اليومي';
+
+  @override
+  String get backupExportNow => 'تصدير نسخة الآن';
+
+  @override
+  String get backupImport => 'استيراد نسخة';
+
+  @override
+  String get backupImportConfirmTitle => 'استيراد النسخة الاحتياطية؟';
+
+  @override
+  String get backupImportConfirmMessage =>
+      'سيتم استبدال جميع بيانات التطبيق الحالية (قاعدة البيانات والإعدادات). لا يمكن التراجع.';
+
+  @override
+  String get backupImportConfirmAction => 'استيراد';
+
+  @override
+  String get backupSuccess => 'تم إنشاء النسخة الاحتياطية بنجاح';
+
+  @override
+  String get backupExportSuccess => 'تم تجهيز النسخة للتصدير';
+
+  @override
+  String get backupImportSuccess => 'تم استيراد النسخة بنجاح';
+
+  @override
+  String get backupFailed => 'تعذر إنشاء النسخة الاحتياطية';
+
+  @override
+  String get backupExportFailed => 'تعذر تصدير النسخة';
+
+  @override
+  String get backupImportFailed => 'تعذر استيراد النسخة';
+
+  @override
+  String get backupInvalidArchive => 'ملف النسخة غير صالح';
+
+  @override
+  String get backupUnsupportedSchema => 'نسخة قاعدة البيانات أحدث من التطبيق';
+
+  @override
+  String get backupSecurityWarning =>
+      'ملف النسخة يحتوي على بيانات حساسة (PIN وكلمة المرور). لا تشاركه مع أحد.';
+
+  @override
+  String get backupNotificationTitle => 'ديوان المال';
+
+  @override
+  String get backupNotificationBody => 'تم إنشاء نسخة احتياطية بنجاح';
+
+  @override
+  String get profileSectionData => 'البيانات والنسخ';
 
   @override
   String get currenciesTitle => 'العملات';

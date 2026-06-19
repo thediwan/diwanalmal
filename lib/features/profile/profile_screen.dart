@@ -199,6 +199,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 20),
                     ProfileSettingsSection(
+                      title: l10n.profileSectionData,
+                      children: [
+                        ProfileSettingsTile(
+                          icon: Icons.backup_outlined,
+                          title: l10n.settingsBackup,
+                          subtitle: l10n.settingsBackupSubtitle,
+                          onTap: () => context.push('/settings/backup'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    ProfileSettingsSection(
                       title: l10n.profileSectionAppearance,
                       children: [
                         ProfileSettingsTile(

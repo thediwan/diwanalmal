@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/settings_provider.dart';
+import '../../services/backup_scheduler_service.dart';
 
 /// Locks the app when it goes to background.
 class AppLifecycleObserver extends StatefulWidget {
@@ -34,6 +35,20 @@ class _AppLifecycleObserverState extends State<AppLifecycleObserver>
         state == AppLifecycleState.detached) {
       context.read<SettingsProvider>().lockSession();
     }
+
+    if (state == AppLifecycleState.resumed) {
+      _runBackupCatchUp();
+    }
+  }
+
+  Future<void> _runBackupCatchUp() async {
+    try {
+      final scheduler = context.read<BackupSchedulerService>();
+      await scheduler.runCatchUpIfDue(
+        onSettingsChanged: () =>
+            context.read<SettingsProvider>().reloadFromStorage(),
+      );
+    } catch (_) {}
   }
 
   @override
