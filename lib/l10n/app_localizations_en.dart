@@ -1423,4 +1423,128 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get goalSavingsDestinationWallet => 'Destination wallet';
+
+  @override
+  String get profileSectionAccount => 'Account settings';
+
+  @override
+  String get profileSectionFinancial => 'Financial preferences';
+
+  @override
+  String get profileSectionAppearance => 'App appearance';
+
+  @override
+  String get profilePersonalInfo => 'Personal information';
+
+  @override
+  String get profileSecurity => 'Security';
+
+  @override
+  String get profileTwoFactor => 'Two-factor authentication';
+
+  @override
+  String get profileTwoFactorSubtitle => 'Coming soon';
+
+  @override
+  String get profileDefaultCurrency => 'Default currency';
+
+  @override
+  String get profileLanguage => 'Language (Language)';
+
+  @override
+  String get profileLanguageSubtitle => 'العربية | English';
+
+  @override
+  String get profileLanguageArabic => 'العربية';
+
+  @override
+  String get profileLanguageEnglish => 'English';
+
+  @override
+  String get profileNotifications => 'Notification settings';
+
+  @override
+  String get profileNotificationsSubtitle => 'Coming soon';
+
+  @override
+  String get profileDarkMode => 'Dark mode';
+
+  @override
+  String get profileAppearanceCustomize => 'Appearance customization';
+
+  @override
+  String get profileLogout => 'Log out';
+
+  @override
+  String get profileLogoutConfirmTitle => 'Log out';
+
+  @override
+  String get profileLogoutConfirmMessage =>
+      'Lock the session and sign out? You will need your PIN or biometrics to sign in again.';
+
+  @override
+  String profileVersion(String appName, String version) {
+    return '$appName — Version $version';
+  }
+
+  @override
+  String get profileFullName => 'Full name';
+
+  @override
+  String get profileFullNameRequired => 'Name is required';
+
+  @override
+  String get profileEmail => 'Email';
+
+  @override
+  String get profileEmailInvalid => 'Invalid email address';
+
+  @override
+  String get profilePhone => 'Phone number';
+
+  @override
+  String get profileSaveSuccess => 'Profile saved successfully';
+
+  @override
+  String get profileAvatarUpdated => 'Profile photo updated';
+
+  @override
+  String get profileChangePin => 'Change PIN';
+
+  @override
+  String get profileCurrentPin => 'Current PIN';
+
+  @override
+  String get profileNewPin => 'New PIN';
+
+  @override
+  String get profileConfirmPin => 'Confirm PIN';
+
+  @override
+  String get profilePinMismatch => 'PINs do not match';
+
+  @override
+  String get profilePinInvalid => 'Current PIN is incorrect';
+
+  @override
+  String get profilePinUpdated => 'PIN updated successfully';
+
+  @override
+  String get profileBiometric => 'Biometric / Face ID';
+
+  @override
+  String get profileRecoveryCode => 'Recovery code';
+
+  @override
+  String get profileRecoveryCodeHint => 'Keep this code in a safe place';
+
+  @override
+  String get profileAppLock => 'Lock app now';
+
+  @override
+  String get profileAppLockSubtitle =>
+      'Requires PIN or biometrics to enter again';
+
+  @override
+  String get profileSelectLanguage => 'Select language';
 }

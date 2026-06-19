@@ -7,6 +7,7 @@ import '../models/app_settings.dart';
 import '../services/auth_service.dart';
 import '../services/biometric_service.dart';
 import '../services/hive_service.dart';
+import '../services/profile_service.dart';
 
 /// Manages app settings, registration, and session lock state.
 class SettingsProvider extends ChangeNotifier {
@@ -14,6 +15,7 @@ class SettingsProvider extends ChangeNotifier {
     this._hiveService,
     this._authService,
     this._biometricService,
+    this._profileService,
   ) {
     _settings = _hiveService.getSettings();
     CurrencyFormatter.configureFromStyle(_settings.amountFormatStyle);
@@ -29,6 +31,7 @@ class SettingsProvider extends ChangeNotifier {
   final HiveService _hiveService;
   final AuthService _authService;
   final BiometricService _biometricService;
+  final ProfileService _profileService;
 
   late AppSettings _settings;
   bool _isSessionUnlocked = false;
@@ -42,6 +45,7 @@ class SettingsProvider extends ChangeNotifier {
   bool get isSetupComplete => _settings.isSetupComplete;
   String get baseCurrencyCode => _settings.baseCurrencyCode;
   ThemeMode get themeMode => _settings.themeMode;
+  Locale get locale => Locale(_settings.localeCode);
   bool get hasAccount => _settings.hasAccount;
   bool get isSecuritySetupComplete => _settings.isSecuritySetupComplete;
   bool get biometricEnabled => _settings.biometricEnabled;
@@ -85,6 +89,26 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setThemeMode(ThemeMode mode) async {
     _settings = _settings.copyWith(themeMode: mode);
     await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> setLocale(Locale locale) async {
+    final code = locale.languageCode == 'en' ? 'en' : 'ar';
+    _settings = _settings.copyWith(localeCode: code);
+    await _hiveService.saveSettings(_settings);
+    await _profileService.syncLanguage(code);
+    notifyListeners();
+  }
+
+  Future<void> setBiometricEnabled(bool enabled) async {
+    _settings = _settings.copyWith(biometricEnabled: enabled);
+    await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> updatePin(String newPin) async {
+    await _authService.updatePin(newPin);
+    _settings = _hiveService.getSettings();
     notifyListeners();
   }
 

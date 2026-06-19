@@ -15,7 +15,10 @@ import '../features/auth/unlock_screen.dart';
 import '../features/categories/categories_screen.dart';
 import '../features/categories/category_form_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
-import '../features/profile/profile_placeholder_screen.dart';
+import '../features/profile/appearance_screen.dart';
+import '../features/profile/personal_info_screen.dart';
+import '../features/profile/profile_screen.dart';
+import '../features/profile/security_screen.dart';
 import '../features/transactions/transaction_edit_screen.dart';
 import '../features/transactions/transaction_add_screen.dart';
 import '../features/transactions/models/transaction_entry_type.dart';
@@ -26,7 +29,6 @@ import '../core/constants/database_constants.dart';
 import '../features/onboarding/select_base_currency_screen.dart';
 import '../features/settings/currencies/currencies_screen.dart';
 import '../features/settings/currencies/currency_form_screen.dart';
-import '../features/settings/settings_screen.dart';
 import '../features/goals/goal_edit_screen.dart';
 import '../features/goals/goal_form_screen.dart';
 import '../features/goals/goal_plan_screen.dart';
@@ -109,7 +111,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/profile',
-        builder: (context, state) => const ProfilePlaceholderScreen(),
+        redirect: (context, state) => '/settings',
       ),
       GoRoute(
         path: '/transactions/add',
@@ -233,8 +235,20 @@ class AppRouter {
           ),
           GoRoute(
             path: '/settings',
-            builder: (context, state) => const SettingsScreen(),
+            builder: (context, state) => const ProfileScreen(),
             routes: [
+              GoRoute(
+                path: 'personal-info',
+                builder: (context, state) => const PersonalInfoScreen(),
+              ),
+              GoRoute(
+                path: 'security',
+                builder: (context, state) => const SecurityScreen(),
+              ),
+              GoRoute(
+                path: 'appearance',
+                builder: (context, state) => const AppearanceScreen(),
+              ),
               GoRoute(
                 path: 'currencies',
                 builder: (context, state) => const CurrenciesScreen(),

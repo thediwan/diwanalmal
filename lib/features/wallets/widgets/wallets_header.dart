@@ -35,7 +35,7 @@ class WalletsHeader extends StatelessWidget {
         children: [
           Row(
             children: [
-              _ProfileAvatar(onTap: () => context.push('/profile')),
+              _ProfileAvatar(onTap: () => context.push('/settings')),
               const SizedBox(width: 8),
               _CircleIconButton(
                 icon: CupertinoIcons.bell,

@@ -1413,4 +1413,127 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get goalSavingsDestinationWallet => 'محفظة الوجهة';
+
+  @override
+  String get profileSectionAccount => 'إعدادات الحساب';
+
+  @override
+  String get profileSectionFinancial => 'التفضيلات المالية';
+
+  @override
+  String get profileSectionAppearance => 'مظهر التطبيق';
+
+  @override
+  String get profilePersonalInfo => 'المعلومات الشخصية';
+
+  @override
+  String get profileSecurity => 'الأمان';
+
+  @override
+  String get profileTwoFactor => 'المصادقة الثنائية';
+
+  @override
+  String get profileTwoFactorSubtitle => 'قريباً';
+
+  @override
+  String get profileDefaultCurrency => 'العملة الافتراضية';
+
+  @override
+  String get profileLanguage => 'اللغة (Language)';
+
+  @override
+  String get profileLanguageSubtitle => 'العربية | English';
+
+  @override
+  String get profileLanguageArabic => 'العربية';
+
+  @override
+  String get profileLanguageEnglish => 'English';
+
+  @override
+  String get profileNotifications => 'إعدادات التنبيهات';
+
+  @override
+  String get profileNotificationsSubtitle => 'قريباً';
+
+  @override
+  String get profileDarkMode => 'الوضع الداكن';
+
+  @override
+  String get profileAppearanceCustomize => 'تخصيص المظهر';
+
+  @override
+  String get profileLogout => 'تسجيل الخروج';
+
+  @override
+  String get profileLogoutConfirmTitle => 'تسجيل الخروج';
+
+  @override
+  String get profileLogoutConfirmMessage =>
+      'هل تريد قفل الجلسة والخروج؟ ستحتاج PIN أو البصمة للدخول مجدداً.';
+
+  @override
+  String profileVersion(String appName, String version) {
+    return '$appName — النسخة $version';
+  }
+
+  @override
+  String get profileFullName => 'الاسم الكامل';
+
+  @override
+  String get profileFullNameRequired => 'الاسم مطلوب';
+
+  @override
+  String get profileEmail => 'البريد الإلكتروني';
+
+  @override
+  String get profileEmailInvalid => 'بريد إلكتروني غير صالح';
+
+  @override
+  String get profilePhone => 'رقم الهاتف';
+
+  @override
+  String get profileSaveSuccess => 'تم حفظ المعلومات بنجاح';
+
+  @override
+  String get profileAvatarUpdated => 'تم تحديث الصورة الشخصية';
+
+  @override
+  String get profileChangePin => 'تغيير PIN';
+
+  @override
+  String get profileCurrentPin => 'PIN الحالي';
+
+  @override
+  String get profileNewPin => 'PIN الجديد';
+
+  @override
+  String get profileConfirmPin => 'تأكيد PIN';
+
+  @override
+  String get profilePinMismatch => 'PIN غير متطابق';
+
+  @override
+  String get profilePinInvalid => 'PIN الحالي غير صحيح';
+
+  @override
+  String get profilePinUpdated => 'تم تحديث PIN بنجاح';
+
+  @override
+  String get profileBiometric => 'البصمة / Face ID';
+
+  @override
+  String get profileRecoveryCode => 'رمز الاسترداد';
+
+  @override
+  String get profileRecoveryCodeHint => 'احفظ هذا الرمز في مكان آمن';
+
+  @override
+  String get profileAppLock => 'قفل التطبيق الآن';
+
+  @override
+  String get profileAppLockSubtitle => 'يتطلب PIN أو البصمة للدخول مجدداً';
+
+  @override
+  String get profileSelectLanguage => 'اختر اللغة';
 }

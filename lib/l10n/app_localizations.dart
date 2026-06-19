@@ -2689,6 +2689,246 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'محفظة الوجهة'**
   String get goalSavingsDestinationWallet;
+
+  /// No description provided for @profileSectionAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعدادات الحساب'**
+  String get profileSectionAccount;
+
+  /// No description provided for @profileSectionFinancial.
+  ///
+  /// In ar, this message translates to:
+  /// **'التفضيلات المالية'**
+  String get profileSectionFinancial;
+
+  /// No description provided for @profileSectionAppearance.
+  ///
+  /// In ar, this message translates to:
+  /// **'مظهر التطبيق'**
+  String get profileSectionAppearance;
+
+  /// No description provided for @profilePersonalInfo.
+  ///
+  /// In ar, this message translates to:
+  /// **'المعلومات الشخصية'**
+  String get profilePersonalInfo;
+
+  /// No description provided for @profileSecurity.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأمان'**
+  String get profileSecurity;
+
+  /// No description provided for @profileTwoFactor.
+  ///
+  /// In ar, this message translates to:
+  /// **'المصادقة الثنائية'**
+  String get profileTwoFactor;
+
+  /// No description provided for @profileTwoFactorSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'قريباً'**
+  String get profileTwoFactorSubtitle;
+
+  /// No description provided for @profileDefaultCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملة الافتراضية'**
+  String get profileDefaultCurrency;
+
+  /// No description provided for @profileLanguage.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللغة (Language)'**
+  String get profileLanguage;
+
+  /// No description provided for @profileLanguageSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'العربية | English'**
+  String get profileLanguageSubtitle;
+
+  /// No description provided for @profileLanguageArabic.
+  ///
+  /// In ar, this message translates to:
+  /// **'العربية'**
+  String get profileLanguageArabic;
+
+  /// No description provided for @profileLanguageEnglish.
+  ///
+  /// In ar, this message translates to:
+  /// **'English'**
+  String get profileLanguageEnglish;
+
+  /// No description provided for @profileNotifications.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعدادات التنبيهات'**
+  String get profileNotifications;
+
+  /// No description provided for @profileNotificationsSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'قريباً'**
+  String get profileNotificationsSubtitle;
+
+  /// No description provided for @profileDarkMode.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوضع الداكن'**
+  String get profileDarkMode;
+
+  /// No description provided for @profileAppearanceCustomize.
+  ///
+  /// In ar, this message translates to:
+  /// **'تخصيص المظهر'**
+  String get profileAppearanceCustomize;
+
+  /// No description provided for @profileLogout.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الخروج'**
+  String get profileLogout;
+
+  /// No description provided for @profileLogoutConfirmTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الخروج'**
+  String get profileLogoutConfirmTitle;
+
+  /// No description provided for @profileLogoutConfirmMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل تريد قفل الجلسة والخروج؟ ستحتاج PIN أو البصمة للدخول مجدداً.'**
+  String get profileLogoutConfirmMessage;
+
+  /// No description provided for @profileVersion.
+  ///
+  /// In ar, this message translates to:
+  /// **'{appName} — النسخة {version}'**
+  String profileVersion(String appName, String version);
+
+  /// No description provided for @profileFullName.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم الكامل'**
+  String get profileFullName;
+
+  /// No description provided for @profileFullNameRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم مطلوب'**
+  String get profileFullNameRequired;
+
+  /// No description provided for @profileEmail.
+  ///
+  /// In ar, this message translates to:
+  /// **'البريد الإلكتروني'**
+  String get profileEmail;
+
+  /// No description provided for @profileEmailInvalid.
+  ///
+  /// In ar, this message translates to:
+  /// **'بريد إلكتروني غير صالح'**
+  String get profileEmailInvalid;
+
+  /// No description provided for @profilePhone.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم الهاتف'**
+  String get profilePhone;
+
+  /// No description provided for @profileSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ المعلومات بنجاح'**
+  String get profileSaveSuccess;
+
+  /// No description provided for @profileAvatarUpdated.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تحديث الصورة الشخصية'**
+  String get profileAvatarUpdated;
+
+  /// No description provided for @profileChangePin.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير PIN'**
+  String get profileChangePin;
+
+  /// No description provided for @profileCurrentPin.
+  ///
+  /// In ar, this message translates to:
+  /// **'PIN الحالي'**
+  String get profileCurrentPin;
+
+  /// No description provided for @profileNewPin.
+  ///
+  /// In ar, this message translates to:
+  /// **'PIN الجديد'**
+  String get profileNewPin;
+
+  /// No description provided for @profileConfirmPin.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد PIN'**
+  String get profileConfirmPin;
+
+  /// No description provided for @profilePinMismatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'PIN غير متطابق'**
+  String get profilePinMismatch;
+
+  /// No description provided for @profilePinInvalid.
+  ///
+  /// In ar, this message translates to:
+  /// **'PIN الحالي غير صحيح'**
+  String get profilePinInvalid;
+
+  /// No description provided for @profilePinUpdated.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تحديث PIN بنجاح'**
+  String get profilePinUpdated;
+
+  /// No description provided for @profileBiometric.
+  ///
+  /// In ar, this message translates to:
+  /// **'البصمة / Face ID'**
+  String get profileBiometric;
+
+  /// No description provided for @profileRecoveryCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'رمز الاسترداد'**
+  String get profileRecoveryCode;
+
+  /// No description provided for @profileRecoveryCodeHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'احفظ هذا الرمز في مكان آمن'**
+  String get profileRecoveryCodeHint;
+
+  /// No description provided for @profileAppLock.
+  ///
+  /// In ar, this message translates to:
+  /// **'قفل التطبيق الآن'**
+  String get profileAppLock;
+
+  /// No description provided for @profileAppLockSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'يتطلب PIN أو البصمة للدخول مجدداً'**
+  String get profileAppLockSubtitle;
+
+  /// No description provided for @profileSelectLanguage.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر اللغة'**
+  String get profileSelectLanguage;
 }
 
 class _AppLocalizationsDelegate

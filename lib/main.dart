@@ -10,6 +10,7 @@ import 'l10n/app_localizations.dart';
 import 'core/widgets/app_lifecycle_observer.dart';
 import 'providers/dashboard_refresh_provider.dart';
 import 'providers/currency_provider.dart';
+import 'providers/profile_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/wallet_provider.dart';
 import 'router/app_router.dart';
@@ -19,6 +20,7 @@ import 'services/currency_deduplication_service.dart';
 import 'services/currency_service.dart';
 import 'services/hive_service.dart';
 import 'services/lazarus_database_service.dart';
+import 'services/profile_service.dart';
 import 'services/treasury_service.dart';
 import 'services/wallet_balance_service.dart';
 import 'services/wallet_service.dart';
@@ -47,11 +49,15 @@ Future<void> main() async {
   final walletBalanceService = WalletBalanceService(lazarusService);
   final walletsDisplayService = WalletsDisplayService();
 
+  final profileService = ProfileService(lazarusService, hiveService);
+
   final settingsProvider = SettingsProvider(
     hiveService,
     authService,
     biometricService,
+    profileService,
   );
+  final profileProvider = ProfileProvider(profileService);
   final currencyProvider = CurrencyProvider(currencyService);
   final walletProvider = WalletProvider(
     walletService,
@@ -66,6 +72,7 @@ Future<void> main() async {
   await Future.wait([
     walletProvider.loadWallets(),
     currencyProvider.loadCurrencies(),
+    profileProvider.load(),
   ]);
 
   final appRouter = AppRouter(settingsProvider);
@@ -74,6 +81,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: settingsProvider),
+        ChangeNotifierProvider.value(value: profileProvider),
         ChangeNotifierProvider.value(value: currencyProvider),
         ChangeNotifierProvider.value(value: walletProvider),
         ChangeNotifierProvider.value(value: dashboardRefreshProvider),
@@ -95,6 +103,9 @@ class BaytAlmalApp extends StatelessWidget {
     final themeMode = context.select<SettingsProvider, ThemeMode>(
       (settings) => settings.themeMode,
     );
+    final locale = context.select<SettingsProvider, Locale>(
+      (settings) => settings.locale,
+    );
 
     return AppLifecycleObserver(
       child: MaterialApp.router(
@@ -103,7 +114,7 @@ class BaytAlmalApp extends StatelessWidget {
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
         themeMode: themeMode,
-        locale: const Locale('ar'),
+        locale: locale,
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: const [
           AppLocalizations.delegate,

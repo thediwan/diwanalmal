@@ -21,6 +21,7 @@ class AppSettings extends HiveObject {
     int? transactionDeleteWindowHours,
     int? transactionEditWindowDays,
     int? amountFormatStyleIndex,
+    this.localeCode = 'ar',
   })  : _transactionDeleteWindowHours = transactionDeleteWindowHours,
         _transactionEditWindowDays = transactionEditWindowDays,
         _amountFormatStyleIndex = amountFormatStyleIndex;
@@ -36,6 +37,7 @@ class AppSettings extends HiveObject {
   final bool biometricEnabled;
   final bool isSecuritySetupComplete;
   final bool securityCodeAcknowledged;
+  final String localeCode;
 
   final int? _transactionDeleteWindowHours;
   final int? _transactionEditWindowDays;
@@ -69,6 +71,7 @@ class AppSettings extends HiveObject {
     int? transactionDeleteWindowHours,
     int? transactionEditWindowDays,
     int? amountFormatStyleIndex,
+    String? localeCode,
   }) {
     return AppSettings(
       isSetupComplete: isSetupComplete ?? this.isSetupComplete,
@@ -90,6 +93,7 @@ class AppSettings extends HiveObject {
           transactionEditWindowDays ?? _transactionEditWindowDays,
       amountFormatStyleIndex:
           amountFormatStyleIndex ?? _amountFormatStyleIndex,
+      localeCode: localeCode ?? this.localeCode,
     );
   }
 
@@ -138,7 +142,14 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       transactionDeleteWindowHours: _readOptionalInt(reader),
       transactionEditWindowDays: _readOptionalInt(reader),
       amountFormatStyleIndex: _readOptionalInt(reader),
+      localeCode: _readOptionalString(reader) ?? 'ar',
     );
+  }
+
+  /// Reads a string when bytes remain (Hive locale migration).
+  static String? _readOptionalString(BinaryReader reader) {
+    if (reader.availableBytes == 0) return null;
+    return reader.readString();
   }
 
   /// Reads a bool only when at least one byte remains.
@@ -168,6 +179,7 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeBool(obj.securityCodeAcknowledged)
       ..writeInt(obj.transactionDeleteWindowHours)
       ..writeInt(obj.transactionEditWindowDays)
-      ..writeInt(obj.amountFormatStyle.storageIndex);
+      ..writeInt(obj.amountFormatStyle.storageIndex)
+      ..writeString(obj.localeCode);
   }
 }

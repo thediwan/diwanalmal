@@ -23,7 +23,7 @@ class DashboardHeader extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           _HeaderIconButton(
-            onPressed: () => context.push('/profile'),
+            onPressed: () => context.push('/settings'),
             icon: CupertinoIcons.person_crop_circle,
             filled: true,
           ),

@@ -61,6 +61,11 @@ class AuthService {
     return _settings.pinCode.isNotEmpty && _settings.pinCode == pin;
   }
 
+  Future<void> updatePin(String newPin) async {
+    final updated = _settings.copyWith(pinCode: newPin);
+    await _hiveService.saveSettings(updated);
+  }
+
   /// Verifies recovery code (case-insensitive) and updates the account password.
   Future<bool> resetPassword({
     required String securityCode,
