@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/goal_icon_styles.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -42,7 +41,7 @@ class GoalIconSelector extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: isSelected
-                      ? AppColors.dashboardPrimary
+                      ? Theme.of(context).colorScheme.primary
                       : colors.inputBorder,
                   width: isSelected ? 2.5 : 1,
                 ),
@@ -50,7 +49,7 @@ class GoalIconSelector extends StatelessWidget {
               child: Icon(
                 GoalIconStyles.iconFor(style),
                 color: isSelected
-                    ? AppColors.dashboardPrimary
+                    ? Theme.of(context).colorScheme.primary
                     : colors.textMuted,
                 size: 24,
               ),
@@ -73,7 +72,7 @@ class GoalFormLabel extends StatelessWidget {
     return Text(
       text,
       style: AppTextStyles.label.copyWith(
-        color: AppColors.dashboardPrimary,
+        color: Theme.of(context).colorScheme.primary,
         fontWeight: FontWeight.w700,
         fontSize: 14,
       ),

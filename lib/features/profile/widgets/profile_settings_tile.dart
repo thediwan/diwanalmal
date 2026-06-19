@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
 
@@ -30,7 +29,7 @@ class ProfileSettingsTile extends StatelessWidget {
     final colors = context.appColors;
     final textColor = enabled ? colors.textPrimary : colors.textMuted;
     final iconColor =
-        enabled ? AppColors.dashboardPrimary : colors.textMuted;
+        enabled ? Theme.of(context).colorScheme.primary : colors.textMuted;
 
     return Material(
       color: Colors.transparent,

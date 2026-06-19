@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../constants/app_colors.dart';
 import '../extensions/context_l10n.dart';
 import '../extensions/context_theme.dart';
 import '../responsive/app_breakpoints.dart';
@@ -97,6 +96,7 @@ class AdaptiveAppShell extends StatelessWidget {
   NavigationBar _buildBottomNav(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.appColors;
+    final primary = Theme.of(context).colorScheme.primary;
     final labels = [
       l10n.navHome,
       l10n.navTransactions,
@@ -106,7 +106,7 @@ class AdaptiveAppShell extends StatelessWidget {
 
     return NavigationBar(
       backgroundColor: colors.navBarBackground,
-      indicatorColor: AppColors.primaryContainer.withValues(alpha: 0.12),
+      indicatorColor: primary.withValues(alpha: 0.12),
       selectedIndex: _selectedIndex,
       onDestinationSelected: _onDestinationSelected,
       destinations: [
@@ -115,7 +115,7 @@ class AdaptiveAppShell extends StatelessWidget {
             icon: Icon(_destinations[i].icon),
             selectedIcon: Icon(
               _destinations[i].selectedIcon,
-              color: AppColors.primaryContainer,
+              color: primary,
             ),
             label: labels[i],
           ),
@@ -126,6 +126,7 @@ class AdaptiveAppShell extends StatelessWidget {
   Widget _buildNavigationRail(BuildContext context, {required bool extended}) {
     final l10n = context.l10n;
     final colors = context.appColors;
+    final primary = Theme.of(context).colorScheme.primary;
     final labels = [
       l10n.navHome,
       l10n.navTransactions,
@@ -141,12 +142,10 @@ class AdaptiveAppShell extends StatelessWidget {
       labelType: extended
           ? NavigationRailLabelType.none
           : NavigationRailLabelType.all,
-      selectedIconTheme: const IconThemeData(
-        color: AppColors.primaryContainer,
-      ),
+      selectedIconTheme: IconThemeData(color: primary),
       unselectedIconTheme: IconThemeData(color: colors.textSecondary),
       selectedLabelTextStyle: TextStyle(
-        color: AppColors.primaryContainer,
+        color: primary,
         fontWeight: FontWeight.w600,
       ),
       unselectedLabelTextStyle: TextStyle(color: colors.textSecondary),

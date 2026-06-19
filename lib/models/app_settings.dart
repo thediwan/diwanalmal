@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 import '../core/constants/transaction_policy.dart';
+import '../core/theme/palettes/app_color_palette.dart';
 import 'amount_format_style.dart';
 
 /// Application-wide settings stored locally.
@@ -22,6 +23,7 @@ class AppSettings extends HiveObject {
     int? transactionEditWindowDays,
     int? amountFormatStyleIndex,
     this.localeCode = 'ar',
+    this.colorPaletteKey,
   })  : _transactionDeleteWindowHours = transactionDeleteWindowHours,
         _transactionEditWindowDays = transactionEditWindowDays,
         _amountFormatStyleIndex = amountFormatStyleIndex;
@@ -38,6 +40,12 @@ class AppSettings extends HiveObject {
   final bool isSecuritySetupComplete;
   final bool securityCodeAcknowledged;
   final String localeCode;
+
+  /// Storage key for the chosen color palette (null → default = original).
+  final String? colorPaletteKey;
+
+  AppColorPaletteId get colorPaletteId =>
+      AppColorPaletteId.fromStorageKey(colorPaletteKey);
 
   final int? _transactionDeleteWindowHours;
   final int? _transactionEditWindowDays;
@@ -72,6 +80,7 @@ class AppSettings extends HiveObject {
     int? transactionEditWindowDays,
     int? amountFormatStyleIndex,
     String? localeCode,
+    String? colorPaletteKey,
   }) {
     return AppSettings(
       isSetupComplete: isSetupComplete ?? this.isSetupComplete,
@@ -94,6 +103,7 @@ class AppSettings extends HiveObject {
       amountFormatStyleIndex:
           amountFormatStyleIndex ?? _amountFormatStyleIndex,
       localeCode: localeCode ?? this.localeCode,
+      colorPaletteKey: colorPaletteKey ?? this.colorPaletteKey,
     );
   }
 
@@ -143,6 +153,7 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       transactionEditWindowDays: _readOptionalInt(reader),
       amountFormatStyleIndex: _readOptionalInt(reader),
       localeCode: _readOptionalString(reader) ?? 'ar',
+      colorPaletteKey: _readOptionalString(reader),
     );
   }
 
@@ -180,6 +191,7 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeInt(obj.transactionDeleteWindowHours)
       ..writeInt(obj.transactionEditWindowDays)
       ..writeInt(obj.amountFormatStyle.storageIndex)
-      ..writeString(obj.localeCode);
+      ..writeString(obj.localeCode)
+      ..writeString(obj.colorPaletteKey ?? '');
   }
 }

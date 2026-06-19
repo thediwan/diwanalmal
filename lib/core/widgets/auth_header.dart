@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_constants.dart';
 import '../extensions/context_l10n.dart';
 import '../extensions/context_theme.dart';
-import '../constants/app_colors.dart';
-import '../constants/app_constants.dart';
 import '../theme/app_text_styles.dart';
 import 'brand_logo.dart';
 
@@ -47,7 +46,7 @@ class AuthHeader extends StatelessWidget {
         Text(
           AppConstants.appName,
           style: AppTextStyles.headingLarge.copyWith(
-            color: AppColors.primaryContainer,
+            color: Theme.of(context).colorScheme.primary,
             fontSize: 30,
             fontWeight: FontWeight.w800,
           ),

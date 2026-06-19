@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/treasury_icon_styles.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
@@ -98,14 +97,14 @@ class _WalletTypeOption extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected
-                    ? AppColors.dashboardPrimary
+                    ? Theme.of(context).colorScheme.primary
                     : colors.inputBorder,
                 width: isSelected ? 2 : 1,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: AppColors.dashboardPrimary.withValues(alpha: 0.12),
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
                         blurRadius: 10,
                         offset: const Offset(0, 3),
                       ),
@@ -136,7 +135,7 @@ class _WalletTypeOption extends StatelessWidget {
                   style: AppTextStyles.bodySmall.copyWith(
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                     color: isSelected
-                        ? AppColors.dashboardPrimary
+                        ? Theme.of(context).colorScheme.primary
                         : colors.textSecondary,
                     fontSize: 12,
                   ),

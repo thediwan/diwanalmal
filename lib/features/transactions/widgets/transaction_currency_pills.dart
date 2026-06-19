@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../models/currency.dart';
@@ -49,7 +48,7 @@ class TransactionCurrencyPills extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: selected
-                        ? AppColors.dashboardPrimary
+                        ? Theme.of(context).colorScheme.primary
                         : colors.cardBorder,
                     width: selected ? 1.5 : 1,
                   ),
@@ -58,7 +57,7 @@ class TransactionCurrencyPills extends StatelessWidget {
                   currency.code,
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: selected
-                        ? AppColors.dashboardPrimary
+                        ? Theme.of(context).colorScheme.primary
                         : colors.textSecondary,
                     fontWeight: FontWeight.w700,
                   ),

@@ -111,6 +111,14 @@
   "@dashboardTotalBalance": {
     "placeholders": { "code": { "type": "String" } }
   },
+  "dashboardBalanceCardType": "Digital Wallet",
+  "dashboardBalanceCardHolder": "Holder",
+  "dashboardBalanceCardExpDate": "Exp Date",
+  "dashboardCardMenuTitle": "Card Options",
+  "dashboardCardMenuViewWallets": "View Wallets",
+  "dashboardCardMenuAddTransaction": "Add Transaction",
+  "dashboardCardMenuTransfer": "Transfer",
+  "dashboardCardMenuViewStats": "Statistics",
   "dashboardApproxBase": "≈ {amount}",
   "@dashboardApproxBase": {
     "placeholders": { "amount": { "type": "String" } }
@@ -430,6 +438,12 @@
   "settingsThemeLight": "Light",
   "settingsThemeDark": "Dark",
   "settingsThemeSystem": "System",
+  "settingsColorPalette": "Color palette",
+  "paletteOriginal": "Original",
+  "paletteDeepSea": "Deep Sea",
+  "paletteGothicGlam": "Gothic Glam",
+  "palettePurpleHaze": "Purple Haze",
+  "paletteTurquoiseHarmony": "Turquoise Harmony",
   "settingsAmountFormat": "Number format",
   "settingsAmountFormatSubtitle": "Thousands and decimal separators",
   "settingsAmountFormatWestern": "1,234.56",
@@ -636,5 +650,15 @@
   "profileRecoveryCodeHint": "Keep this code in a safe place",
   "profileAppLock": "Lock app now",
   "profileAppLockSubtitle": "Requires PIN or biometrics to enter again",
-  "profileSelectLanguage": "Select language"
+  "profileSelectLanguage": "Select language",
+  "quickActionAddTransaction": "Add",
+  "quickActionTransfer": "Transfer",
+  "quickActionViewAll": "All",
+  "statusOffline": "Offline",
+  "statusOfflineData": "Your data is stored on this device",
+  "transactionConfirmTitle": "Confirm Transaction",
+  "transactionConfirmSubtitle": "Review details before saving",
+  "transactionConfirmSave": "Save",
+  "goalAchievedTitle": "Well done!",
+  "goalAchievedSubtitle": "You've reached your financial goal"
 }

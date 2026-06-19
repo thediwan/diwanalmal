@@ -877,7 +877,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                       _amountInput.display,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.headingLarge.copyWith(
-                        color: AppColors.dashboardPrimary,
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w800,
                         fontSize: 36,
                       ),
@@ -970,7 +970,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                   FilledButton(
                     onPressed: _canEdit && !_isSaving ? _save : null,
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.dashboardPrimary,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       minimumSize: const Size.fromHeight(50),
                     ),
                     child: _isSaving

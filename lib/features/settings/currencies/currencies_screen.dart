@@ -65,7 +65,7 @@ class _CurrencyTile extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: currency.isBase
-              ? AppColors.primary
+              ? Theme.of(context).colorScheme.primary
               : colors.surfaceVariant,
           child: Text(
             currency.symbol,
@@ -82,13 +82,13 @@ class _CurrencyTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.15),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   l10n.currencyBaseBadge,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),

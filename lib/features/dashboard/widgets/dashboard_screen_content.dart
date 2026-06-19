@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/extensions/context_l10n.dart';
-import '../../../core/extensions/context_theme.dart';
 import '../../../core/responsive/app_breakpoints.dart';
 import '../../../core/responsive/responsive_content.dart';
 import '../../../core/responsive/responsive_layout.dart';
@@ -13,14 +10,15 @@ import '../../../providers/currency_provider.dart';
 import '../../../providers/wallet_provider.dart';
 import '../../../services/dashboard_service.dart';
 import '../data/dashboard_currency_balances.dart';
+import 'dashboard_balance_hero_card.dart';
 import 'dashboard_currency_carousel.dart';
 import 'dashboard_expense_chart.dart';
 import 'dashboard_goals_section.dart';
 import 'dashboard_header.dart';
 import 'dashboard_monthly_summary.dart';
+import 'dashboard_quick_actions.dart';
 import 'dashboard_recent_transactions.dart';
 import 'dashboard_section_divider.dart';
-import 'dashboard_total_balance.dart';
 
 /// Shared dashboard sections — layout-agnostic content widgets.
 class DashboardScreenContent extends StatelessWidget {
@@ -65,15 +63,21 @@ class DashboardScreenContent extends StatelessWidget {
       currencyProvider: currencyProvider,
     );
 
+    // Primary column: balance hero + quick actions + monthly pulse +
+    //                 recent transactions (high-frequency, moved above goals)
     final primarySections = <Widget>[
       const DashboardHeader(),
-      const SizedBox(height: 8),
-      DashboardTotalBalance(
+      const SizedBox(height: 12),
+      DashboardBalanceHeroCard(
         label: l10n.dashboardTotalBalance(baseCode),
         amount: totalBalance,
         currencyCode: baseCode,
+        monthlyIncome: data.monthlyIncome,
+        monthlyExpense: data.monthlyExpense,
       ),
       const SizedBox(height: 20),
+      const DashboardQuickActions(),
+      const SizedBox(height: 4),
       DashboardCurrencyBalancesRow(
         balances: currencyBalances,
         baseCode: baseCode,
@@ -87,23 +91,25 @@ class DashboardScreenContent extends StatelessWidget {
         onDebtsTap: () => context.go('/transactions?tab=debt'),
       ),
       const DashboardSectionDivider(),
+      // Recent transactions moved above goals — high-frequency action
+      DashboardRecentTransactions(
+        transactions: data.transactions,
+      ),
+    ];
+
+    // Secondary column: goals (medium-frequency) + expense chart (exploration)
+    final secondarySections = <Widget>[
+      const DashboardSectionDivider(),
       DashboardGoalsSection(
         goals: data.goals,
         onAddGoal: onAddGoal,
         onGoalTap: onGoalTap,
       ),
-    ];
-
-    final secondarySections = <Widget>[
       const DashboardSectionDivider(),
       DashboardExpenseChart(
         dailyPoints: data.dailyChart,
         weeklyPoints: data.weeklyChart,
         currencyCode: data.baseCurrencyCode,
-      ),
-      const DashboardSectionDivider(),
-      DashboardRecentTransactions(
-        transactions: data.transactions,
       ),
     ];
 

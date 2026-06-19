@@ -1,6 +1,6 @@
 # Number formatting
 
-> **Last updated:** June 10, 2026  
+> **Last updated:** June 19, 2026  
 > **Scope:** Monetary amount display across the app and keypad entry on transaction forms.
 
 ---
@@ -8,7 +8,7 @@
 ## Overview
 
 Amounts are formatted using a user preference stored in Hive (`AppSettings.amountFormatStyle`).  
-The settings screen will expose this later; the default is **Western** (`1,234.56`).
+The user selects the style on **Settings → Appearance** (`/settings/appearance`). Default is **Western** (`1,234.56`).
 
 | Style | Example | Thousands | Decimal |
 |-------|---------|-----------|---------|
@@ -43,6 +43,7 @@ TransactionAmountInput.display — live keypad entry
 | `lib/core/helpers/number_format_preferences.dart` | Active preferences + `intl` formatters |
 | `lib/core/helpers/currency_formatter.dart` | App-wide amount formatting API |
 | `lib/features/transactions/widgets/transaction_numeric_keypad.dart` | Keypad + `TransactionAmountInput` |
+| `lib/features/profile/appearance_screen.dart` | User-facing amount format picker |
 
 ---
 
@@ -63,15 +64,17 @@ The numeric keypad enters amounts in **whole currency units**, not cents.
 
 ---
 
-## Settings integration (planned)
+## Settings integration
 
-When the settings UI is built:
+Implemented on **`/settings/appearance`** (`AppearanceScreen`):
 
-1. Read `context.read<SettingsProvider>().amountFormatStyle`
+1. Read `context.watch<SettingsProvider>().amountFormatStyle`
 2. On change, call `setAmountFormatStyle(AmountFormatStyle.western)` (etc.)
-3. Use l10n keys: `settingsAmountFormat`, `settingsAmountFormatWestern`, …
+3. l10n keys: `settingsAmountFormat`, `settingsAmountFormatWestern`, …
 
 No app restart required — `CurrencyFormatter` updates in memory immediately.
+
+For theme mode and color palettes on the same screen, see `docs/modules/color-palettes-and-theming.md`.
 
 ---
 

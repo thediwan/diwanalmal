@@ -1,0 +1,86 @@
+import 'package:flutter/material.dart';
+
+import '../app_theme_colors.dart';
+import 'app_color_palette.dart';
+
+/// Purple Haze palette — `e8d7f1 · d3bccc · a167a5 · 4a306d · 0e273c`
+/// (lightest → darkest; light mode uses light stops as bg, dark uses dark stops)
+const kPurpleHazePalette = AppColorPaletteDefinition(
+  id: AppColorPaletteId.purpleHaze,
+  nameKey: 'palettePurpleHaze',
+  previewStops: [
+    Color(0xFFe8d7f1),
+    Color(0xFFd3bccc),
+    Color(0xFFa167a5),
+    Color(0xFF4a306d),
+    Color(0xFF0e273c),
+  ],
+  light: AppPaletteScheme(
+    accent: AppAccentColors(
+      primary: Color(0xFFa167a5),
+      primaryDeep: Color(0xFF4a306d),
+      primaryLight: Color(0xFFe8d7f1),
+      primaryAccent: Color(0xFFBB88C0),
+      onPrimary: Colors.white,
+    ),
+    surfaces: AppThemeColors(
+      scaffoldBackground: Color(0xFFe8d7f1),
+      surface: Color(0xFFFFFFFF),
+      surfaceElevated: Color(0xFFF5EFF8),
+      surfaceVariant: Color(0xFFEADDF3),
+      cardBorder: Color(0xFFD8C8E4),
+      cardShadow: Color(0x0D000000),
+      cardShadowSky: Color(0x14a167a5),
+      divider: Color(0xFFD3C4E0),
+      textPrimary: Color(0xFF0e273c),
+      textSecondary: Color(0xFF2E1850),
+      textMuted: Color(0xFF6A5A7A),
+      inputText: Color(0xFF0e273c),
+      inputHint: Color(0xFF6A5A7A),
+      inputBorder: Color(0xFFCCBBD8),
+      inputFill: Color(0xFFEDE3F5),
+      authGradientTop: Color(0xFFe8d7f1),
+      authGradientBottom: Color(0xFFd3bccc),
+      navBarBackground: Color(0xFFFFFFFF),
+      searchFieldFill: Color(0xFFE4D5EE),
+      accentSurface: Color(0xFFE8D7F1),
+      accentSurfaceBorder: Color(0xFFa167a5),
+      dropdownBackground: Color(0xFFFFFFFF),
+      onPrimary: Colors.white,
+    ),
+  ),
+  dark: AppPaletteScheme(
+    accent: AppAccentColors(
+      primary: Color(0xFFa167a5),
+      primaryDeep: Color(0xFF4a306d),
+      primaryLight: Color(0xFF3A1F58),
+      primaryAccent: Color(0xFFBB88C0),
+      onPrimary: Colors.white,
+    ),
+    surfaces: AppThemeColors(
+      scaffoldBackground: Color(0xFF0e273c),
+      surface: Color(0xFF4a306d),
+      surfaceElevated: Color(0xFF5B3D80),
+      surfaceVariant: Color(0xFF432B62),
+      cardBorder: Color(0xFF6A4A90),
+      cardShadow: Color(0x40000000),
+      cardShadowSky: Color(0x26000000),
+      divider: Color(0xFF503870),
+      textPrimary: Color(0xFFe8d7f1),
+      textSecondary: Color(0xFFCCBBD8),
+      textMuted: Color(0xFF9A85B0),
+      inputText: Color(0xFFe8d7f1),
+      inputHint: Color(0xFF9A85B0),
+      inputBorder: Color(0xFF6A4A90),
+      inputFill: Color(0xFF1F1035),
+      authGradientTop: Color(0xFF0e273c),
+      authGradientBottom: Color(0xFF4a306d),
+      navBarBackground: Color(0xFF180F2A),
+      searchFieldFill: Color(0xFF1F1035),
+      accentSurface: Color(0xFF3A1F58),
+      accentSurfaceBorder: Color(0xFFa167a5),
+      dropdownBackground: Color(0xFF4a306d),
+      onPrimary: Colors.white,
+    ),
+  ),
+);

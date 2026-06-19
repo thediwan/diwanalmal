@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/treasury_icon_styles.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/helpers/currency_formatter.dart';
@@ -99,7 +98,7 @@ class _WalletCard extends StatelessWidget {
           color: colors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? AppColors.dashboardPrimary : colors.cardBorder,
+            color: selected ? Theme.of(context).colorScheme.primary : colors.cardBorder,
             width: selected ? 2 : 1,
           ),
           boxShadow: [
@@ -113,12 +112,12 @@ class _WalletCard extends StatelessWidget {
         child: Stack(
           children: [
             if (selected)
-              const Positioned(
+              Positioned(
                 top: 0,
                 left: 0,
                 child: Icon(
                   Icons.check_circle,
-                  color: AppColors.dashboardPrimary,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 20,
                 ),
               ),

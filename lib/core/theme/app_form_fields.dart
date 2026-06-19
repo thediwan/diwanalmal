@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_colors.dart';
 import '../extensions/context_theme.dart';
 import 'app_text_styles.dart';
 import 'app_theme_colors.dart';
@@ -47,7 +46,7 @@ abstract final class AppFormFields {
       prefixIcon: prefixIcon,
       labelStyle: AppTextStyles.inputLabel.copyWith(color: colors.textPrimary),
       floatingLabelStyle: AppTextStyles.inputLabel.copyWith(
-        color: AppColors.dashboardPrimary,
+        color: Theme.of(context).colorScheme.primary,
       ),
       hintStyle: AppTextStyles.inputHint.copyWith(color: colors.inputHint),
       contentPadding: contentPadding ??
@@ -62,8 +61,8 @@ abstract final class AppFormFields {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: AppColors.dashboardPrimary,
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
           width: 1.5,
         ),
       ),
@@ -92,8 +91,8 @@ abstract final class AppFormFields {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: AppColors.dashboardPrimary,
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
           width: 1.5,
         ),
       ),

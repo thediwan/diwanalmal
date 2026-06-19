@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_form_fields.dart';
@@ -139,7 +138,7 @@ class _DebtSettlementSheetState extends State<DebtSettlementSheet> {
           FilledButton(
             onPressed: _submit,
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.dashboardPrimary,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               minimumSize: const Size.fromHeight(48),
             ),
             child: Text(l10n.transactionDebtSettleConfirm),

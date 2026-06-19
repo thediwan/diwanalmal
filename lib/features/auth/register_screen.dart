@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/extensions/context_l10n.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -155,7 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Checkbox(
                             value: _acceptedTerms,
-                            activeColor: AppColors.primaryContainer,
+                            activeColor: Theme.of(context).colorScheme.primary,
                             onChanged: (v) =>
                                 setState(() => _acceptedTerms = v ?? false),
                           ),
@@ -174,7 +173,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     TextSpan(
                                       text: l10n.authTerms,
                                       style: AppTextStyles.bodySmall.copyWith(
-                                        color: AppColors.primaryContainer,
+                                        color: Theme.of(context).colorScheme.primary,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -182,7 +181,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     TextSpan(
                                       text: l10n.authPrivacy,
                                       style: AppTextStyles.bodySmall.copyWith(
-                                        color: AppColors.primaryContainer,
+                                        color: Theme.of(context).colorScheme.primary,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -199,7 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         height: 52,
                         child: FilledButton(
                           style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.primaryContainer,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
                             foregroundColor: colors.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -239,7 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 TextSpan(
                                   text: l10n.login,
                                   style: AppTextStyles.bodyMedium.copyWith(
-                                    color: AppColors.primaryContainer,
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -258,9 +257,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: FloatingActionButton.small(
                   onPressed: () {},
                   backgroundColor: colors.surface,
-                  child: const Icon(
+                  child: Icon(
                     CupertinoIcons.question,
-                    color: AppColors.primaryContainer,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),

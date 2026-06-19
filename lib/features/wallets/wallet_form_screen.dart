@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/treasury_icon_styles.dart';
 import '../../core/extensions/context_l10n.dart';
@@ -390,9 +389,9 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
                             decoration: AppFormFields.decoration(
                               context,
                               hintText: l10n.walletFormNameHintNew,
-                              suffixIcon: const Icon(
+                              suffixIcon: Icon(
                                 Icons.edit_outlined,
-                                color: AppColors.dashboardPrimary,
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 20,
                               ),
                             ),
@@ -441,7 +440,7 @@ class _WalletFormScreenState extends State<WalletFormScreen> {
             child: FilledButton(
               onPressed: _isSaving ? null : _save,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.dashboardPrimary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: colors.onPrimary,
                 minimumSize: const Size.fromHeight(54),
                 shape: RoundedRectangleBorder(
@@ -521,7 +520,7 @@ class _FormTopBar extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: AppTextStyles.headingSmall.copyWith(
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w800,
                 fontSize: 20,
               ),
@@ -537,10 +536,10 @@ class _FormTopBar extends StatelessWidget {
               width: 36,
               height: 36,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const Icon(
+              errorBuilder: (_, __, ___) => Icon(
                 Icons.account_balance,
                 size: 28,
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
         ],
@@ -577,7 +576,7 @@ class _HeroLogo extends StatelessWidget {
           AppConstants.appName,
           textAlign: TextAlign.center,
           style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.dashboardPrimary,
+            color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.w700,
           ),
         ),

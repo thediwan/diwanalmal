@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_colors.dart';
 import '../constants/brand_logo_assets.dart';
 import '../extensions/context_theme.dart';
 import '../theme/app_text_styles.dart';
@@ -78,7 +77,7 @@ class BrandLogoTile extends StatelessWidget {
         errorBuilder: (_, __, ___) => Icon(
           Icons.account_balance,
           size: size * 0.45,
-          color: AppColors.primaryContainer,
+          color: Theme.of(context).colorScheme.primary,
         ),
       ),
     );
@@ -95,7 +94,7 @@ class _FallbackWordmark extends StatelessWidget {
     return Text(
       'AMANAH',
       style: AppTextStyles.headingMedium.copyWith(
-        color: AppColors.primaryContainer,
+        color: Theme.of(context).colorScheme.primary,
         fontSize: height * 0.55,
         letterSpacing: 1.2,
       ),

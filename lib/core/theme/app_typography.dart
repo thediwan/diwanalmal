@@ -15,13 +15,20 @@ abstract final class AppTypography {
 
   // --- Size tokens (before scale) ---
 
-  static const double sizeHeadingLarge = 28;
-  static const double sizeHeadingMedium = 22;
+  /// Hero balance display — largest text in the app.
+  static const double sizeBalanceDisplay = 40;
+
+  static const double sizeHeadingLarge = 30;
+  static const double sizeHeadingMedium = 24;
   static const double sizeHeadingSmall = 18;
   static const double sizeBodyLarge = 16;
   static const double sizeBodyMedium = 14;
   static const double sizeBodySmall = 12;
   static const double sizeLabel = 13;
+
+  /// Currency codes, status chips — small caps feel.
+  static const double sizeLabelSmall = 11;
+
   static const double sizeInput = 15;
 
   /// Scales a raw font size by [textScaleFactor].

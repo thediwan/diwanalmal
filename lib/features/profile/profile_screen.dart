@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../../core/responsive/responsive_content.dart';
 import '../../core/constants/app_constants.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -209,8 +208,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           trailing: Switch.adaptive(
                             value: isDarkMode,
                             activeTrackColor:
-                                AppColors.dashboardPrimary.withValues(alpha: 0.5),
-                            activeThumbColor: AppColors.dashboardPrimary,
+                                Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                            activeThumbColor: Theme.of(context).colorScheme.primary,
                             onChanged: (on) {
                               settings.setThemeMode(
                                 on ? ThemeMode.dark : ThemeMode.light,

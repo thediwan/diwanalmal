@@ -1,6 +1,6 @@
 # ديوان المال — وثيقة متابعة المشروع
 
-> **آخر تحديث:** 10 يونيو 2026  
+> **آخر تحديث:** 19 يونيو 2026  
 > **الغرض:** توثيق ما تم إنجازه، الوضع الحالي، وخطة العمل للمتابعة مع فريق التطوير.
 
 ---
@@ -42,10 +42,12 @@
 ```
 lib/
 ├── core/           # الثيم، الألوان، الامتدادات، الويدجت المشتركة
-│   ├── constants/  # AppConstants.appName = «ديوان المال»
-│   ├── extensions/ # context.l10n
+│   ├── constants/  # AppConstants.appName = «ديوان المال»؛ AppColors (دلالات مالية ثابتة)
+│   ├── extensions/ # context.l10n، context.appColors، context.palette
 │   ├── theme/
-│   └── widgets/    # AuthBackground, AppScaffoldShell, AppLifecycleObserver
+│   │   ├── app_theme.dart          # AppTheme.build(palette, brightness)
+│   │   └── palettes/               # سجل لوحات الألوان (5 لوحات + إرشادات الإضافة)
+│   └── widgets/    # AuthBackground, ClayCard, AppLifecycleObserver
 ├── features/
 │   ├── auth/       # تسجيل، دخول، PIN، بصمة، رمز الأمان
 │   ├── onboarding/ # اختيار العملة الأساسية
@@ -64,8 +66,11 @@ lib/
 docs/
 ├── project-progress.md              ← هذه الوثيقة
 ├── database-lazarus.md              ← مخطط قاعدة البيانات
+├── responsive-architecture.md         ← التخطيط المتجاوب
 ├── dashboard-design-alignment-plan.md ← مواصفات لوحة التحكم
 ├── modules/auth.md                  ← وحدة المصادقة
+├── modules/number-formatting.md     ← تنسيق الأرقام
+├── modules/color-palettes-and-theming.md ← لوحات الألوان والثيم الديناميكي
 └── seeds/dashboard-mockup.json      ← بيانات العرض المرجعية
 ```
 
@@ -77,6 +82,7 @@ docs/
 
 - [x] مشروع Flutter مع Provider + GoRouter
 - [x] ثيم فاتح/داكن/تلقائي
+- [x] **لوحات ألوان قابلة للاختيار (5)** + ثيم داكن Original برمادي محايد
 - [x] تعريب كامل لشاشات المصادقة (`context.l10n`)
 - [x] دعم RTL والعربية كلغة افتراضية في `main.dart`
 - [x] قفل الجلسة عند إرسال التطبيق للخلفية (`AppLifecycleObserver`)
@@ -109,7 +115,7 @@ docs/
 **قواعد مهمة:**
 - رمز الأمان يُنشأ في `AuthService.completeSecuritySetup()` وليس عند التسجيل.
 - بعد حفظ PIN: `context.go('/auth/security-code', extra: code)` فقط — **لا** `notifyListeners()` قبل التنقل.
-- `main.dart` يستخدم `context.select` لـ `themeMode` فقط لتجنب شاشة بيضاء.
+- `main.dart` يستخدم `context.select` لـ `themeMode` و`colorPaletteId` و`locale` فقط لتجنب شاشة بيضاء.
 
 ### 4.3 قاعدة بيانات Lazarus (SQLite)
 
@@ -139,7 +145,7 @@ docs/
 | إضافة/تعديل/حذف محفظة | ✅ |
 | إدارة العملات | ✅ |
 | اختيار العملة الأساسية (onboarding) | ✅ (نصوص جزئياً غير معرّبة) |
-| الإعدادات | 🟡 شبه مكتمل | ثيم + عملات؛ تنسيق الأرقام جاهز في الخلفية — واجهة لاحقاً |
+| الإعدادات | 🟢 مكتمل | ثيم + لوحات ألوان + تنسيق أرقام في `/settings/appearance` |
 
 ### 4.6 إصلاحات الجلسة الأخيرة (يونيو 2026)
 
@@ -193,11 +199,11 @@ docs/
 | البند | الحالة |
 |-------|--------|
 | تفضيل تنسيق الأرقام في `AppSettings` | ✅ (`AmountFormatStyle`: western / european / plain) |
-| `SettingsProvider.setAmountFormatStyle()` | ✅ جاهز لشاشة الإعدادات لاحقاً |
+| `SettingsProvider.setAmountFormatStyle()` | ✅ |
 | `CurrencyFormatter` يقرأ التفضيل | ✅ |
 | إصلاح لوحة المفاتيح: `20` → `20` وليس `0.20` | ✅ |
 | دعم الكسور: `20.1` | ✅ (زر عشري في الصف السفلي) |
-| واجهة الإعدادات للتنسيق | ⬜ لاحقاً |
+| واجهة الإعدادات للتنسيق | ✅ ضمن `/settings/appearance` |
 
 **التفاصيل:** `docs/modules/number-formatting.md`
 
@@ -212,6 +218,28 @@ docs/
 | الدخل: بدون اختيار فئة (دخل عام تلقائياً) | ✅ |
 | تعطيل بذور العرض التجريبية | ✅ `SeedConstants.enabled = false` |
 
+### 4.9 لوحات الألوان والثيم الديناميكي (يونيو 2026)
+
+| البند | الحالة |
+|-------|--------|
+| سجل لوحات (`AppColorPaletteRegistry`) — 5 لوحات | ✅ |
+| Original داكن: أسطح `#121212` / `#1E1E1E` (بدون صبغة زرقاء) | ✅ |
+| `AppTheme.build(palette, brightness)` | ✅ |
+| `AppAccentColors` + `AppThemeColors` عبر `ThemeExtension` | ✅ |
+| حفظ الاختيار في Hive (`colorPaletteKey`) + ترحيل متوافق | ✅ |
+| واجهة اختيار اللوحة في `/settings/appearance` | ✅ |
+| ترحيل ~80 مرجع `AppColors.primary` → `colorScheme.primary` | ✅ |
+| ألوان مالية ثابتة (`success` / `expense` / `warning` / `debtAccent`) | ✅ عبر `AppColors` |
+
+**اللوحات المتاحة:** Original، Deep Sea، Gothic Glam، Purple Haze، Turquoise Harmony.
+
+**قواعد للمطورين:**
+- واجهة الميزات: `Theme.of(context).colorScheme.primary` أو `context.appColors` / `context.palette`.
+- لا تستخدم `AppColors.primary` في UI جديد — يتجاهل اختيار المستخدم.
+- إضافة لوحة = ملف في `lib/core/theme/palettes/` + سطر في السجل + مفاتيح l10n.
+
+**التفاصيل الكاملة:** `docs/modules/color-palettes-and-theming.md`
+
 ---
 
 ## 5. الوضع الحالي لكل وحدة
@@ -224,7 +252,7 @@ docs/
 | المحافظ | 🟢 مكتمل | واجهة جديدة + تجميع افتراضي + بحث + بذور موحّدة |
 | العملات | 🟢 مكتمل | متصل بـ Lazarus |
 | المعاملات | 🟢 يعمل | قائمة + إضافة/تعديل/حذف؛ دخل/مصروف/تحويل/ذمم |
-| الملف الشخصي | 🔴 placeholder | `/profile` |
+| الملف الشخصي | 🟡 جزئي | `/profile` + `/settings/appearance` |
 | النسخ الاحتياطي | ⬜ مرحلة 8 | معطّل في الإعدادات |
 | التعريب الكامل | 🟡 جزئي | auth ✅ — settings/wallets/onboarding جزئياً |
 
@@ -325,7 +353,7 @@ docs/
 /goals/add | /goals/plan | /goals/:id
 /transactions | /transactions/add
 /wallets | /wallets/add | /wallets/:id/edit
-/settings | /settings/currencies | ...
+/settings | /settings/currencies | /settings/appearance | ...
 /profile (خارج Shell)
 ```
 
@@ -386,6 +414,7 @@ flutter build apk --debug
 5. **النصوص** — لا `Text('حفظ')`؛ استخدم `context.l10n`.
 6. **RTL** — اختبر كل شاشة جديدة بالعربية.
 7. **Android للبصمة** — `MainActivity` يجب أن يبقى `FlutterFragmentActivity`.
+8. **ألوان الواجهة** — لا `AppColors.primary` في UI؛ استخدم `Theme.of(context).colorScheme.primary` أو `context.appColors` / `context.palette`. احتفظ بـ `AppColors.success` / `expense` / `warning` / `debtAccent` للدلالات المالية فقط.
 
 ---
 
@@ -402,6 +431,7 @@ flutter build apk --debug
 - [ ] `flutter analyze`
 - [ ] تعريب أي نص جديد في `app_ar.arb` + `app_en.arb`
 - [ ] اختبار RTL
+- [ ] إن مسّت الألوان: التحقق من اللوحة النشطة + الوضع الداكن (راجع `docs/modules/color-palettes-and-theming.md`)
 - [ ] تحديث هذه الوثيقة أو الوثيقة الفرعية المناسبة
 - [ ] اختبار على جهاز حقيقي (بصمة + notch)
 
@@ -422,7 +452,9 @@ flutter build apk --debug
 | مخطط قاعدة البيانات | `docs/database-lazarus.md` |
 | وحدة المصادقة | `docs/modules/auth.md` |
 | مواصفات لوحة التحكم | `docs/dashboard-design-alignment-plan.md` |
+| التخطيط المتجاوب | `docs/responsive-architecture.md` |
 | تنسيق الأرقام | `docs/modules/number-formatting.md` |
+| لوحات الألوان والثيم | `docs/modules/color-palettes-and-theming.md` |
 | بيانات البذور المرجعية | `docs/seeds/dashboard-mockup.json` |
 | قواعد Cursor للمشروع | `.cursor/rules/` |
 
@@ -439,6 +471,7 @@ flutter build apk --debug
 | 2026-06-09 | شاشة المحافظ الجديدة + بذور موحّدة مع Dashboard |
 | 2026-06-10 | تنسيق أرقام قابل للإعداد + إصلاح إدخال المبلغ في المعاملات |
 | 2026-06-10 | فئات النظام + شاشة إدارة الفئات + تعطيل البذور التجريبية |
+| 2026-06-19 | لوحات ألوان قابلة للاختيار (5) + ثيم Original داكن برمادي محايد + `AppTheme.build` |
 
 ---
 

@@ -686,6 +686,54 @@ abstract class AppLocalizations {
   /// **'الرصيد الإجمالي ({code})'**
   String dashboardTotalBalance(String code);
 
+  /// No description provided for @dashboardBalanceCardType.
+  ///
+  /// In ar, this message translates to:
+  /// **'محفظة رقمية'**
+  String get dashboardBalanceCardType;
+
+  /// No description provided for @dashboardBalanceCardHolder.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحامل'**
+  String get dashboardBalanceCardHolder;
+
+  /// No description provided for @dashboardBalanceCardExpDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الصلاحية'**
+  String get dashboardBalanceCardExpDate;
+
+  /// No description provided for @dashboardCardMenuTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'خيارات البطاقة'**
+  String get dashboardCardMenuTitle;
+
+  /// No description provided for @dashboardCardMenuViewWallets.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض المحافظ'**
+  String get dashboardCardMenuViewWallets;
+
+  /// No description provided for @dashboardCardMenuAddTransaction.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة معاملة'**
+  String get dashboardCardMenuAddTransaction;
+
+  /// No description provided for @dashboardCardMenuTransfer.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحويل'**
+  String get dashboardCardMenuTransfer;
+
+  /// No description provided for @dashboardCardMenuViewStats.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإحصائيات'**
+  String get dashboardCardMenuViewStats;
+
   /// No description provided for @dashboardApproxBase.
   ///
   /// In ar, this message translates to:
@@ -2054,6 +2102,42 @@ abstract class AppLocalizations {
   /// **'تلقائي'**
   String get settingsThemeSystem;
 
+  /// No description provided for @settingsColorPalette.
+  ///
+  /// In ar, this message translates to:
+  /// **'لوحة الألوان'**
+  String get settingsColorPalette;
+
+  /// No description provided for @paletteOriginal.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأصلي'**
+  String get paletteOriginal;
+
+  /// No description provided for @paletteDeepSea.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعماق البحر'**
+  String get paletteDeepSea;
+
+  /// No description provided for @paletteGothicGlam.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجلامور القوطي'**
+  String get paletteGothicGlam;
+
+  /// No description provided for @palettePurpleHaze.
+  ///
+  /// In ar, this message translates to:
+  /// **'الضباب البنفسجي'**
+  String get palettePurpleHaze;
+
+  /// No description provided for @paletteTurquoiseHarmony.
+  ///
+  /// In ar, this message translates to:
+  /// **'الانسجام الفيروزي'**
+  String get paletteTurquoiseHarmony;
+
   /// No description provided for @settingsAmountFormat.
   ///
   /// In ar, this message translates to:
@@ -2935,6 +3019,66 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'اختر اللغة'**
   String get profileSelectLanguage;
+
+  /// No description provided for @quickActionAddTransaction.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة'**
+  String get quickActionAddTransaction;
+
+  /// No description provided for @quickActionTransfer.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحويل'**
+  String get quickActionTransfer;
+
+  /// No description provided for @quickActionViewAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكل'**
+  String get quickActionViewAll;
+
+  /// No description provided for @statusOffline.
+  ///
+  /// In ar, this message translates to:
+  /// **'غير متصل'**
+  String get statusOffline;
+
+  /// No description provided for @statusOfflineData.
+  ///
+  /// In ar, this message translates to:
+  /// **'بياناتك محفوظة على جهازك'**
+  String get statusOfflineData;
+
+  /// No description provided for @transactionConfirmTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد العملية'**
+  String get transactionConfirmTitle;
+
+  /// No description provided for @transactionConfirmSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'راجع التفاصيل قبل الحفظ'**
+  String get transactionConfirmSubtitle;
+
+  /// No description provided for @transactionConfirmSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ'**
+  String get transactionConfirmSave;
+
+  /// No description provided for @goalAchievedTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أحسنت!'**
+  String get goalAchievedTitle;
+
+  /// No description provided for @goalAchievedSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لقد حققت هدفك المالي'**
+  String get goalAchievedSubtitle;
 }
 
 class _AppLocalizationsDelegate

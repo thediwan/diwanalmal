@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
+import '../../../core/charts/models/chart_series.dart';
+import '../../../core/charts/widgets/app_bar_chart.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
-import '../../../core/helpers/currency_formatter.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_theme_colors.dart';
+import '../../../core/widgets/clay_card.dart';
 import '../models/dashboard_models.dart';
 
-/// Expense analysis: vertical bar chart with daily / weekly toggle.
+/// Expense analysis section — daily / weekly bar chart with period toggle.
+///
+/// Section header and [_PeriodToggle] are retained from the original design.
+/// The custom bar rendering is replaced by [AppBarChart] (backed by fl_chart),
+/// wrapped in a [ClayCard] for consistent Claymorphism styling.
 class DashboardExpenseChart extends StatefulWidget {
   const DashboardExpenseChart({
     super.key,
@@ -32,15 +38,22 @@ class _DashboardExpenseChartState extends State<DashboardExpenseChart> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.appColors;
-    final points = _isDaily ? widget.dailyPoints : widget.weeklyPoints;
+    final rawPoints = _isDaily ? widget.dailyPoints : widget.weeklyPoints;
     final periodLabel =
         _isDaily ? l10n.dashboardLast7Days : l10n.dashboardLast4Weeks;
+
+    // Convert DashboardChartPoint list to tagged ChartSeriesPoint list.
+    final seriesPoints = ChartSeriesPoint.fromValues(
+      labels: rawPoints.map((p) => p.label).toList(),
+      values: rawPoints.map((p) => p.amount).toList(),
+    );
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Section header
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -77,297 +90,24 @@ class _DashboardExpenseChartState extends State<DashboardExpenseChart> {
             ],
           ),
           const SizedBox(height: 16),
-          _ExpenseBarChart(
-            points: points,
-            currencyCode: widget.currencyCode,
-            colors: colors,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ExpenseBarChart extends StatelessWidget {
-  const _ExpenseBarChart({
-    required this.points,
-    required this.currencyCode,
-    required this.colors,
-  });
-
-  final List<DashboardChartPoint> points;
-  final String currencyCode;
-  final AppThemeColors colors;
-
-  @override
-  Widget build(BuildContext context) {
-    if (points.isEmpty) {
-      return SizedBox(
-        height: 200,
-        child: Center(
-          child: Text(
-            '—',
-            style: AppTextStyles.captionOnSurface(colors),
-          ),
-        ),
-      );
-    }
-
-    final amounts = points.map((p) => p.amount).toList();
-    final positiveAmounts = amounts.where((a) => a > 0).toList();
-    final maxAmount = amounts.reduce((a, b) => a > b ? a : b);
-    final minAmount = positiveAmounts.isEmpty
-        ? 0.0
-        : positiveAmounts.reduce((a, b) => a < b ? a : b);
-    final maxIndex = amounts.indexOf(maxAmount);
-    final minIndex = positiveAmounts.isEmpty
-        ? -1
-        : amounts.indexOf(minAmount);
-    final scaleMax = maxAmount <= 0 ? 1.0 : maxAmount;
-    final scaleTicks = _buildScaleTicks(minAmount, scaleMax);
-
-    double normalizeAmount(double amount) {
-      if (scaleMax <= 0 || amount <= 0) return 0;
-      return (amount / scaleMax).clamp(0.0, 1.0);
-    }
-
-    return SizedBox(
-      height: 248,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            width: 72,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                const bottomLabelReserve = 36.0;
-                const topPadding = 8.0;
-                final plotHeight =
-                    constraints.maxHeight - bottomLabelReserve - topPadding;
-
-                return Padding(
-                  padding: const EdgeInsets.only(top: topPadding, bottom: bottomLabelReserve),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      for (final tick in scaleTicks)
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          top: _tickTopForAmount(
-                            amount: tick,
-                            scaleMax: scaleMax,
-                            plotHeight: plotHeight,
-                          ),
-                          child: Transform.translate(
-                            offset: const Offset(0, -8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  CurrencyFormatter.formatCodeFirst(
-                                    tick,
-                                    currencyCode,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyles.captionOnSurface(colors)
-                                      .copyWith(
-                                    fontSize: 10,
-                                    fontWeight: tick == scaleMax
-                                        ? FontWeight.w800
-                                        : tick == minAmount && tick > 0
-                                            ? FontWeight.w700
-                                            : tick == 0
-                                                ? FontWeight.w600
-                                                : FontWeight.w500,
-                                    color: tick == scaleMax
-                                        ? AppColors.expense
-                                        : tick == minAmount && tick > 0
-                                            ? colors.textSecondary
-                                            : colors.textMuted,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Stack(
-              children: [
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  top: 8,
-                  bottom: 36,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Stack(
-                        children: [
-                          for (final tick in scaleTicks)
-                            Positioned(
-                              left: 0,
-                              right: 0,
-                              top: _tickTopForAmount(
-                                amount: tick,
-                                scaleMax: scaleMax,
-                                plotHeight: constraints.maxHeight,
-                              ),
-                              child: Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: colors.divider.withValues(
-                                  alpha: tick == scaleMax ||
-                                          tick == 0 ||
-                                          (tick == minAmount && tick > 0)
-                                      ? 0.55
-                                      : 0.28,
-                                ),
-                              ),
-                            ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (var i = 0; i < points.length; i++)
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 8,
-                                  bottom: 4,
-                                ),
-                                child: _ChartBarSlot(
-                                  amount: points[i].amount,
-                                  normalizedHeight: normalizeAmount(
-                                    points[i].amount,
-                                  ),
-                                  isMax: i == maxIndex && points[i].amount > 0,
-                                  isMin: i == minIndex && minIndex >= 0,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              points[i].label,
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTextStyles.captionOnSurface(colors)
-                                  .copyWith(
-                                fontSize: 10,
-                                fontWeight: i == maxIndex || i == minIndex
-                                    ? FontWeight.w800
-                                    : FontWeight.w500,
-                                color: i == maxIndex
-                                    ? AppColors.expense
-                                    : i == minIndex
-                                        ? colors.textSecondary
-                                        : colors.textMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ],
+          // Chart wrapped in clay card for consistent surface language
+          ClayCard(
+            elevation: ClayElevation.standard,
+            padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
+            child: AppBarChart(
+              points: seriesPoints,
+              currencyCode: widget.currencyCode,
             ),
           ),
         ],
       ),
     );
   }
-
-  /// Y-axis ticks: starts at 0, first step is [minPositive], up to [max].
-  static List<double> _buildScaleTicks(double minPositive, double max) {
-    if (max <= 0) return [0];
-    if (minPositive <= 0 || minPositive >= max) {
-      return [0, max];
-    }
-
-    final mid = minPositive + (max - minPositive) / 2;
-    return [0, minPositive, mid, max];
-  }
-
-  /// Maps an amount to a vertical offset within the plot (0 = top/max).
-  static double _tickTopForAmount({
-    required double amount,
-    required double scaleMax,
-    required double plotHeight,
-  }) {
-    if (plotHeight <= 0 || scaleMax <= 0) return 0;
-    final ratio = (amount / scaleMax).clamp(0.0, 1.0);
-    return plotHeight * (1 - ratio);
-  }
 }
 
-/// Single bar column — shares the same [Expanded] slot as its date label below.
-class _ChartBarSlot extends StatelessWidget {
-  const _ChartBarSlot({
-    required this.amount,
-    required this.normalizedHeight,
-    required this.isMax,
-    required this.isMin,
-  });
-
-  final double amount;
-  final double normalizedHeight;
-  final bool isMax;
-  final bool isMin;
-
-  @override
-  Widget build(BuildContext context) {
-    final baseColor = isMax
-        ? AppColors.expense
-        : isMin
-            ? AppColors.dashboardPrimary.withValues(alpha: 0.85)
-            : AppColors.dashboardPrimary.withValues(alpha: 0.45);
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final barWidth = constraints.maxWidth * 0.55;
-        final barHeight = constraints.maxHeight * normalizedHeight;
-
-        return Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            width: barWidth,
-            height: barHeight,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [
-                  baseColor.withValues(alpha: 0.55),
-                  baseColor,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(6),
-              border: amount > 0 && barHeight >= 4
-                  ? Border.all(color: baseColor.withValues(alpha: 0.2))
-                  : null,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
+// ---------------------------------------------------------------------------
+// Period toggle — retained unchanged from original implementation
+// ---------------------------------------------------------------------------
 
 class _PeriodToggle extends StatelessWidget {
   const _PeriodToggle({
@@ -391,7 +131,7 @@ class _PeriodToggle extends StatelessWidget {
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: colors.surfaceVariant,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.chip),
       ),
       child: Row(
         children: [
@@ -436,10 +176,10 @@ class _ToggleChip extends StatelessWidget {
       color: selected ? colors.surface : Colors.transparent,
       elevation: selected ? 1 : 0,
       shadowColor: Colors.black26,
-      borderRadius: BorderRadius.circular(999),
+      borderRadius: BorderRadius.circular(AppRadius.chip),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.chip),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 7),
           child: Text(

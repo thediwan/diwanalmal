@@ -464,9 +464,9 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
               decoration: AppFormFields.decoration(
                 context,
                 hintText: l10n.goalFormNameHint,
-                suffixIcon: const Icon(
+                suffixIcon: Icon(
                   Icons.flag_outlined,
-                  color: AppColors.dashboardPrimary,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 20,
                 ),
               ),
@@ -486,9 +486,9 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
               selectedCurrencyId: _selectedCurrencyId,
               onCurrencyChanged: (id) => setState(() => _selectedCurrencyId = id),
               validator: _validateRequiredAmount,
-              suffixIcon: const Icon(
+              suffixIcon: Icon(
                 Icons.payments_outlined,
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
                 size: 20,
               ),
             ),
@@ -501,9 +501,9 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
             InputDecorator(
               decoration: AppFormFields.decoration(
                 context,
-                suffixIcon: const Icon(
+                suffixIcon: Icon(
                   Icons.savings_outlined,
-                  color: AppColors.dashboardPrimary,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 20,
                 ),
               ),
@@ -524,9 +524,9 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
               child: InputDecorator(
                 decoration: AppFormFields.decoration(
                   context,
-                  suffixIcon: const Icon(
+                  suffixIcon: Icon(
                     Icons.calendar_month_outlined,
-                    color: AppColors.dashboardPrimary,
+                    color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
                 ),
@@ -585,7 +585,7 @@ class _GoalEditScreenState extends State<GoalEditScreen> {
       child: FilledButton(
         onPressed: _isSaving ? null : _save,
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.dashboardPrimary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: colors.onPrimary,
           minimumSize: const Size.fromHeight(54),
           shape: RoundedRectangleBorder(
@@ -714,7 +714,7 @@ class _EditTopBar extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: AppTextStyles.headingSmall.copyWith(
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w800,
                 fontSize: 20,
               ),
@@ -754,9 +754,9 @@ class _GoalHeroLogo extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       child: BrandLogoImage(
         fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const Icon(
+        errorBuilder: (_, __, ___) => Icon(
           Icons.account_balance,
-          color: AppColors.dashboardPrimary,
+          color: Theme.of(context).colorScheme.primary,
           size: 32,
         ),
       ),

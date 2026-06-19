@@ -56,7 +56,7 @@ class TransactionTypeToggle extends StatelessWidget {
             _SegmentButton(
               label: transferLabel,
               selected: selected == TransactionEntryType.currencyTransfer,
-              selectedColor: AppColors.dashboardPrimary,
+              selectedColor: Theme.of(context).colorScheme.primary,
               onTap: () => onChanged(TransactionEntryType.currencyTransfer),
             ),
             _SegmentButton(

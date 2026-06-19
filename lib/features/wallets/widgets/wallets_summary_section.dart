@@ -36,7 +36,7 @@ class WalletsSummarySection extends StatelessWidget {
             r'$' '$total',
             style: AppTextStyles.headingMedium.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppColors.dashboardPrimary,
+              color: Theme.of(context).colorScheme.primary,
               fontSize: 32,
             ),
           ),
@@ -56,9 +56,9 @@ class WalletsSummarySection extends StatelessWidget {
                 child: _MetricCard(
                   label: l10n.walletsWalletCount,
                   value: l10n.walletsWalletCountValue(summary.walletCount),
-                  valueColor: AppColors.dashboardPrimary,
+                  valueColor: Theme.of(context).colorScheme.primary,
                   backgroundColor:
-                      AppColors.dashboardPrimary.withValues(alpha: 0.1),
+                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 ),
               ),
             ],

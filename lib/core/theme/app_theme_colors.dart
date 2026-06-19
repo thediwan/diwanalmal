@@ -8,9 +8,11 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   const AppThemeColors({
     required this.scaffoldBackground,
     required this.surface,
+    required this.surfaceElevated,
     required this.surfaceVariant,
     required this.cardBorder,
     required this.cardShadow,
+    required this.cardShadowSky,
     required this.divider,
     required this.textPrimary,
     required this.textSecondary,
@@ -31,9 +33,15 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
 
   final Color scaffoldBackground;
   final Color surface;
+
+  /// Slightly tinted elevated surface for clay cards.
+  final Color surfaceElevated;
   final Color surfaceVariant;
   final Color cardBorder;
   final Color cardShadow;
+
+  /// Sky-tinted ambient shadow color for clay cards.
+  final Color cardShadowSky;
   final Color divider;
   final Color textPrimary;
   final Color textSecondary;
@@ -54,15 +62,17 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   static const AppThemeColors light = AppThemeColors(
     scaffoldBackground: AppColors.backgroundLight,
     surface: AppColors.surfaceLight,
+    surfaceElevated: AppColors.surfaceElevatedLight,
     surfaceVariant: AppColors.surfaceVariantLight,
     cardBorder: AppColors.borderLight,
     cardShadow: AppColors.shadowLight,
+    cardShadowSky: AppColors.shadowSkyLight,
     divider: AppColors.dividerLight,
     textPrimary: AppColors.textPrimaryLight,
     textSecondary: AppColors.textSecondaryLight,
     textMuted: AppColors.textMutedLight,
     inputText: AppColors.inputTextLight,
-    inputHint: AppColors.textSecondaryLight,
+    inputHint: AppColors.textMutedLight,
     inputBorder: AppColors.borderLight,
     inputFill: AppColors.inputFillLight,
     authGradientTop: AppColors.authGradientTopLight,
@@ -78,15 +88,17 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   static const AppThemeColors dark = AppThemeColors(
     scaffoldBackground: AppColors.backgroundDark,
     surface: AppColors.surfaceDark,
+    surfaceElevated: AppColors.surfaceElevatedDark,
     surfaceVariant: AppColors.surfaceVariantDark,
     cardBorder: AppColors.borderDark,
     cardShadow: AppColors.shadowDark,
+    cardShadowSky: AppColors.shadowSkyDark,
     divider: AppColors.dividerDark,
     textPrimary: AppColors.textPrimaryDark,
     textSecondary: AppColors.textSecondaryDark,
     textMuted: AppColors.textMutedDark,
     inputText: AppColors.inputTextDark,
-    inputHint: AppColors.textSecondaryDark,
+    inputHint: AppColors.textMutedDark,
     inputBorder: AppColors.borderDark,
     inputFill: AppColors.inputFillDark,
     authGradientTop: AppColors.authGradientTopDark,
@@ -103,9 +115,11 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   AppThemeColors copyWith({
     Color? scaffoldBackground,
     Color? surface,
+    Color? surfaceElevated,
     Color? surfaceVariant,
     Color? cardBorder,
     Color? cardShadow,
+    Color? cardShadowSky,
     Color? divider,
     Color? textPrimary,
     Color? textSecondary,
@@ -126,9 +140,11 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     return AppThemeColors(
       scaffoldBackground: scaffoldBackground ?? this.scaffoldBackground,
       surface: surface ?? this.surface,
+      surfaceElevated: surfaceElevated ?? this.surfaceElevated,
       surfaceVariant: surfaceVariant ?? this.surfaceVariant,
       cardBorder: cardBorder ?? this.cardBorder,
       cardShadow: cardShadow ?? this.cardShadow,
+      cardShadowSky: cardShadowSky ?? this.cardShadowSky,
       divider: divider ?? this.divider,
       textPrimary: textPrimary ?? this.textPrimary,
       textSecondary: textSecondary ?? this.textSecondary,
@@ -155,9 +171,11 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       scaffoldBackground:
           Color.lerp(scaffoldBackground, other.scaffoldBackground, t)!,
       surface: Color.lerp(surface, other.surface, t)!,
+      surfaceElevated: Color.lerp(surfaceElevated, other.surfaceElevated, t)!,
       surfaceVariant: Color.lerp(surfaceVariant, other.surfaceVariant, t)!,
       cardBorder: Color.lerp(cardBorder, other.cardBorder, t)!,
       cardShadow: Color.lerp(cardShadow, other.cardShadow, t)!,
+      cardShadowSky: Color.lerp(cardShadowSky, other.cardShadowSky, t)!,
       divider: Color.lerp(divider, other.divider, t)!,
       textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
       textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,

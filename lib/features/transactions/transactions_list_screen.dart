@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/constants/app_colors.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/theme/app_form_fields.dart';
@@ -362,7 +361,7 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
               ListTile(
                 title: Text(l10n.transactionsListAllWallets),
                 trailing: _selectedWalletId == null
-                    ? const Icon(Icons.check, color: AppColors.dashboardPrimary)
+                    ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
                     : null,
                 onTap: () => Navigator.pop(
                   context,
@@ -373,9 +372,9 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
                 ListTile(
                   title: Text(wallet.name),
                   trailing: _selectedWalletId == wallet.id
-                      ? const Icon(
+                      ? Icon(
                           Icons.check,
-                          color: AppColors.dashboardPrimary,
+                          color: Theme.of(context).colorScheme.primary,
                         )
                       : null,
                   onTap: () => Navigator.pop(
@@ -501,7 +500,7 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
               l10n.transactionsListTitle,
               style: AppTextStyles.headingSmall.copyWith(
                 fontWeight: FontWeight.w800,
-                color: AppColors.dashboardPrimary,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             centerTitle: true,
@@ -509,15 +508,15 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
               IconButton(
                 icon: Icon(
                   _searchVisible ? Icons.close : CupertinoIcons.search,
-                  color: AppColors.dashboardPrimary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 onPressed: _toggleSearch,
               ),
               if (wide)
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.add,
-                    color: AppColors.dashboardPrimary,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: _openAddTransaction,
                   tooltip: l10n.transactionsListAdd,
@@ -527,7 +526,7 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
           floatingActionButton: showFab
               ? FloatingActionButton(
                   onPressed: _openAddTransaction,
-                  backgroundColor: AppColors.dashboardPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: colors.onPrimary,
                   child: const Icon(Icons.add),
                 )
@@ -855,8 +854,8 @@ class _TabChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: selected
-          ? AppColors.dashboardPrimary
-          : AppColors.dashboardPrimary.withValues(alpha: 0.08),
+          ? Theme.of(context).colorScheme.primary
+          : Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,
@@ -867,7 +866,7 @@ class _TabChip extends StatelessWidget {
             label,
             style: AppTextStyles.bodySmall.copyWith(
               fontWeight: FontWeight.w700,
-              color: selected ? Colors.white : AppColors.dashboardPrimary,
+              color: selected ? Colors.white : Theme.of(context).colorScheme.primary,
             ),
           ),
         ),
@@ -941,7 +940,7 @@ class _FilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final bg = selected ? colors.accentSurface : colors.inputFill;
-    final fg = selected ? AppColors.dashboardPrimary : colors.textSecondary;
+    final fg = selected ? Theme.of(context).colorScheme.primary : colors.textSecondary;
 
     return Material(
       color: bg,

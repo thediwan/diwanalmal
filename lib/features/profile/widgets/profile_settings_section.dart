@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/clay_card.dart';
 
-/// Section title + rounded card container for profile settings rows.
+/// Section title + clay card container for profile settings rows.
 class ProfileSettingsSection extends StatelessWidget {
   const ProfileSettingsSection({
     super.key,
@@ -27,25 +27,15 @@ class ProfileSettingsSection extends StatelessWidget {
           child: Text(
             title,
             style: AppTextStyles.label.copyWith(
-              color: AppColors.dashboardPrimary,
+              color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.w800,
               fontSize: 15,
             ),
           ),
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.cardBorder),
-            boxShadow: [
-              BoxShadow(
-                color: colors.cardShadow,
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
+        ClayCard(
+          elevation: ClayElevation.standard,
+          padding: EdgeInsets.zero,
           child: Column(
             children: _withDividers(children, colors.divider),
           ),

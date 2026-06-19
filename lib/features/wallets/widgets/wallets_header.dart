@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
@@ -49,7 +48,7 @@ class WalletsHeader extends StatelessWidget {
                 errorBuilder: (_, __, ___) => Text(
                   AppConstants.appName,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.dashboardPrimary,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -113,7 +112,7 @@ class WalletsHeader extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onAddWallet,
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.dashboardPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: colors.onPrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
@@ -148,17 +147,17 @@ class _ProfileAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.dashboardPrimary.withValues(alpha: 0.12),
+      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
       shape: const CircleBorder(),
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
-        child: const SizedBox(
+        child: SizedBox(
           width: 40,
           height: 40,
           child: Icon(
             CupertinoIcons.person_crop_circle_fill,
-            color: AppColors.dashboardPrimary,
+            color: Theme.of(context).colorScheme.primary,
             size: 28,
           ),
         ),
@@ -187,7 +186,7 @@ class _CircleIconButton extends StatelessWidget {
         child: SizedBox(
           width: 40,
           height: 40,
-          child: Icon(icon, size: 22, color: AppColors.dashboardPrimary),
+          child: Icon(icon, size: 22, color: Theme.of(context).colorScheme.primary),
         ),
       ),
     );

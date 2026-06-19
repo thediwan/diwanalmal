@@ -58,14 +58,14 @@ TreasuryIconSpec treasuryIconSpecFor(String? style) {
         radius: 14,
       ),
     TreasuryIconStyles.cash => const TreasuryIconSpec(
-        background: AppColors.dashboardPrimary,
+        background: AppColors.primary,
         foreground: Colors.white,
         icon: Icons.account_balance_wallet_rounded,
         radius: 14,
       ),
     _ => const TreasuryIconSpec(
         background: Color(0xFFDBEAFE),
-        foreground: AppColors.dashboardPrimary,
+        foreground: AppColors.primary,
         icon: Icons.account_balance_wallet_rounded,
         radius: 14,
       ),

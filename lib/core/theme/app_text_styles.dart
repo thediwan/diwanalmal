@@ -6,6 +6,12 @@ import 'app_typography.dart';
 
 /// Semantic text styles — all sizes and families come from [AppTypography].
 abstract final class AppTextStyles {
+  /// Hero balance display — 40px Qomra bold.
+  static TextStyle get balanceDisplay => AppTypography.heading(
+        size: AppTypography.sizeBalanceDisplay,
+        fontWeight: FontWeight.w700,
+      );
+
   static TextStyle get headingLarge => AppTypography.heading(
         size: AppTypography.sizeHeadingLarge,
       );
@@ -34,6 +40,13 @@ abstract final class AppTextStyles {
   static TextStyle get label => AppTypography.body(
         size: AppTypography.sizeLabel,
         fontWeight: FontWeight.w500,
+      );
+
+  /// Currency codes, status chips, small caps.
+  static TextStyle get labelSmall => AppTypography.body(
+        size: AppTypography.sizeLabelSmall,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.4,
       );
 
   /// Small captions on light/dark surfaces.
