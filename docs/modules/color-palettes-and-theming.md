@@ -16,6 +16,8 @@
 
 Both are configured on **Settings → Appearance** (`/settings/appearance`).
 
+A third independent dimension — **font size** (Default / Large / Extra Large) — is also on the same screen. See [font-size-preferences.md](./font-size-preferences.md).
+
 The **Original** palette keeps the sky-blue light-mode identity and uses **neutral dark-grey** surfaces in dark mode (`#121212` scaffold, `#1E1E1E` cards) instead of the previous blue-navy cast.
 
 ---

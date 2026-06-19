@@ -2138,6 +2138,54 @@ abstract class AppLocalizations {
   /// **'الانسجام الفيروزي'**
   String get paletteTurquoiseHarmony;
 
+  /// No description provided for @settingsFontSize.
+  ///
+  /// In ar, this message translates to:
+  /// **'حجم الخط'**
+  String get settingsFontSize;
+
+  /// No description provided for @settingsFontSizeSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُطبَّق على النصوص في التطبيق بالكامل'**
+  String get settingsFontSizeSubtitle;
+
+  /// No description provided for @settingsFontSizeDefault.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتراضي'**
+  String get settingsFontSizeDefault;
+
+  /// No description provided for @settingsFontSizeLarge.
+  ///
+  /// In ar, this message translates to:
+  /// **'كبير'**
+  String get settingsFontSizeLarge;
+
+  /// No description provided for @settingsFontSizeExtraLarge.
+  ///
+  /// In ar, this message translates to:
+  /// **'كبير جداً'**
+  String get settingsFontSizeExtraLarge;
+
+  /// No description provided for @settingsFontSizePreviewHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'معاينة العنوان'**
+  String get settingsFontSizePreviewHeading;
+
+  /// No description provided for @settingsFontSizePreviewBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا نص تجريبي لمعاينة حجم الخط في الواجهة.'**
+  String get settingsFontSizePreviewBody;
+
+  /// No description provided for @settingsFontSizePreviewAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'١٢٬٣٤٥٫٦٧ ر.س'**
+  String get settingsFontSizePreviewAmount;
+
   /// No description provided for @settingsAmountFormat.
   ///
   /// In ar, this message translates to:

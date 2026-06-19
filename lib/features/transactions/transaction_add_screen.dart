@@ -1104,14 +1104,17 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            _amountInput.display,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.headingLarge.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 42,
-                              height: 1.1,
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              _amountInput.display,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.headingLarge.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 42,
+                                height: 1.1,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 14),

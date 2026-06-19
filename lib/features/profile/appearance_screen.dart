@@ -8,6 +8,7 @@ import '../../core/theme/palettes/app_color_palette.dart';
 import '../../core/theme/palettes/app_color_palette_registry.dart';
 import '../../core/widgets/clay_card.dart';
 import '../../models/amount_format_style.dart';
+import '../../models/font_size_preference.dart';
 import '../../providers/settings_provider.dart';
 
 /// Theme, palette, amount format, and advanced appearance options.
@@ -42,6 +43,30 @@ class AppearanceScreen extends StatelessWidget {
           _PalettePickerSection(
             currentId: settings.colorPaletteId,
             onChanged: settings.setColorPalette,
+          ),
+          const SizedBox(height: 28),
+          // --- Font size ---
+          _SectionLabel(label: l10n.settingsFontSize),
+          const SizedBox(height: 4),
+          Text(
+            l10n.settingsFontSizeSubtitle,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: colors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ClayFontSizeToggle(
+            current: settings.fontSizePreference,
+            onChanged: settings.setFontSizePreference,
+            defaultLabel: l10n.settingsFontSizeDefault,
+            largeLabel: l10n.settingsFontSizeLarge,
+            extraLargeLabel: l10n.settingsFontSizeExtraLarge,
+          ),
+          const SizedBox(height: 12),
+          _FontSizePreviewCard(
+            amountLabel: l10n.settingsFontSizePreviewAmount,
+            bodyLabel: l10n.settingsFontSizePreviewBody,
+            headingLabel: l10n.settingsFontSizePreviewHeading,
           ),
           const SizedBox(height: 28),
           // --- Amount format ---
@@ -317,6 +342,172 @@ class _ThemeChip extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Font size toggle
+// ---------------------------------------------------------------------------
+
+class _ClayFontSizeToggle extends StatelessWidget {
+  const _ClayFontSizeToggle({
+    required this.current,
+    required this.onChanged,
+    required this.defaultLabel,
+    required this.largeLabel,
+    required this.extraLargeLabel,
+  });
+
+  final FontSizePreference current;
+  final ValueChanged<FontSizePreference> onChanged;
+  final String defaultLabel;
+  final String largeLabel;
+  final String extraLargeLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        _FontSizeChip(
+          label: defaultLabel,
+          icon: Icons.text_fields_rounded,
+          value: FontSizePreference.normal,
+          current: current,
+          onTap: () => onChanged(FontSizePreference.normal),
+        ),
+        const SizedBox(width: 10),
+        _FontSizeChip(
+          label: largeLabel,
+          icon: Icons.format_size_rounded,
+          value: FontSizePreference.large,
+          current: current,
+          onTap: () => onChanged(FontSizePreference.large),
+        ),
+        const SizedBox(width: 10),
+        _FontSizeChip(
+          label: extraLargeLabel,
+          icon: Icons.format_size,
+          value: FontSizePreference.extraLarge,
+          current: current,
+          onTap: () => onChanged(FontSizePreference.extraLarge),
+        ),
+      ],
+    );
+  }
+}
+
+class _FontSizeChip extends StatelessWidget {
+  const _FontSizeChip({
+    required this.label,
+    required this.icon,
+    required this.value,
+    required this.current,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final FontSizePreference value;
+  final FontSizePreference current;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelected = value == current;
+    final primary = Theme.of(context).colorScheme.primary;
+    final tertiary = Theme.of(context).colorScheme.tertiary;
+    final colors = context.appColors;
+
+    return Expanded(
+      child: ClayCard(
+        elevation: isSelected ? ClayElevation.hero : ClayElevation.low,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        gradient: isSelected
+            ? LinearGradient(
+                colors: [primary, tertiary],
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+              )
+            : null,
+        onTap: onTap,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 26,
+              color: isSelected ? Colors.white : primary,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.labelSmall.copyWith(
+                color: isSelected ? Colors.white : colors.textSecondary,
+                fontWeight:
+                    isSelected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FontSizePreviewCard extends StatelessWidget {
+  const _FontSizePreviewCard({
+    required this.headingLabel,
+    required this.bodyLabel,
+    required this.amountLabel,
+  });
+
+  final String headingLabel;
+  final String bodyLabel;
+  final String amountLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return ClayCard(
+      elevation: ClayElevation.standard,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            headingLabel,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.headingSmall.copyWith(
+              color: colors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            bodyLabel,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: colors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              amountLabel,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.balanceDisplay.copyWith(
+                color: primary,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

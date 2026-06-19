@@ -137,10 +137,13 @@ class _ClayKeyState extends State<_ClayKey>
                     size: 22,
                     color: colors.textSecondary,
                   )
-                : Text(
-                    widget.label,
-                    style: AppTextStyles.headingMedium.copyWith(
-                      color: colors.textPrimary,
+                : FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      widget.label,
+                      style: AppTextStyles.headingMedium.copyWith(
+                        color: colors.textPrimary,
+                      ),
                     ),
                   ),
           ),

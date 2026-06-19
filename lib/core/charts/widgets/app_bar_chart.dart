@@ -58,6 +58,7 @@ class AppBarChart extends StatelessWidget {
     final duration = AppChartTheme.animationDuration(context);
 
     final data = BarChartMapper.build(
+      context: context,
       points: points,
       currencyCode: currencyCode,
       isRtl: isRtl,

@@ -5,6 +5,7 @@ import '../core/helpers/currency_formatter.dart';
 import '../core/theme/palettes/app_color_palette.dart';
 import '../models/amount_format_style.dart';
 import '../models/app_settings.dart';
+import '../models/font_size_preference.dart';
 import '../services/auth_service.dart';
 import '../services/biometric_service.dart';
 import '../services/hive_service.dart';
@@ -66,6 +67,9 @@ class SettingsProvider extends ChangeNotifier {
   /// Thousands / decimal separators for monetary amounts.
   AmountFormatStyle get amountFormatStyle => _settings.amountFormatStyle;
 
+  /// App-wide font size preset (Default / Large / Extra Large).
+  FontSizePreference get fontSizePreference => _settings.fontSizePreference;
+
   /// Best available code for the security screen (memory, then Hive).
   String get displaySecurityCode =>
       _displaySecurityCode.isNotEmpty ? _displaySecurityCode : securityCode;
@@ -124,6 +128,14 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setAmountFormatStyle(AmountFormatStyle style) async {
     _settings = _settings.copyWith(amountFormatStyleIndex: style.storageIndex);
     CurrencyFormatter.configureFromStyle(style);
+    await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> setFontSizePreference(FontSizePreference preference) async {
+    _settings = _settings.copyWith(
+      fontSizePreferenceIndex: preference.storageIndex,
+    );
     await _hiveService.saveSettings(_settings);
     notifyListeners();
   }
