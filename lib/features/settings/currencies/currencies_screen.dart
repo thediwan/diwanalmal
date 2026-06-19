@@ -98,8 +98,13 @@ class _CurrencyTile extends StatelessWidget {
         subtitle: currency.isBase
             ? Text(l10n.currencyExchangeRateBase(currency.code))
             : Text(
-                '${currency.code} — 1 ${currency.code} = '
-                '${CurrencyFormatter.formatWithCode(currency.rateToBase, base?.code ?? '')}',
+                l10n.currencyExchangeRateLine(
+                  base?.code ?? '',
+                  CurrencyFormatter.formatWithCode(
+                    CurrencyFormatter.displayRateFromStored(currency.rateToBase),
+                    currency.code,
+                  ),
+                ),
               ),
         trailing: currency.isBase
             ? null

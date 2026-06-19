@@ -54,7 +54,10 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
     _codeController.text = currency.code;
     _nameController.text = currency.name;
     _symbolController.text = currency.symbol;
-    _rateController.text = currency.rateToBase.toString();
+    _rateController.text =
+        CurrencyFormatter.formatExchangeRate(
+          CurrencyFormatter.displayRateFromStored(currency.rateToBase),
+        );
     setState(() {});
   }
 
@@ -76,9 +79,10 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
   }
 
   double? get _previewBaseAmount {
-    final rate = double.tryParse(_rateController.text);
-    if (rate == null) return null;
-    return CurrencyFormatter.toBaseAmount(100, rate);
+    final displayRate = double.tryParse(_rateController.text);
+    if (displayRate == null || displayRate <= 0) return null;
+    final rateToBase = CurrencyFormatter.storedRateFromDisplay(displayRate);
+    return CurrencyFormatter.toBaseAmount(100, rateToBase);
   }
 
   Future<void> _save() async {
@@ -89,14 +93,15 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
 
     try {
       final provider = context.read<CurrencyProvider>();
-      final rate = double.parse(_rateController.text);
+      final displayRate = double.parse(_rateController.text);
+      final rateToBase = CurrencyFormatter.storedRateFromDisplay(displayRate);
 
       if (widget.isEditing && _existingCurrency != null) {
         await provider.updateCurrency(
           _existingCurrency!.copyWith(
             name: _nameController.text.trim(),
             symbol: _symbolController.text.trim(),
-            rateToBase: rate,
+            rateToBase: rateToBase,
           ),
         );
       } else {
@@ -104,7 +109,7 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
           code: _codeController.text.trim(),
           name: _nameController.text.trim(),
           symbol: _symbolController.text.trim(),
-          rateToBase: rate,
+          rateToBase: rateToBase,
         );
       }
 
@@ -221,7 +226,7 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
                 labelText: l10n.currencyFormRateLabel(baseCode),
                 hintText: l10n.currencyFormRateHint,
               ).copyWith(
-                helperText: l10n.currencyFormRateHelper(codeDisplay, baseCode),
+                helperText: l10n.currencyFormRateHelper(baseCode, codeDisplay),
               ),
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
@@ -256,7 +261,9 @@ class _CurrencyFormScreenState extends State<CurrencyFormScreen> {
                             codeDisplay,
                             CurrencyFormatter.approximateBase(
                               100,
-                              double.parse(_rateController.text),
+                              CurrencyFormatter.storedRateFromDisplay(
+                                double.parse(_rateController.text),
+                              ),
                               baseCode,
                             ),
                           ),

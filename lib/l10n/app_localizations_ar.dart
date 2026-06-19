@@ -1245,6 +1245,11 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String currencyExchangeRateLine(String baseCode, String rate) {
+    return '1 $baseCode = $rate';
+  }
+
+  @override
   String get currencyFormEditTitle => 'تعديل العملة';
 
   @override
@@ -1283,11 +1288,11 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get currencyFormRateHint => '0.025';
+  String get currencyFormRateHint => '15000';
 
   @override
-  String currencyFormRateHelper(String code, String baseCode) {
-    return '1 $code = X $baseCode';
+  String currencyFormRateHelper(String baseCode, String code) {
+    return '1 $baseCode = X $code';
   }
 
   @override

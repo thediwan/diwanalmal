@@ -2402,6 +2402,12 @@ abstract class AppLocalizations {
   /// **'{code} — سعر الصرف: 1.0'**
   String currencyExchangeRateBase(String code);
 
+  /// No description provided for @currencyExchangeRateLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'1 {baseCode} = {rate}'**
+  String currencyExchangeRateLine(String baseCode, String rate);
+
   /// No description provided for @currencyFormEditTitle.
   ///
   /// In ar, this message translates to:
@@ -2477,14 +2483,14 @@ abstract class AppLocalizations {
   /// No description provided for @currencyFormRateHint.
   ///
   /// In ar, this message translates to:
-  /// **'0.025'**
+  /// **'15000'**
   String get currencyFormRateHint;
 
   /// No description provided for @currencyFormRateHelper.
   ///
   /// In ar, this message translates to:
-  /// **'1 {code} = X {baseCode}'**
-  String currencyFormRateHelper(String code, String baseCode);
+  /// **'1 {baseCode} = X {code}'**
+  String currencyFormRateHelper(String baseCode, String code);
 
   /// No description provided for @currencyFormRateRequired.
   ///

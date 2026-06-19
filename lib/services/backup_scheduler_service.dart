@@ -19,10 +19,7 @@ class BackupSchedulerService {
 
   /// Registers WorkManager callback (call once from [main]).
   static Future<void> register() async {
-    await Workmanager().initialize(
-      backupCallbackDispatcher,
-      isInDebugMode: false,
-    );
+    await Workmanager().initialize(backupCallbackDispatcher);
   }
 
   /// Schedules the next run from current Hive settings.

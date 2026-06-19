@@ -497,6 +497,13 @@
   "@currencyExchangeRateBase": {
     "placeholders": { "code": { "type": "String" } }
   },
+  "currencyExchangeRateLine": "1 {baseCode} = {rate}",
+  "@currencyExchangeRateLine": {
+    "placeholders": {
+      "baseCode": { "type": "String" },
+      "rate": { "type": "String" }
+    }
+  },
   "currencyFormEditTitle": "تعديل العملة",
   "currencyFormNewTitle": "عملة جديدة",
   "currencyFormPresetHint": "اختر من القائمة أو أدخل يدوياً",
@@ -512,12 +519,12 @@
   "@currencyFormRateLabel": {
     "placeholders": { "baseCode": { "type": "String" } }
   },
-  "currencyFormRateHint": "0.025",
-  "currencyFormRateHelper": "1 {code} = X {baseCode}",
+  "currencyFormRateHint": "15000",
+  "currencyFormRateHelper": "1 {baseCode} = X {code}",
   "@currencyFormRateHelper": {
     "placeholders": {
-      "code": { "type": "String" },
-      "baseCode": { "type": "String" }
+      "baseCode": { "type": "String" },
+      "code": { "type": "String" }
     }
   },
   "currencyFormRateRequired": "سعر الصرف مطلوب",

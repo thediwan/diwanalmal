@@ -43,6 +43,29 @@ abstract final class CurrencyFormatter {
     return amount * rateToBase;
   }
 
+  /// User-facing rate: `1 base = displayRate` units of the foreign currency.
+  static double displayRateFromStored(double rateToBase) {
+    if (rateToBase <= 0) return 0;
+    return 1 / rateToBase;
+  }
+
+  /// Stored multiplier used by transactions: foreign amount × [rateToBase] = base.
+  static double storedRateFromDisplay(double displayRate) {
+    if (displayRate <= 0) return 0;
+    return 1 / displayRate;
+  }
+
+  /// Formats exchange rates with up to 6 decimals, trimming trailing zeros.
+  static String formatExchangeRate(double rate) {
+    if (rate == rate.roundToDouble()) {
+      return rate.toStringAsFixed(0);
+    }
+    return rate
+        .toStringAsFixed(6)
+        .replaceAll(RegExp(r'0+$'), '')
+        .replaceAll(RegExp(r'\.$'), '');
+  }
+
   /// Shows approximate base currency equivalent before saving.
   static String approximateBase(
     double amount,
