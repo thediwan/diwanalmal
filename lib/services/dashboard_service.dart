@@ -31,15 +31,13 @@ class DashboardService {
 
     final baseCode = await _resolveBaseCurrencyCode(userId);
     final now = DateTime.now();
-    final income = await _dao.sumTransactionsBaseAmount(
+    final income = await _dao.sumMonthlyIncomeBase(
       userId: userId,
-      type: DatabaseConstants.txIncome,
       year: now.year,
       month: now.month,
     );
-    final expense = await _dao.sumTransactionsBaseAmount(
+    final expense = await _dao.sumMonthlyExpenseBase(
       userId: userId,
-      type: DatabaseConstants.txExpense,
       year: now.year,
       month: now.month,
     );

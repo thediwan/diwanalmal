@@ -130,7 +130,7 @@ class DebtService {
     return _db.financeDao.getDebtDetailByLedgerTransactionId(transactionId);
   }
 
-  /// Creates linked debt + transaction rows (no wallet balance impact yet).
+  /// Creates linked debt + transaction rows and updates wallet balance via ledger type.
   Future<CreateDebtEntryResult> create(CreateDebtEntryInput input) async {
     final userId = await _lazarus.getActiveUserId();
     if (userId == null) {

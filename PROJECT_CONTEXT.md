@@ -42,9 +42,15 @@ Reports store immutable KPI snapshots + JSON breakdowns. Surplus can be carried 
 - **Workmanager:** Single init via `BackgroundWorkmanagerRegistry.ensureInitialized()` in `main.dart`.
 - **Startup:** Backup/report scheduling and monthly report catch-up are non-fatal (logged, do not block launch).
 
+## Debt Ledger Balance Impact
+
+- **Wallet balance:** `FinanceDao.transactionWalletBalanceDelta` — `debtor` (−), `creditor` (+), settlements via `income`/`expense`.
+- **Monthly totals:** `sumMonthlyIncomeBase` includes creditor origination; `sumMonthlyExpenseBase` includes debtor origination.
+- **Outstanding:** `sumOutstandingDebtsBase` tracks unpaid receivable/payable amounts on `debts` table.
+
 ## Last Updated
 
-2026-06-20 — Database upgrade hardening: `DatabaseOpenGuard`, idempotent v14 migration, single Workmanager init, non-fatal startup tasks.
+2026-06-20 — Debtor/creditor ledger entries now affect wallet balances, monthly totals, and settlement flow consistently.
 2026-06-20 — Transactions list: full title display; notes preview limited to 2 words in list tile only.
 2026-06-20 — Transaction add screen: income category grid (income-only), expense overflow category picker (7+More), notes keyboard scroll fix.
 2026-06-20 — Transfer exchange rate unified with currency form (`ExchangeRateDisplay`); manual edits update stored rates.

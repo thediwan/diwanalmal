@@ -94,6 +94,23 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
     return row?.read(expr) ?? 0;
   }
 
+  /// Wallet balance delta for a transaction type (+ inflow, − outflow, 0 ignored).
+  static double transactionWalletBalanceDelta({
+    required String type,
+    required double amountInWalletCurrency,
+  }) {
+    switch (type) {
+      case DatabaseConstants.txIncome:
+      case DatabaseConstants.txCreditor:
+        return amountInWalletCurrency;
+      case DatabaseConstants.txExpense:
+      case DatabaseConstants.txDebtor:
+        return -amountInWalletCurrency;
+      default:
+        return 0;
+    }
+  }
+
   /// Outstanding debt in base currency minus partial payments.
   Future<double> sumOutstandingDebtsBase({
     required String userId,
@@ -314,31 +331,49 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
   }
 
   /// Monthly income total in base currency for a calendar month.
+  ///
+  /// Includes creditor (payable) origination as cash inflow.
   Future<double> sumMonthlyIncomeBase({
     required String userId,
     required int year,
     required int month,
-  }) {
-    return sumTransactionsBaseAmount(
+  }) async {
+    final income = await sumTransactionsBaseAmount(
       userId: userId,
-      type: 'income',
+      type: DatabaseConstants.txIncome,
       year: year,
       month: month,
     );
+    final creditor = await sumTransactionsBaseAmount(
+      userId: userId,
+      type: DatabaseConstants.txCreditor,
+      year: year,
+      month: month,
+    );
+    return income + creditor;
   }
 
   /// Monthly expense total in base currency for a calendar month.
+  ///
+  /// Includes debtor (receivable) origination as cash outflow.
   Future<double> sumMonthlyExpenseBase({
     required String userId,
     required int year,
     required int month,
-  }) {
-    return sumTransactionsBaseAmount(
+  }) async {
+    final expense = await sumTransactionsBaseAmount(
       userId: userId,
-      type: 'expense',
+      type: DatabaseConstants.txExpense,
       year: year,
       month: month,
     );
+    final debtor = await sumTransactionsBaseAmount(
+      userId: userId,
+      type: DatabaseConstants.txDebtor,
+      year: year,
+      month: month,
+    );
+    return expense + debtor;
   }
 
   /// Average salary income (base) from salary-category transactions.
@@ -1054,11 +1089,10 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
         txRate: tx.exchangeRate,
         walletCurrency: currency,
       );
-      if (tx.type == 'income') {
-        balance += inWallet;
-      } else if (tx.type == 'expense') {
-        balance -= inWallet;
-      }
+      balance += FinanceDao.transactionWalletBalanceDelta(
+        type: tx.type,
+        amountInWalletCurrency: inWallet,
+      );
     }
 
     final transfersOut = await (select(db.transfers)

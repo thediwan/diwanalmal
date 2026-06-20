@@ -604,7 +604,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionFormDebtLedgerHint =>
-      'Debt entries do not affect wallet balances until you pay or receive.';
+      'Debt entries affect the wallet balance immediately. Paying or receiving adjusts the balance by the settlement amount.';
 
   @override
   String get transactionFormDebtSaveSuccess => 'Debt entry saved successfully';

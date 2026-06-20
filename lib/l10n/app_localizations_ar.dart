@@ -603,7 +603,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get transactionFormDebtLedgerHint =>
-      'قيد الذمة لا يؤثر على رصيد المحفظة حتى الدفع أو التحصيل.';
+      'قيد الذمة يؤثر على رصيد المحفظة فوراً. السداد أو التحصيل يعدّل الرصيد حسب المبلغ المدفوع أو المستلم.';
 
   @override
   String get transactionFormDebtSaveSuccess => 'تم حفظ قيد الذمة بنجاح';

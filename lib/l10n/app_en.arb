@@ -239,7 +239,7 @@
   "transactionFormDueDate": "Due date",
   "transactionFormDueDateOptional": "Optional — tap to set",
   "transactionFormClearDueDate": "Clear due date",
-  "transactionFormDebtLedgerHint": "Debt entries do not affect wallet balances until you pay or receive.",
+  "transactionFormDebtLedgerHint": "Debt entries affect the wallet balance immediately. Paying or receiving adjusts the balance by the settlement amount.",
   "transactionFormDebtSaveSuccess": "Debt entry saved successfully",
   "transactionDebtTotal": "Total",
   "transactionDebtPaid": "Paid",

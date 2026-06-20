@@ -239,7 +239,7 @@
   "transactionFormDueDate": "تاريخ الاستحقاق",
   "transactionFormDueDateOptional": "اختياري — اضغط للتحديد",
   "transactionFormClearDueDate": "مسح تاريخ الاستحقاق",
-  "transactionFormDebtLedgerHint": "قيد الذمة لا يؤثر على رصيد المحفظة حتى الدفع أو التحصيل.",
+  "transactionFormDebtLedgerHint": "قيد الذمة يؤثر على رصيد المحفظة فوراً. السداد أو التحصيل يعدّل الرصيد حسب المبلغ المدفوع أو المستلم.",
   "transactionFormDebtSaveSuccess": "تم حفظ قيد الذمة بنجاح",
   "transactionDebtTotal": "الإجمالي",
   "transactionDebtPaid": "المدفوع",

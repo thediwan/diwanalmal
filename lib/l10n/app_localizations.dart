@@ -1213,7 +1213,7 @@ abstract class AppLocalizations {
   /// No description provided for @transactionFormDebtLedgerHint.
   ///
   /// In ar, this message translates to:
-  /// **'قيد الذمة لا يؤثر على رصيد المحفظة حتى الدفع أو التحصيل.'**
+  /// **'قيد الذمة يؤثر على رصيد المحفظة فوراً. السداد أو التحصيل يعدّل الرصيد حسب المبلغ المدفوع أو المستلم.'**
   String get transactionFormDebtLedgerHint;
 
   /// No description provided for @transactionFormDebtSaveSuccess.

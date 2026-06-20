@@ -54,15 +54,13 @@ class WalletBalanceService {
 
     final now = DateTime.now();
     final dao = _lazarus.database.financeDao;
-    final income = await dao.sumTransactionsBaseAmount(
+    final income = await dao.sumMonthlyIncomeBase(
       userId: userId,
-      type: 'income',
       year: now.year,
       month: now.month,
     );
-    final expense = await dao.sumTransactionsBaseAmount(
+    final expense = await dao.sumMonthlyExpenseBase(
       userId: userId,
-      type: 'expense',
       year: now.year,
       month: now.month,
     );
