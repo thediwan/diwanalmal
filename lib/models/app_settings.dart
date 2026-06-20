@@ -30,6 +30,7 @@ class AppSettings extends HiveObject {
     this.backupMinute = 0,
     this.backupEnabled = true,
     this.lastBackupAt,
+    this.backupDirectoryPath,
   })  : _transactionDeleteWindowHours = transactionDeleteWindowHours,
         _transactionEditWindowDays = transactionEditWindowDays,
         _amountFormatStyleIndex = amountFormatStyleIndex,
@@ -62,6 +63,9 @@ class AppSettings extends HiveObject {
 
   /// Timestamp of the last successful backup (local device time).
   final DateTime? lastBackupAt;
+
+  /// Custom folder for automatic backups; null → app default `backups/`.
+  final String? backupDirectoryPath;
 
   TimeOfDay get backupTime => TimeOfDay(hour: backupHour, minute: backupMinute);
 
@@ -112,6 +116,8 @@ class AppSettings extends HiveObject {
     bool? backupEnabled,
     DateTime? lastBackupAt,
     bool clearLastBackupAt = false,
+    String? backupDirectoryPath,
+    bool clearBackupDirectoryPath = false,
   }) {
     return AppSettings(
       isSetupComplete: isSetupComplete ?? this.isSetupComplete,
@@ -142,6 +148,9 @@ class AppSettings extends HiveObject {
       backupEnabled: backupEnabled ?? this.backupEnabled,
       lastBackupAt:
           clearLastBackupAt ? null : (lastBackupAt ?? this.lastBackupAt),
+      backupDirectoryPath: clearBackupDirectoryPath
+          ? null
+          : (backupDirectoryPath ?? this.backupDirectoryPath),
     );
   }
 
@@ -197,6 +206,7 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       backupMinute: _readOptionalInt(reader) ?? 0,
       backupEnabled: _readOptionalBool(reader, defaultValue: true),
       lastBackupAt: _readOptionalDateTime(reader),
+      backupDirectoryPath: _readOptionalString(reader),
     );
   }
 
@@ -250,6 +260,7 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeInt(obj.backupHour)
       ..writeInt(obj.backupMinute)
       ..writeBool(obj.backupEnabled)
-      ..writeString(obj.lastBackupAt?.toIso8601String() ?? '');
+      ..writeString(obj.lastBackupAt?.toIso8601String() ?? '')
+      ..writeString(obj.backupDirectoryPath ?? '');
   }
 }

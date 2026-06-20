@@ -1226,6 +1226,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get backupNotificationBody => 'تم إنشاء نسخة احتياطية بنجاح';
 
   @override
+  String get backupStoragePath => 'مسار التخزين';
+
+  @override
+  String get backupStoragePathDefault => 'المسار الافتراضي';
+
+  @override
+  String get backupStoragePathCustom => 'مسار مخصص';
+
+  @override
+  String get backupChangeLocation => 'تغيير المجلد';
+
+  @override
+  String get backupResetLocation => 'استخدام المسار الافتراضي';
+
+  @override
+  String get backupLocationUpdated => 'تم تحديث مسار النسخ الاحتياطي';
+
+  @override
+  String get backupLocationPickFailed => 'تعذر اختيار المجلد';
+
+  @override
   String get profileSectionData => 'البيانات والنسخ';
 
   @override

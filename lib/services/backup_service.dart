@@ -36,12 +36,16 @@ class BackupOperationResult {
 class BackupStatus {
   const BackupStatus({
     required this.archivePath,
+    required this.backupDirectory,
+    required this.isCustomLocation,
     required this.archiveExists,
     this.lastBackupAt,
     required this.isDue,
   });
 
   final String archivePath;
+  final String backupDirectory;
+  final bool isCustomLocation;
   final bool archiveExists;
   final DateTime? lastBackupAt;
   final bool isDue;
@@ -57,14 +61,51 @@ class BackupService {
   final HiveService _hiveService;
   final LazarusDatabase? _database;
 
+  /// Default automatic backup folder under app data.
+  static Future<String> defaultBackupDirectory() async {
+    final dir = await AppStoragePaths.ensureDataDirectory();
+    return p.join(dir, BackupConstants.backupsSubdir);
+  }
+
   /// Resolves the on-device automatic backup archive path.
   static Future<String> localArchivePath() async {
-    final dir = await AppStoragePaths.ensureDataDirectory();
-    return p.join(
-      dir,
-      BackupConstants.backupsSubdir,
-      BackupConstants.archiveFileName,
+    final backupDir = await _resolveBackupDirectoryStatic();
+    return p.join(backupDir, BackupConstants.archiveFileName);
+  }
+
+  /// Writes [backupDirectoryPath] to a config file for background isolates.
+  Future<void> syncBackupLocationConfig() async {
+    final custom = _hiveService.getSettings().backupDirectoryPath;
+    final dataDir = await AppStoragePaths.ensureDataDirectory();
+    final configFile = File(
+      p.join(dataDir, BackupConstants.backupLocationConfigFile),
     );
+    if (custom != null && custom.trim().isNotEmpty) {
+      await configFile.parent.create(recursive: true);
+      await configFile.writeAsString(custom.trim());
+    } else if (configFile.existsSync()) {
+      await configFile.delete();
+    }
+  }
+
+  Future<String> _resolveBackupDirectory() async {
+    final custom = _hiveService.getSettings().backupDirectoryPath;
+    if (custom != null && custom.trim().isNotEmpty) {
+      return custom.trim();
+    }
+    return defaultBackupDirectory();
+  }
+
+  static Future<String> _resolveBackupDirectoryStatic() async {
+    final dataDir = await AppStoragePaths.ensureDataDirectory();
+    final configFile = File(
+      p.join(dataDir, BackupConstants.backupLocationConfigFile),
+    );
+    if (configFile.existsSync()) {
+      final custom = (await configFile.readAsString()).trim();
+      if (custom.isNotEmpty) return custom;
+    }
+    return p.join(dataDir, BackupConstants.backupsSubdir);
   }
 
   /// Resolves `lazarus.db` in app data directory.
@@ -80,10 +121,13 @@ class BackupService {
 
   Future<BackupStatus> getStatus() async {
     final settings = _hiveService.getSettings();
-    final path = await localArchivePath();
+    final backupDir = await _resolveBackupDirectory();
+    final path = p.join(backupDir, BackupConstants.archiveFileName);
     final file = File(path);
     return BackupStatus(
       archivePath: path,
+      backupDirectory: backupDir,
+      isCustomLocation: settings.backupDirectoryPath?.trim().isNotEmpty ?? false,
       archiveExists: file.existsSync(),
       lastBackupAt: settings.lastBackupAt,
       isDue: _isDue(settings),
@@ -263,8 +307,7 @@ class BackupService {
   static Future<String> _createArchiveStatic({
     required bool replaceExisting,
   }) async {
-    final docs = await documentsPath();
-    final backupDir = p.join(docs, BackupConstants.backupsSubdir);
+    final backupDir = await _resolveBackupDirectoryStatic();
     await Directory(backupDir).create(recursive: true);
     final archivePath = p.join(backupDir, BackupConstants.archiveFileName);
 

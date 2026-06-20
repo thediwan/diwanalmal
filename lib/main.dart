@@ -71,6 +71,7 @@ Future<void> _bootstrapApp() async {
     database: lazarusService.database,
   );
   await backupService.mergeBackgroundBackupMarker();
+  await backupService.syncBackupLocationConfig();
   if (BackupSchedulerService.isBackgroundSchedulingSupported) {
     await BackupNotificationService.initialize();
     await BackupSchedulerService.register();

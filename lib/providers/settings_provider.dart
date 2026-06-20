@@ -70,6 +70,7 @@ class SettingsProvider extends ChangeNotifier {
   bool get backupEnabled => _settings.backupEnabled;
   TimeOfDay get backupTime => _settings.backupTime;
   DateTime? get lastBackupAt => _settings.lastBackupAt;
+  String? get backupDirectoryPath => _settings.backupDirectoryPath;
 
   AppSettings get settingsSnapshot => _settings;
 
@@ -149,6 +150,18 @@ class SettingsProvider extends ChangeNotifier {
       backupHour: time.hour,
       backupMinute: time.minute,
     );
+    await _hiveService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  /// Sets a custom folder for automatic backups, or resets to default when null.
+  Future<void> setBackupDirectory(String? directoryPath) async {
+    final trimmed = directoryPath?.trim();
+    if (trimmed == null || trimmed.isEmpty) {
+      _settings = _settings.copyWith(clearBackupDirectoryPath: true);
+    } else {
+      _settings = _settings.copyWith(backupDirectoryPath: trimmed);
+    }
     await _hiveService.saveSettings(_settings);
     notifyListeners();
   }

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/brand_logo.dart';
+import '../../../core/widgets/profile_avatar_button.dart';
 
 /// Dashboard top bar: logo (visual left), centered title, bell + profile (visual right).
 class DashboardHeader extends StatelessWidget {
@@ -22,10 +23,9 @@ class DashboardHeader extends StatelessWidget {
             icon: CupertinoIcons.bell,
           ),
           const SizedBox(width: 6),
-          _HeaderIconButton(
-            onPressed: () => context.push('/settings'),
-            icon: CupertinoIcons.person_crop_circle,
-            filled: true,
+          ProfileAvatarButton(
+            onTap: () => context.push('/settings'),
+            size: 44,
           ),
           Expanded(
             child: Text(
@@ -61,20 +61,16 @@ class _HeaderIconButton extends StatelessWidget {
   const _HeaderIconButton({
     required this.onPressed,
     required this.icon,
-    this.filled = false,
   });
 
   final VoidCallback onPressed;
   final IconData icon;
-  final bool filled;
 
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
     return Material(
-      color: filled
-          ? primary.withValues(alpha: 0.12)
-          : Colors.transparent,
+      color: Colors.transparent,
       shape: const CircleBorder(),
       child: InkWell(
         onTap: onPressed,

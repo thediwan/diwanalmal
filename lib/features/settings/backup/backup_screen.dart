@@ -44,6 +44,36 @@ class _BackupScreenState extends State<BackupScreen> {
     if (mounted) setState(() => _status = status);
   }
 
+  Future<void> _pickBackupDirectory() async {
+    final l10n = context.l10n;
+    final picked = await FilePicker.platform.getDirectoryPath();
+    if (picked == null || !mounted) return;
+
+    try {
+      final settings = context.read<SettingsProvider>();
+      final backupService = context.read<BackupService>();
+      await settings.setBackupDirectory(picked);
+      await backupService.syncBackupLocationConfig();
+      await _loadStatus();
+      if (!mounted) return;
+      context.showSuccessFeedback(l10n.backupLocationUpdated);
+    } catch (_) {
+      if (!mounted) return;
+      context.showErrorFeedback(l10n.backupLocationPickFailed);
+    }
+  }
+
+  Future<void> _resetBackupDirectory() async {
+    final l10n = context.l10n;
+    final settings = context.read<SettingsProvider>();
+    final backupService = context.read<BackupService>();
+    await settings.setBackupDirectory(null);
+    await backupService.syncBackupLocationConfig();
+    await _loadStatus();
+    if (!mounted) return;
+    context.showSuccessFeedback(l10n.backupLocationUpdated);
+  }
+
   Future<void> _pickBackupTime() async {
     final settings = context.read<SettingsProvider>();
     final picked = await showTimePicker(
@@ -173,6 +203,70 @@ class _BackupScreenState extends State<BackupScreen> {
                             fontWeight: FontWeight.w700,
                             color: colors.textPrimary,
                           ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.folder_outlined, color: colors.textSecondary),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                l10n.backupStoragePath,
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.textPrimary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          _status?.isCustomLocation ?? false
+                              ? l10n.backupStoragePathCustom
+                              : l10n.backupStoragePathDefault,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SelectableText(
+                          _status?.archivePath ?? '—',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: colors.textPrimary,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _pickBackupDirectory,
+                                icon: const Icon(Icons.drive_folder_upload_outlined),
+                                label: Text(l10n.backupChangeLocation),
+                              ),
+                            ),
+                            if (_status?.isCustomLocation ?? false) ...[
+                              const SizedBox(width: 8),
+                              IconButton(
+                                onPressed: _resetBackupDirectory,
+                                tooltip: l10n.backupResetLocation,
+                                icon: const Icon(Icons.restore),
+                              ),
+                            ],
+                          ],
                         ),
                       ],
                     ),

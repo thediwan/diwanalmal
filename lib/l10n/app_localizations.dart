@@ -2372,6 +2372,48 @@ abstract class AppLocalizations {
   /// **'تم إنشاء نسخة احتياطية بنجاح'**
   String get backupNotificationBody;
 
+  /// No description provided for @backupStoragePath.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسار التخزين'**
+  String get backupStoragePath;
+
+  /// No description provided for @backupStoragePathDefault.
+  ///
+  /// In ar, this message translates to:
+  /// **'المسار الافتراضي'**
+  String get backupStoragePathDefault;
+
+  /// No description provided for @backupStoragePathCustom.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسار مخصص'**
+  String get backupStoragePathCustom;
+
+  /// No description provided for @backupChangeLocation.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير المجلد'**
+  String get backupChangeLocation;
+
+  /// No description provided for @backupResetLocation.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدام المسار الافتراضي'**
+  String get backupResetLocation;
+
+  /// No description provided for @backupLocationUpdated.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تحديث مسار النسخ الاحتياطي'**
+  String get backupLocationUpdated;
+
+  /// No description provided for @backupLocationPickFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر اختيار المجلد'**
+  String get backupLocationPickFailed;
+
   /// No description provided for @profileSectionData.
   ///
   /// In ar, this message translates to:

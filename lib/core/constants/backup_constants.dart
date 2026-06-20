@@ -2,6 +2,8 @@
 abstract final class BackupConstants {
   static const String archiveFileName = 'dewanalmal_backup.dmbackup';
   static const String backupsSubdir = 'backups';
+  /// Persists custom backup folder for background tasks (mirrors Hive settings).
+  static const String backupLocationConfigFile = 'backup_location.config';
   static const String manifestFileName = 'manifest.json';
   static const int manifestVersion = 1;
   static const int maxSupportedSchemaVersion = 11;

@@ -1235,6 +1235,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupNotificationBody => 'Backup completed successfully';
 
   @override
+  String get backupStoragePath => 'Storage path';
+
+  @override
+  String get backupStoragePathDefault => 'Default path';
+
+  @override
+  String get backupStoragePathCustom => 'Custom path';
+
+  @override
+  String get backupChangeLocation => 'Change folder';
+
+  @override
+  String get backupResetLocation => 'Use default path';
+
+  @override
+  String get backupLocationUpdated => 'Backup storage path updated';
+
+  @override
+  String get backupLocationPickFailed => 'Could not select folder';
+
+  @override
   String get profileSectionData => 'Data & backup';
 
   @override

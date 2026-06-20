@@ -8,6 +8,7 @@ import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_form_fields.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/brand_logo.dart';
+import '../../../core/widgets/profile_avatar_button.dart';
 
 /// Top section for the wallets screen (profile, title, search, add).
 class WalletsHeader extends StatelessWidget {
@@ -34,7 +35,9 @@ class WalletsHeader extends StatelessWidget {
         children: [
           Row(
             children: [
-              _ProfileAvatar(onTap: () => context.push('/settings')),
+              ProfileAvatarButton(
+                onTap: () => context.push('/settings'),
+              ),
               const SizedBox(width: 8),
               _CircleIconButton(
                 icon: CupertinoIcons.bell,
@@ -134,33 +137,6 @@ class WalletsHeader extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ProfileAvatar extends StatelessWidget {
-  const _ProfileAvatar({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
-      shape: const CircleBorder(),
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: SizedBox(
-          width: 40,
-          height: 40,
-          child: Icon(
-            CupertinoIcons.person_crop_circle_fill,
-            color: Theme.of(context).colorScheme.primary,
-            size: 28,
-          ),
-        ),
       ),
     );
   }
