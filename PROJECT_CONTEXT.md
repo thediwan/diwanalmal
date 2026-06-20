@@ -51,6 +51,7 @@ Reports store immutable KPI snapshots + JSON breakdowns. Surplus can be carried 
 ## Last Updated
 
 2026-06-20 — Debtor/creditor ledger entries now affect wallet balances, monthly totals, and settlement flow consistently.
+2026-06-20 — Transaction add screen: overflow category picker includes "Manage categories" action below hidden items.
 2026-06-20 — Transactions list: full title display; notes preview limited to 2 words in list tile only.
 2026-06-20 — Transaction add screen: income category grid (income-only), expense overflow category picker (7+More), notes keyboard scroll fix.
 2026-06-20 — Transfer exchange rate unified with currency form (`ExchangeRateDisplay`); manual edits update stored rates.

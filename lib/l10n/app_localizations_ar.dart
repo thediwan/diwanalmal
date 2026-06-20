@@ -851,6 +851,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get transactionFormMore => 'المزيد';
 
   @override
+  String get transactionFormManageCategories => 'إدارة التصنيفات';
+
+  @override
   String get transactionFormCategoriesComingSoon =>
       'إدارة التصنيفات ستتوفر قريباً';
 

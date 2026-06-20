@@ -55,9 +55,23 @@ class TransactionCategoryGrid extends StatelessWidget {
           child: ListView.separated(
             shrinkWrap: true,
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            itemCount: overflow.length,
+            itemCount: overflow.length + 1,
             separatorBuilder: (_, __) => const SizedBox(height: 4),
             itemBuilder: (sheetContext, index) {
+              if (index == overflow.length) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop();
+                      onMoreTap();
+                    },
+                    icon: const Icon(Icons.tune_outlined, size: 20),
+                    label: Text(l10n.transactionFormManageCategories),
+                  ),
+                );
+              }
+
               final category = overflow[index];
               final selected = category.id == selectedCategoryId;
               final accent = CategoryIconStyles.colorFor(category.colorHex);

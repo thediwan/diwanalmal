@@ -342,6 +342,7 @@
   "categoryFormNotFound": "Category not found",
   "transactionFormSelectCategory": "Select a category",
   "transactionFormMore": "More",
+  "transactionFormManageCategories": "Manage categories",
   "transactionFormCategoriesComingSoon": "Category management coming soon",
   "transactionFormNotes": "Notes",
   "transactionFormNotesHint": "Write a short description for this transaction...",

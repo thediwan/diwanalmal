@@ -342,6 +342,7 @@
   "categoryFormNotFound": "التصنيف غير موجود",
   "transactionFormSelectCategory": "اختر التصنيف",
   "transactionFormMore": "المزيد",
+  "transactionFormManageCategories": "إدارة التصنيفات",
   "transactionFormCategoriesComingSoon": "إدارة التصنيفات ستتوفر قريباً",
   "transactionFormNotes": "ملاحظات",
   "transactionFormNotesHint": "اكتب وصفاً قصيراً للعملية...",

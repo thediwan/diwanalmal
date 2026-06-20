@@ -856,6 +856,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionFormMore => 'More';
 
   @override
+  String get transactionFormManageCategories => 'Manage categories';
+
+  @override
   String get transactionFormCategoriesComingSoon =>
       'Category management coming soon';
 

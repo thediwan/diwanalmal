@@ -1672,6 +1672,12 @@ abstract class AppLocalizations {
   /// **'المزيد'**
   String get transactionFormMore;
 
+  /// No description provided for @transactionFormManageCategories.
+  ///
+  /// In ar, this message translates to:
+  /// **'إدارة التصنيفات'**
+  String get transactionFormManageCategories;
+
   /// No description provided for @transactionFormCategoriesComingSoon.
   ///
   /// In ar, this message translates to:
