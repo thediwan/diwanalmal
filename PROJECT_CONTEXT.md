@@ -37,6 +37,8 @@ Reports store immutable KPI snapshots + JSON breakdowns. Surplus can be carried 
 
 ## Last Updated
 
+2026-06-20 — Transactions list: full title display; notes preview limited to 2 words in list tile only.
+2026-06-20 — Transaction add screen: income category grid (income-only), expense overflow category picker (7+More), notes keyboard scroll fix.
 2026-06-20 — Transfer exchange rate unified with currency form (`ExchangeRateDisplay`); manual edits update stored rates.
 2026-06-20 — Transaction dates use numeric `yyyy/MM/dd` format via `AppDateFormatter`.
 2026-06-20 — Monthly Financial Report System implemented.

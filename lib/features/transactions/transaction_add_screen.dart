@@ -59,14 +59,11 @@ class TransactionAddScreen extends StatefulWidget {
   State<TransactionAddScreen> createState() => _TransactionAddScreenState();
 }
 
-class _TransactionAddScreenState extends State<TransactionAddScreen>
-    with WidgetsBindingObserver {
+class _TransactionAddScreenState extends State<TransactionAddScreen> {
   static const _saveButtonAreaHeight = 78.0;
 
   final _amountInput = TransactionAmountInput();
   final _scrollController = ScrollController();
-  final _notesFocusNode = FocusNode();
-  final _notesFieldKey = GlobalKey();
   final _notesController = TextEditingController();
   final _transferAmountController = TextEditingController();
   final _exchangeRateController = TextEditingController();
@@ -89,8 +86,6 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
   FormFeedbackType? _feedbackType;
   String? _feedbackMessage;
   Timer? _feedbackDismissTimer;
-  Timer? _notesScrollDebounce;
-  bool _notesScrollAnimating = false;
 
   String? _selectedCurrencyId;
   String? _selectedWalletId;
@@ -108,84 +103,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _notesFocusNode.addListener(_onNotesFocusChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _initialize());
-  }
-
-  @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    if (_notesFocusNode.hasFocus) {
-      _scheduleNotesFieldScroll();
-    }
-  }
-
-  /// Waits for the keyboard to settle, then runs one smooth scroll.
-  void _onNotesFocusChanged() {
-    if (!_notesFocusNode.hasFocus) return;
-    _scheduleNotesFieldScroll();
-  }
-
-  void _scheduleNotesFieldScroll() {
-    _notesScrollDebounce?.cancel();
-    _notesScrollDebounce = Timer(const Duration(milliseconds: 260), () {
-      if (!mounted || !_notesFocusNode.hasFocus) return;
-      _scrollNotesFieldIntoViewSmooth();
-    });
-  }
-
-  Future<void> _scrollNotesFieldIntoViewSmooth() async {
-    if (!mounted || !_notesFocusNode.hasFocus || _notesScrollAnimating) return;
-    if (!_scrollController.hasClients) return;
-
-    final fieldContext = _notesFieldKey.currentContext;
-    if (fieldContext == null) return;
-
-    final fieldBox = fieldContext.findRenderObject();
-    if (fieldBox is! RenderBox || !fieldBox.hasSize) return;
-
-    final scrollable = Scrollable.maybeOf(fieldContext);
-    if (scrollable == null) return;
-
-    final scrollBox = scrollable.context.findRenderObject();
-    if (scrollBox is! RenderBox || !scrollBox.hasSize) return;
-
-    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
-    final visibleBottom =
-        scrollBox.size.height - keyboardInset - _saveButtonAreaHeight - 12;
-    final fieldTop =
-        fieldBox.localToGlobal(Offset.zero, ancestor: scrollBox).dy;
-    final fieldBottom = fieldTop + fieldBox.size.height;
-
-    const topMargin = 20.0;
-    var targetOffset = _scrollController.offset;
-
-    if (fieldBottom > visibleBottom) {
-      targetOffset += fieldBottom - visibleBottom;
-    } else if (fieldTop < topMargin) {
-      targetOffset -= topMargin - fieldTop;
-    } else {
-      return;
-    }
-
-    targetOffset = targetOffset.clamp(
-      _scrollController.position.minScrollExtent,
-      _scrollController.position.maxScrollExtent,
-    );
-
-    if ((_scrollController.offset - targetOffset).abs() < 6) return;
-
-    _notesScrollAnimating = true;
-    try {
-      await _scrollController.animateTo(
-        targetOffset,
-        duration: const Duration(milliseconds: 380),
-        curve: Curves.easeOutCubic,
-      );
-    } finally {
-      _notesScrollAnimating = false;
-    }
   }
 
   Future<void> _initialize() async {
@@ -244,13 +162,6 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
       _entryType == TransactionEntryType.creditor;
 
   bool get _isIncomeEntry => _entryType == TransactionEntryType.income;
-
-  TransactionCategory? get _systemGeneralIncomeCategory =>
-      _incomeCategories
-          .where(
-            (c) => c.id == DatabaseConstants.systemGeneralIncomeCategoryId,
-          )
-          .firstOrNull;
 
   double? get _debtAmountValue =>
       _parsePositiveDouble(_debtAmountController.text);
@@ -368,7 +279,16 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
         _selectedWalletId = wallets.firstOrNull?.id;
       }
       if (_isIncomeEntry) {
-        _selectedCategoryId = _systemGeneralIncomeCategory?.id;
+        final generalIncome = categories
+            .where(
+              (c) => c.id == DatabaseConstants.systemGeneralIncomeCategoryId,
+            )
+            .firstOrNull;
+        if (_selectedCategoryId == null && generalIncome != null) {
+          _selectedCategoryId = generalIncome.id;
+        } else if (categories.every((c) => c.id != _selectedCategoryId)) {
+          _selectedCategoryId = categories.firstOrNull?.id;
+        }
       } else if (_entryType == TransactionEntryType.expense) {
         final generalExpense = categories
             .where(
@@ -673,18 +593,12 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
       return;
     }
 
-    final category = _isIncomeEntry
-        ? _systemGeneralIncomeCategory
-        : _activeCategories
-            .where((c) => c.id == _selectedCategoryId)
-            .firstOrNull;
+    final category = _activeCategories
+        .where((c) => c.id == _selectedCategoryId)
+        .firstOrNull;
 
     if (category == null) {
-      _showFormWarning(
-        _isIncomeEntry
-            ? l10n.transactionFormCategoryUnavailable
-            : l10n.transactionFormSelectCategory,
-      );
+      _showFormWarning(l10n.transactionFormSelectCategory);
       return;
     }
 
@@ -939,10 +853,6 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
   @override
   void dispose() {
     _feedbackDismissTimer?.cancel();
-    _notesScrollDebounce?.cancel();
-    WidgetsBinding.instance.removeObserver(this);
-    _notesFocusNode.removeListener(_onNotesFocusChanged);
-    _notesFocusNode.dispose();
     _scrollController.dispose();
     _notesController.dispose();
     _transferAmountController.dispose();
@@ -1256,13 +1166,32 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                             ),
                             const SizedBox(height: 10),
                             TransactionCategoryGrid(
-                              categories: _activeCategories,
+                              categories: _expenseCategories,
                               selectedCategoryId: _selectedCategoryId,
                               onSelected: (category) => setState(
                                 () => _selectedCategoryId = category.id,
                               ),
                               moreLabel: l10n.transactionFormMore,
                               onMoreTap: _showMoreCategoriesPlaceholder,
+                              useOverflowPicker: true,
+                            ),
+                          ],
+                          if (_entryType == TransactionEntryType.income) ...[
+                            const SizedBox(height: 22),
+                            _SectionHeader(
+                              title: l10n.transactionFormCategory,
+                              icon: Icons.category_outlined,
+                            ),
+                            const SizedBox(height: 10),
+                            TransactionCategoryGrid(
+                              categories: _incomeCategories,
+                              selectedCategoryId: _selectedCategoryId,
+                              onSelected: (category) => setState(
+                                () => _selectedCategoryId = category.id,
+                              ),
+                              moreLabel: l10n.transactionFormMore,
+                              onMoreTap: _showMoreCategoriesPlaceholder,
+                              useOverflowPicker: true,
                             ),
                           ],
                           const SizedBox(height: 22),
@@ -1299,13 +1228,15 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
-                          key: _notesFieldKey,
                           controller: _notesController,
-                          focusNode: _notesFocusNode,
                           maxLines: 3,
                           textInputAction: TextInputAction.done,
                           style: AppFormFields.inputTextStyleOf(context),
-                          scrollPadding: EdgeInsets.zero,
+                          scrollPadding: EdgeInsets.only(
+                            bottom: keyboardInset +
+                                _saveButtonAreaHeight +
+                                24,
+                          ),
                           decoration: AppFormFields.decoration(
                             context,
                             hintText: l10n.transactionFormNotesHint,

@@ -122,9 +122,20 @@ class _TitleBlock extends StatelessWidget {
 
   final TransactionListItem item;
 
+  static String? _truncateNotesPreview(String? notes, int maxWords) {
+    final trimmed = notes?.trim();
+    if (trimmed == null || trimmed.isEmpty) return null;
+
+    final words = trimmed.split(RegExp(r'\s+'));
+    if (words.length <= maxWords) return trimmed;
+
+    return words.take(maxWords).join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final notesPreview = _truncateNotesPreview(item.notes, 2);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,6 +165,17 @@ class _TitleBlock extends StatelessWidget {
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),
+            ),
+          ),
+        ],
+        if (notesPreview != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            notesPreview,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.captionOnSurface(colors).copyWith(
+              fontSize: 12,
             ),
           ),
         ],

@@ -17,6 +17,7 @@ class TransactionCategoryGrid extends StatelessWidget {
     required this.moreLabel,
     required this.onMoreTap,
     this.maxVisible = 7,
+    this.useOverflowPicker = false,
   });
 
   final List<TransactionCategory> categories;
@@ -25,15 +26,91 @@ class TransactionCategoryGrid extends StatelessWidget {
   final String moreLabel;
   final VoidCallback onMoreTap;
   final int maxVisible;
+  final bool useOverflowPicker;
+
+  List<TransactionCategory> get _visibleCategories =>
+      categories.take(maxVisible).toList();
+
+  List<TransactionCategory> get _overflowCategories =>
+      categories.length > maxVisible
+          ? categories.skip(maxVisible).toList()
+          : const [];
+
+  bool get _showMoreTile =>
+      useOverflowPicker ? _overflowCategories.isNotEmpty : true;
+
+  bool get _selectedInOverflow =>
+      _overflowCategories.any((category) => category.id == selectedCategoryId);
+
+  Future<void> _showOverflowPicker(BuildContext context) async {
+    final overflow = _overflowCategories;
+    if (overflow.isEmpty) return;
+
+    final l10n = context.l10n;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: ListView.separated(
+            shrinkWrap: true,
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            itemCount: overflow.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 4),
+            itemBuilder: (sheetContext, index) {
+              final category = overflow[index];
+              final selected = category.id == selectedCategoryId;
+              final accent = CategoryIconStyles.colorFor(category.colorHex);
+
+              return Material(
+                color: Colors.transparent,
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  tileColor: selected
+                      ? Theme.of(sheetContext)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.08)
+                      : null,
+                  leading: Icon(
+                    CategoryIconStyles.iconFor(category.iconKey),
+                    color: selected
+                        ? Theme.of(sheetContext).colorScheme.primary
+                        : accent,
+                  ),
+                  title: Text(
+                    category.localizedName(l10n),
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                      color: selected
+                          ? Theme.of(sheetContext).colorScheme.primary
+                          : sheetContext.appColors.textPrimary,
+                    ),
+                  ),
+                  onTap: () {
+                    onSelected(category);
+                    Navigator.of(sheetContext).pop();
+                  },
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final visible = categories.take(maxVisible).toList();
+    final visible = _visibleCategories;
+    final itemCount = visible.length + (_showMoreTile ? 1 : 0);
 
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: visible.length + 1,
+      itemCount: itemCount,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
         mainAxisSpacing: 12,
@@ -41,8 +118,14 @@ class TransactionCategoryGrid extends StatelessWidget {
         childAspectRatio: 0.82,
       ),
       itemBuilder: (context, index) {
-        if (index == visible.length) {
-          return _MoreCategoryTile(label: moreLabel, onTap: onMoreTap);
+        if (_showMoreTile && index == visible.length) {
+          return _MoreCategoryTile(
+            label: moreLabel,
+            selected: _selectedInOverflow,
+            onTap: useOverflowPicker
+                ? () => _showOverflowPicker(context)
+                : onMoreTap,
+          );
         }
 
         final category = visible[index];
@@ -125,14 +208,17 @@ class _MoreCategoryTile extends StatelessWidget {
   const _MoreCategoryTile({
     required this.label,
     required this.onTap,
+    this.selected = false,
   });
 
   final String label;
   final VoidCallback onTap;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Material(
       color: Colors.transparent,
@@ -141,17 +227,23 @@ class _MoreCategoryTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         child: Column(
           children: [
-            Container(
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: colors.surface,
+                color: selected
+                    ? primary.withValues(alpha: 0.12)
+                    : colors.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: colors.cardBorder),
+                border: Border.all(
+                  color: selected ? primary : colors.cardBorder,
+                  width: selected ? 2 : 1,
+                ),
               ),
               child: Icon(
-                Icons.add,
-                color: colors.textMuted,
+                Icons.more_horiz,
+                color: selected ? primary : colors.textMuted,
                 size: 26,
               ),
             ),
@@ -162,7 +254,8 @@ class _MoreCategoryTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: AppTextStyles.bodySmall.copyWith(
-                color: colors.textSecondary,
+                color: selected ? primary : colors.textSecondary,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 fontSize: 12,
               ),
             ),
