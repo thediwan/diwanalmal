@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../core/constants/database_constants.dart';
 import '../core/constants/transaction_policy.dart';
 import '../core/constants/transaction_icon_styles.dart';
+import '../core/helpers/app_date_formatter.dart';
 import '../core/helpers/currency_formatter.dart';
 import '../database/daos/finance_dao.dart';
 import '../features/transactions/models/transaction_list_item.dart';
@@ -392,7 +393,7 @@ class TransactionListService {
       return '$time • $kindLabel • ${l10n.transactionSplitLinkedBadge}';
     }
     if (dueDate != null) {
-      return '$time • $kindLabel • ${l10n.transactionsListDueDate(DateFormat.MMMd(localeName).format(dueDate))}';
+      return '$time • $kindLabel • ${l10n.transactionsListDueDate(AppDateFormatter.format(dueDate))}';
     }
     return '$time • $kindLabel';
   }
@@ -418,7 +419,7 @@ class TransactionListService {
   ) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final dateLabel = DateFormat.MMMd(localeName).format(day);
+    final dateLabel = AppDateFormatter.format(day);
 
     if (day == today) {
       return l10n.transactionsListDateToday(dateLabel);
@@ -426,6 +427,6 @@ class TransactionListService {
     if (day == today.subtract(const Duration(days: 1))) {
       return l10n.transactionsListDateYesterday(dateLabel);
     }
-    return DateFormat.yMMMd(localeName).format(day);
+    return dateLabel;
   }
 }

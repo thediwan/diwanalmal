@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
 import '../../../core/extensions/context_l10n.dart';
+import '../../../core/helpers/app_date_formatter.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_form_fields.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -97,7 +96,6 @@ class _TransactionListFilterSheetState extends State<TransactionListFilterSheet>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.appColors;
-    final localeName = Localizations.localeOf(context).toString();
 
     return Padding(
       padding: EdgeInsets.only(
@@ -121,14 +119,12 @@ class _TransactionListFilterSheetState extends State<TransactionListFilterSheet>
           _DateField(
             label: l10n.transactionsListFilterDateFrom,
             value: _dateFrom,
-            localeName: localeName,
             onTap: () => _pickDate(isFrom: true),
           ),
           const SizedBox(height: 12),
           _DateField(
             label: l10n.transactionsListFilterDateTo,
             value: _dateTo,
-            localeName: localeName,
             onTap: () => _pickDate(isFrom: false),
           ),
           const SizedBox(height: 16),
@@ -220,21 +216,18 @@ class _DateField extends StatelessWidget {
   const _DateField({
     required this.label,
     required this.value,
-    required this.localeName,
     required this.onTap,
   });
 
   final String label;
   final DateTime? value;
-  final String localeName;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final formatted = value != null
-        ? DateFormat.yMMMd(localeName).format(value!)
-        : '—';
+    final formatted =
+        value != null ? AppDateFormatter.format(value!) : '—';
 
     return InkWell(
       onTap: onTap,

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/split_constants.dart';
@@ -10,6 +9,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/database_constants.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
+import '../../core/helpers/app_date_formatter.dart';
 import '../../core/helpers/currency_formatter.dart';
 import '../../core/helpers/number_format_preferences.dart';
 import '../../core/helpers/currency_uniqueness.dart';
@@ -914,19 +914,18 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
     setState(() {});
   }
 
-  String _formatDateLabel(AppLocalizations l10n, String locale) {
+  String _formatDateLabel(AppLocalizations l10n) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final selected =
         DateTime(_transactionDate.year, _transactionDate.month, _transactionDate.day);
+    final formatted = AppDateFormatter.format(_transactionDate);
 
     if (selected == today) {
-      return l10n.transactionFormTodayDate(
-        DateFormat.yMMMMd(locale).format(_transactionDate),
-      );
+      return l10n.transactionFormTodayDate(formatted);
     }
 
-    return DateFormat.yMMMMd(locale).format(_transactionDate);
+    return formatted;
   }
 
   @override
@@ -949,7 +948,6 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.appColors;
-    final locale = Localizations.localeOf(context).toString();
     final currencies = context.watch<CurrencyProvider>().currencies;
     final uniqueCurrencies = uniqueCurrenciesByCode(currencies);
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
@@ -1059,7 +1057,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                           const SizedBox(height: 10),
                           _DateBar(
                             dateLabel: _dueDate != null
-                                ? DateFormat.yMMMMd(locale).format(_dueDate!)
+                                ? AppDateFormatter.format(_dueDate!)
                                 : l10n.transactionFormDueDateOptional,
                             changeLabel: _dueDate == null
                                 ? l10n.transactionFormChangeDate
@@ -1283,7 +1281,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                         ),
                         const SizedBox(height: 16),
                         _DateBar(
-                          dateLabel: _formatDateLabel(l10n, locale),
+                          dateLabel: _formatDateLabel(l10n),
                           changeLabel: l10n.transactionFormChangeDate,
                           onChange: _pickDate,
                         ),

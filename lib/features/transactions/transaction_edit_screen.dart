@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/split_constants.dart';
@@ -10,6 +9,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/database_constants.dart';
 import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
+import '../../core/helpers/app_date_formatter.dart';
 import '../../core/helpers/currency_formatter.dart';
 import '../../core/helpers/number_format_preferences.dart';
 import '../../core/helpers/currency_uniqueness.dart';
@@ -660,7 +660,6 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.appColors;
-    final locale = Localizations.localeOf(context).toString();
     final uniqueCurrencies = uniqueCurrenciesByCode(
       context.watch<CurrencyProvider>().currencies,
     );
@@ -972,8 +971,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                               ),
                             ),
                             subtitle: Text(
-                              DateFormat.yMMMd(locale)
-                                  .format(payment.paymentDate),
+                              AppDateFormatter.format(payment.paymentDate),
                             ),
                           ),
                         ),
@@ -1013,7 +1011,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                       contentPadding: EdgeInsets.zero,
                       title: Text(
                         _dueDate != null
-                            ? DateFormat.yMMMMd(locale).format(_dueDate!)
+                            ? AppDateFormatter.format(_dueDate!)
                             : l10n.transactionFormDueDateOptional,
                         style: AppFormFields.inputTextStyleOf(context),
                       ),
@@ -1150,7 +1148,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                   const SizedBox(height: 12),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text(DateFormat.yMMMMd(locale).format(_transactionDate)),
+                    title: Text(AppDateFormatter.format(_transactionDate)),
                     trailing: TextButton(
                       onPressed: _canEdit ? _pickDate : null,
                       child: Text(l10n.transactionFormChangeDate),
