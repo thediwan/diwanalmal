@@ -27,7 +27,16 @@ Reports store immutable KPI snapshots + JSON breakdowns. Surplus can be carried 
 - **Helper:** `lib/core/helpers/app_date_formatter.dart` — numeric `yyyy/MM/dd` (e.g. `2026/06/20`)
 - Used in transaction list day headers, due dates, add/edit forms, and list filters
 
+## Exchange Rate Display (Transfers)
+
+- **Helper:** `lib/core/helpers/exchange_rate_display.dart`
+- Unified rule app-wide: **`1 {base} = X {currency}`** (same as currency add/edit form)
+- Transfer UI shows/edits the rated currency's display rate vs base (source if non-base, else target)
+- Cross-currency conversion derived internally from both currencies' `rateToBase`
+- Manual rate edits during transfer persist to the `currencies` table via `CurrencyProvider.updateCurrency`
+
 ## Last Updated
 
+2026-06-20 — Transfer exchange rate unified with currency form (`ExchangeRateDisplay`); manual edits update stored rates.
 2026-06-20 — Transaction dates use numeric `yyyy/MM/dd` format via `AppDateFormatter`.
 2026-06-20 — Monthly Financial Report System implemented.

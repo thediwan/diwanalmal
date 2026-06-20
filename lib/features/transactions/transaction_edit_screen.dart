@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,7 @@ import '../../core/extensions/context_l10n.dart';
 import '../../core/extensions/context_theme.dart';
 import '../../core/helpers/app_date_formatter.dart';
 import '../../core/helpers/currency_formatter.dart';
+import '../../core/helpers/exchange_rate_display.dart';
 import '../../core/helpers/number_format_preferences.dart';
 import '../../core/helpers/currency_uniqueness.dart';
 import '../../core/helpers/treasury_filters.dart';
@@ -152,10 +154,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       _sourceWalletId = tr.fromWalletId;
       _targetWalletId = tr.toWalletId;
       _transferAmountController.text = tr.amount.toString();
-      final targetAmount = tr.toAmount ?? tr.amount;
-      if (tr.amount > 0) {
-        _exchangeRateController.text = (targetAmount / tr.amount).toString();
-      }
+      _syncExchangeRateFromCurrencies();
       _notesController.text = tr.notes ?? '';
     } else if (_isDebtKind) {
       final debtService = DebtService(lazarus);
@@ -303,10 +302,9 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
     final source = _currencyById(_sourceCurrencyId);
     final target = _currencyById(_targetCurrencyId);
     if (source == null || target == null) return;
-    _exchangeRateController.text = TransferService.defaultCrossRate(
-      source: source,
-      target: target,
-    ).toString();
+    final rated = ExchangeRateDisplay.ratedCurrency(source: source, target: target);
+    _exchangeRateController.text =
+        ExchangeRateDisplay.defaultDisplayRateText(rated);
   }
 
   String _typeLabel(AppLocalizations l10n) {
@@ -513,12 +511,13 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
 
     if (_isTransferLike) {
       final amount = _parsePositiveDouble(_transferAmountController.text);
-      final crossRate = _parsePositiveDouble(_exchangeRateController.text);
+      final displayRate =
+          ExchangeRateDisplay.parseDisplayRate(_exchangeRateController.text);
       if (amount == null) {
         _showFormWarning(l10n.transactionFormAmountRequired);
         return;
       }
-      if (crossRate == null) {
+      if (displayRate == null) {
         _showFormWarning(l10n.transactionFormExchangeRateRequired);
         return;
       }
@@ -558,16 +557,29 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
         if (source == null || target == null) return;
         if (_sourceWalletId == null || _targetWalletId == null) return;
 
+        final currencyProvider = context.read<CurrencyProvider>();
+        await ExchangeRateDisplay.persistDisplayRateIfChanged(
+          provider: currencyProvider,
+          source: source,
+          target: target,
+          rateText: _exchangeRateController.text,
+        );
+
+        final freshSource =
+            ExchangeRateDisplay.findCurrency(currencyProvider, source) ??
+                source;
+        final freshTarget =
+            ExchangeRateDisplay.findCurrency(currencyProvider, target) ??
+                target;
+
         await TransferService(LazarusDatabaseService.instance).updateCurrencyTransfer(
           input: UpdateCurrencyTransferInput(
             id: widget.id,
             fromWalletId: _sourceWalletId!,
             toWalletId: _targetWalletId!,
-            sourceCurrency: source,
-            targetCurrency: target,
+            sourceCurrency: freshSource,
+            targetCurrency: freshTarget,
             sourceAmount: _parsePositiveDouble(_transferAmountController.text)!,
-            crossExchangeRate:
-                _parsePositiveDouble(_exchangeRateController.text),
             notes: _notesController.text,
             transactionDate: _transactionDate,
           ),
@@ -669,31 +681,23 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
     );
     final targetCurrency = _currencyById(_targetCurrencyId);
     final transferAmount = _parsePositiveDouble(_transferAmountController.text);
-    final crossRate = _parsePositiveDouble(_exchangeRateController.text);
+    final displayRate =
+        ExchangeRateDisplay.parseDisplayRate(_exchangeRateController.text);
     final convertedPreview = _isTransferLike &&
             sourceCurrency != null &&
             targetCurrency != null &&
             transferAmount != null &&
-            crossRate != null
+            displayRate != null
         ? CurrencyFormatter.formatCodeFirst(
-            TransferService.resolveTargetAmount(
+            ExchangeRateDisplay.resolveTransferTargetAmount(
               sourceAmount: transferAmount,
               source: sourceCurrency,
               target: targetCurrency,
-              crossExchangeRate: crossRate,
+              displayRate: displayRate,
             ),
             targetCurrency.code,
           )
-        : sourceCurrency != null && targetCurrency != null
-            ? CurrencyFormatter.formatCodeFirst(
-                TransferService.convertedAmount(
-                  sourceAmount: _amountInput.value,
-                  source: sourceCurrency,
-                  target: targetCurrency,
-                ),
-                targetCurrency.code,
-              )
-            : null;
+        : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -859,11 +863,32 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                       style: AppFormFields.inputTextStyleOf(context),
                       decoration: AppFormFields.decoration(
                         context,
-                        hintText: l10n.transactionFormExchangeRateHint(
-                          sourceCurrency?.code ?? '—',
-                          targetCurrency?.code ?? '—',
+                        labelText: l10n.currencyFormRateLabel(
+                          context.watch<CurrencyProvider>().baseCurrency?.code ??
+                              '—',
                         ),
+                        hintText: l10n.currencyFormRateHint,
+                      ).copyWith(
+                        helperText: sourceCurrency != null &&
+                                targetCurrency != null
+                            ? l10n.currencyFormRateHelper(
+                                context
+                                        .watch<CurrencyProvider>()
+                                        .baseCurrency
+                                        ?.code ??
+                                    '—',
+                                ExchangeRateDisplay.ratedCurrency(
+                                  source: sourceCurrency,
+                                  target: targetCurrency,
+                                ).code,
+                              )
+                            : null,
                       ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d*\.?\d*'),
+                        ),
+                      ],
                       onChanged: (_) => setState(() {}),
                     ),
                     if (convertedPreview != null) ...[
