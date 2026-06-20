@@ -6,6 +6,8 @@ import '../../../core/extensions/context_theme.dart';
 import '../../../core/helpers/split_calculator.dart';
 import '../../../core/theme/app_form_fields.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/helpers/whatsapp_message_helper.dart';
+import '../../../services/whatsapp_service.dart';
 import '../../../services/transaction_split_service.dart';
 import '../../contacts/widgets/person_picker_field.dart';
 
@@ -14,12 +16,14 @@ class SplitParticipantRowState {
   SplitParticipantRowState({
     this.contactId,
     this.contactName,
+    this.phone,
     this.percent,
     this.fixedAmount,
   });
 
   String? contactId;
   String? contactName;
+  String? phone;
   double? percent;
   double? fixedAmount;
 
@@ -27,6 +31,7 @@ class SplitParticipantRowState {
     return SplitParticipantDraft(
       contactId: contactId,
       contactName: contactName,
+      phone: phone,
       percent: percent,
       fixedAmount: fixedAmount,
     );
@@ -39,6 +44,8 @@ class TransactionSplitSection extends StatefulWidget {
     super.key,
     required this.totalAmount,
     required this.currencyCode,
+    required this.transactionTitle,
+    required this.transactionDate,
     required this.onChanged,
     this.initialEnabled = false,
     this.initialMode = SplitConstants.modeEqual,
@@ -49,6 +56,8 @@ class TransactionSplitSection extends StatefulWidget {
 
   final double totalAmount;
   final String currencyCode;
+  final String transactionTitle;
+  final DateTime transactionDate;
   final ValueChanged<({
     bool enabled,
     String mode,
@@ -238,6 +247,12 @@ class _TransactionSplitSectionState extends State<TransactionSplitSection> {
               index: i,
               mode: _mode,
               currencyCode: widget.currencyCode,
+              transactionTitle: widget.transactionTitle,
+              transactionDate: widget.transactionDate,
+              shareAmount: preview != null &&
+                      i < preview.participantShares.length
+                  ? preview.participantShares[i].shareAmount
+                  : null,
               row: _participants[i],
               onChanged: (row) {
                 setState(() => _participants[i] = row);
@@ -316,6 +331,9 @@ class _ParticipantRow extends StatelessWidget {
     required this.index,
     required this.mode,
     required this.currencyCode,
+    required this.transactionTitle,
+    required this.transactionDate,
+    required this.shareAmount,
     required this.row,
     required this.onChanged,
     this.onRemove,
@@ -324,13 +342,54 @@ class _ParticipantRow extends StatelessWidget {
   final int index;
   final String mode;
   final String currencyCode;
+  final String transactionTitle;
+  final DateTime transactionDate;
+  final double? shareAmount;
   final SplitParticipantRowState row;
   final ValueChanged<SplitParticipantRowState> onChanged;
   final VoidCallback? onRemove;
 
+  Future<void> _openWhatsApp(BuildContext context) async {
+    final l10n = context.l10n;
+    final phone = row.phone;
+    final name = row.contactName?.trim() ?? '';
+    final amount = shareAmount;
+
+    if (phone == null || phone.trim().isEmpty || name.isEmpty || amount == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.whatsappNoPhone)),
+      );
+      return;
+    }
+
+    final message = WhatsAppMessageHelper.splitDebtMessage(
+      l10n: l10n,
+      localeName: Localizations.localeOf(context).toString(),
+      personName: name,
+      transactionTitle: transactionTitle,
+      shareAmount: amount,
+      currencyCode: currencyCode,
+      transactionDate: transactionDate,
+    );
+
+    final opened = await WhatsAppService().openChat(
+      phone: phone,
+      message: message,
+    );
+    if (!context.mounted) return;
+    if (!opened) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.whatsappOpenFailed)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final canWhatsApp = shareAmount != null &&
+        (row.phone?.trim().isNotEmpty ?? false) &&
+        (row.contactName?.trim().isNotEmpty ?? false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -339,15 +398,27 @@ class _ParticipantRow extends StatelessWidget {
           children: [
             Expanded(
               child: PersonPickerField(
-                initialSelection: PersonSelection(
-                  contactId: row.contactId,
-                  displayName: row.contactName ?? '',
+                key: ValueKey(
+                  'split-person-$index-${row.contactId ?? 'new'}',
                 ),
+                initialSelection: (row.contactId != null ||
+                        (row.contactName?.isNotEmpty ?? false))
+                    ? PersonSelection(
+                        contactId: row.contactId,
+                        displayName: row.contactName ?? '',
+                        phone: row.phone,
+                      )
+                    : null,
                 label: l10n.transactionSplitParticipantLabel(index + 1),
+                showPhoneField: true,
+                onWhatsAppTap:
+                    canWhatsApp ? () => _openWhatsApp(context) : null,
                 onChanged: (selection) {
+                  final phone = selection.phone?.trim();
                   onChanged(SplitParticipantRowState(
                     contactId: selection.contactId,
-                    contactName: selection.displayName,
+                    contactName: selection.displayName.trim(),
+                    phone: (phone == null || phone.isEmpty) ? null : phone,
                     percent: row.percent,
                     fixedAmount: row.fixedAmount,
                   ));

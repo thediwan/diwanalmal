@@ -3669,6 +3669,14 @@ class $ContactsTable extends Contacts
           GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 255),
       type: DriftSqlType.string,
       requiredDuringInsert: true);
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  @override
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+      'phone', aliasedName, true,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 20),
+      type: DriftSqlType.string,
+      requiredDuringInsert: false);
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -3694,7 +3702,7 @@ class $ContactsTable extends Contacts
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, userId, name, notes, createdAt, updatedAt, deletedAt];
+      [id, userId, name, phone, notes, createdAt, updatedAt, deletedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -3721,6 +3729,10 @@ class $ContactsTable extends Contacts
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('phone')) {
+      context.handle(
+          _phoneMeta, phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta));
     }
     if (data.containsKey('notes')) {
       context.handle(
@@ -3757,6 +3769,8 @@ class $ContactsTable extends Contacts
           .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      phone: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}phone']),
       notes: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}notes']),
       createdAt: attachedDatabase.typeMapping
@@ -3778,6 +3792,7 @@ class DbContact extends DataClass implements Insertable<DbContact> {
   final String id;
   final String userId;
   final String name;
+  final String? phone;
   final String? notes;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -3786,6 +3801,7 @@ class DbContact extends DataClass implements Insertable<DbContact> {
       {required this.id,
       required this.userId,
       required this.name,
+      this.phone,
       this.notes,
       required this.createdAt,
       required this.updatedAt,
@@ -3796,6 +3812,9 @@ class DbContact extends DataClass implements Insertable<DbContact> {
     map['id'] = Variable<String>(id);
     map['user_id'] = Variable<String>(userId);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || phone != null) {
+      map['phone'] = Variable<String>(phone);
+    }
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
@@ -3812,6 +3831,8 @@ class DbContact extends DataClass implements Insertable<DbContact> {
       id: Value(id),
       userId: Value(userId),
       name: Value(name),
+      phone:
+          phone == null && nullToAbsent ? const Value.absent() : Value(phone),
       notes:
           notes == null && nullToAbsent ? const Value.absent() : Value(notes),
       createdAt: Value(createdAt),
@@ -3829,6 +3850,7 @@ class DbContact extends DataClass implements Insertable<DbContact> {
       id: serializer.fromJson<String>(json['id']),
       userId: serializer.fromJson<String>(json['userId']),
       name: serializer.fromJson<String>(json['name']),
+      phone: serializer.fromJson<String?>(json['phone']),
       notes: serializer.fromJson<String?>(json['notes']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -3842,6 +3864,7 @@ class DbContact extends DataClass implements Insertable<DbContact> {
       'id': serializer.toJson<String>(id),
       'userId': serializer.toJson<String>(userId),
       'name': serializer.toJson<String>(name),
+      'phone': serializer.toJson<String?>(phone),
       'notes': serializer.toJson<String?>(notes),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -3853,6 +3876,7 @@ class DbContact extends DataClass implements Insertable<DbContact> {
           {String? id,
           String? userId,
           String? name,
+          Value<String?> phone = const Value.absent(),
           Value<String?> notes = const Value.absent(),
           DateTime? createdAt,
           DateTime? updatedAt,
@@ -3861,6 +3885,7 @@ class DbContact extends DataClass implements Insertable<DbContact> {
         id: id ?? this.id,
         userId: userId ?? this.userId,
         name: name ?? this.name,
+        phone: phone.present ? phone.value : this.phone,
         notes: notes.present ? notes.value : this.notes,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
@@ -3871,6 +3896,7 @@ class DbContact extends DataClass implements Insertable<DbContact> {
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
       name: data.name.present ? data.name.value : this.name,
+      phone: data.phone.present ? data.phone.value : this.phone,
       notes: data.notes.present ? data.notes.value : this.notes,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -3884,6 +3910,7 @@ class DbContact extends DataClass implements Insertable<DbContact> {
           ..write('id: $id, ')
           ..write('userId: $userId, ')
           ..write('name: $name, ')
+          ..write('phone: $phone, ')
           ..write('notes: $notes, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
@@ -3893,8 +3920,8 @@ class DbContact extends DataClass implements Insertable<DbContact> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, userId, name, notes, createdAt, updatedAt, deletedAt);
+  int get hashCode => Object.hash(
+      id, userId, name, phone, notes, createdAt, updatedAt, deletedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3902,6 +3929,7 @@ class DbContact extends DataClass implements Insertable<DbContact> {
           other.id == this.id &&
           other.userId == this.userId &&
           other.name == this.name &&
+          other.phone == this.phone &&
           other.notes == this.notes &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
@@ -3912,6 +3940,7 @@ class ContactsCompanion extends UpdateCompanion<DbContact> {
   final Value<String> id;
   final Value<String> userId;
   final Value<String> name;
+  final Value<String?> phone;
   final Value<String?> notes;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
@@ -3921,6 +3950,7 @@ class ContactsCompanion extends UpdateCompanion<DbContact> {
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
     this.name = const Value.absent(),
+    this.phone = const Value.absent(),
     this.notes = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -3931,6 +3961,7 @@ class ContactsCompanion extends UpdateCompanion<DbContact> {
     required String id,
     required String userId,
     required String name,
+    this.phone = const Value.absent(),
     this.notes = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -3945,6 +3976,7 @@ class ContactsCompanion extends UpdateCompanion<DbContact> {
     Expression<String>? id,
     Expression<String>? userId,
     Expression<String>? name,
+    Expression<String>? phone,
     Expression<String>? notes,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -3955,6 +3987,7 @@ class ContactsCompanion extends UpdateCompanion<DbContact> {
       if (id != null) 'id': id,
       if (userId != null) 'user_id': userId,
       if (name != null) 'name': name,
+      if (phone != null) 'phone': phone,
       if (notes != null) 'notes': notes,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -3967,6 +4000,7 @@ class ContactsCompanion extends UpdateCompanion<DbContact> {
       {Value<String>? id,
       Value<String>? userId,
       Value<String>? name,
+      Value<String?>? phone,
       Value<String?>? notes,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
@@ -3976,6 +4010,7 @@ class ContactsCompanion extends UpdateCompanion<DbContact> {
       id: id ?? this.id,
       userId: userId ?? this.userId,
       name: name ?? this.name,
+      phone: phone ?? this.phone,
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -3995,6 +4030,9 @@ class ContactsCompanion extends UpdateCompanion<DbContact> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
@@ -4020,6 +4058,7 @@ class ContactsCompanion extends UpdateCompanion<DbContact> {
           ..write('id: $id, ')
           ..write('userId: $userId, ')
           ..write('name: $name, ')
+          ..write('phone: $phone, ')
           ..write('notes: $notes, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
@@ -14371,6 +14410,7 @@ typedef $$ContactsTableCreateCompanionBuilder = ContactsCompanion Function({
   required String id,
   required String userId,
   required String name,
+  Value<String?> phone,
   Value<String?> notes,
   required DateTime createdAt,
   required DateTime updatedAt,
@@ -14381,6 +14421,7 @@ typedef $$ContactsTableUpdateCompanionBuilder = ContactsCompanion Function({
   Value<String> id,
   Value<String> userId,
   Value<String> name,
+  Value<String?> phone,
   Value<String?> notes,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -14454,6 +14495,9 @@ class $$ContactsTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get phone => $composableBuilder(
+      column: $table.phone, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnFilters(column));
@@ -14548,6 +14592,9 @@ class $$ContactsTableOrderingComposer
   ColumnOrderings<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get phone => $composableBuilder(
+      column: $table.phone, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnOrderings(column));
 
@@ -14595,6 +14642,9 @@ class $$ContactsTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get phone =>
+      $composableBuilder(column: $table.phone, builder: (column) => column);
 
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
@@ -14701,6 +14751,7 @@ class $$ContactsTableTableManager extends RootTableManager<
             Value<String> id = const Value.absent(),
             Value<String> userId = const Value.absent(),
             Value<String> name = const Value.absent(),
+            Value<String?> phone = const Value.absent(),
             Value<String?> notes = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -14711,6 +14762,7 @@ class $$ContactsTableTableManager extends RootTableManager<
             id: id,
             userId: userId,
             name: name,
+            phone: phone,
             notes: notes,
             createdAt: createdAt,
             updatedAt: updatedAt,
@@ -14721,6 +14773,7 @@ class $$ContactsTableTableManager extends RootTableManager<
             required String id,
             required String userId,
             required String name,
+            Value<String?> phone = const Value.absent(),
             Value<String?> notes = const Value.absent(),
             required DateTime createdAt,
             required DateTime updatedAt,
@@ -14731,6 +14784,7 @@ class $$ContactsTableTableManager extends RootTableManager<
             id: id,
             userId: userId,
             name: name,
+            phone: phone,
             notes: notes,
             createdAt: createdAt,
             updatedAt: updatedAt,

@@ -14,6 +14,7 @@ import '../../core/helpers/currency_formatter.dart';
 import '../../core/helpers/number_format_preferences.dart';
 import '../../core/helpers/currency_uniqueness.dart';
 import '../../core/helpers/treasury_filters.dart';
+import '../../core/helpers/split_calculator.dart';
 import '../../core/helpers/user_facing_error.dart';
 import '../../core/theme/app_form_fields.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -38,6 +39,7 @@ import 'widgets/form_feedback_banner.dart';
 import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_currency_pills.dart';
 import 'widgets/transaction_numeric_keypad.dart';
+import 'widgets/split_whatsapp_success_sheet.dart';
 import 'widgets/transaction_split_section.dart';
 import 'widgets/transaction_type_toggle.dart';
 import 'widgets/transaction_wallet_carousel.dart';
@@ -70,6 +72,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
   final _debtAmountController = TextEditingController();
 
   String? _debtContactId;
+  String? _debtContactPhone;
   bool _splitEnabled = false;
   String _splitMode = SplitConstants.modeEqual;
   bool _splitIncludeSelf = true;
@@ -486,7 +489,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
   void _showFormError(Object error) {
     _showFormFeedback(
       FormFeedbackType.error,
-      UserFacingError.message(context.l10n, error),
+      UserFacingError.transactionMessage(context.l10n, error),
     );
   }
 
@@ -696,6 +699,17 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
 
     setState(() => _isSaving = true);
 
+    final hadSplit = _splitEnabled;
+    final splitParticipants =
+        List<SplitParticipantDraft>.from(_splitParticipants);
+    final splitMode = _splitMode;
+    final splitIncludeSelf = _splitIncludeSelf;
+    final splitFixedAmount = _splitFixedAmountPerPerson;
+    final savedAmount = _amountInput.value;
+    final savedCategoryName = category.name;
+    final savedCurrencyCode = currency.code;
+    final savedDate = _transactionDate;
+
     try {
       final splitService =
           TransactionSplitService(LazarusDatabaseService.instance);
@@ -723,6 +737,28 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
       if (!mounted) return;
 
       context.read<DashboardRefreshProvider>().notifyRefresh();
+
+      if (hadSplit &&
+          splitParticipants.any((participant) => participant.hasIdentity)) {
+        final waParticipants = _whatsappParticipantsFromSplit(
+          participants: splitParticipants,
+          totalAmount: savedAmount,
+          splitMode: splitMode,
+          includeSelfInEqualSplit: splitIncludeSelf,
+          fixedAmountPerPerson: splitFixedAmount,
+        );
+        if (waParticipants.isNotEmpty) {
+          await SplitWhatsAppSuccessSheet.show(
+            context,
+            participants: waParticipants,
+            transactionTitle: savedCategoryName,
+            currencyCode: savedCurrencyCode,
+            transactionDate: savedDate,
+            localeName: Localizations.localeOf(context).toString(),
+          );
+        }
+      }
+
       _resetFormAfterSave();
 
       _showFormSuccess(l10n.transactionFormSaveSuccess);
@@ -836,6 +872,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
           walletId: _selectedWalletId!,
           personName: person,
           contactId: _debtContactId,
+          phone: _debtContactPhone,
           amount: amount,
           currency: currency,
           dueDate: _dueDate,
@@ -863,6 +900,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
     _transferAmountController.clear();
     _personNameController.clear();
     _debtContactId = null;
+    _debtContactPhone = null;
     _debtAmountController.clear();
     _splitEnabled = false;
     _splitMode = SplitConstants.modeEqual;
@@ -962,10 +1000,16 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                           PersonPickerField(
                             label: l10n.transactionFormPersonName,
                             hint: l10n.transactionFormPersonNameHint,
+                            showPhoneField: true,
                             onChanged: (selection) {
                               _debtContactId = selection.contactId;
                               _personNameController.text =
                                   selection.displayName;
+                              final phone = selection.phone?.trim();
+                              _debtContactPhone =
+                                  (phone == null || phone.isEmpty)
+                                      ? null
+                                      : phone;
                             },
                           ),
                           const SizedBox(height: 20),
@@ -1200,6 +1244,14 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                           TransactionSplitSection(
                             totalAmount: _amountInput.value,
                             currencyCode: _selectedCurrency?.code ?? '',
+                            transactionTitle: (_isIncomeEntry
+                                    ? _incomeCategories
+                                    : _expenseCategories)
+                                .where((c) => c.id == _selectedCategoryId)
+                                .firstOrNull
+                                ?.name ??
+                                '',
+                            transactionDate: _transactionDate,
                             onChanged: (state) {
                               _splitEnabled = state.enabled;
                               _splitMode = state.mode;
@@ -1291,6 +1343,56 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
       ),
     ),
     );
+  }
+
+  List<SplitWhatsAppParticipant> _whatsappParticipantsFromSplit({
+    required List<SplitParticipantDraft> participants,
+    required double totalAmount,
+    required String splitMode,
+    required bool includeSelfInEqualSplit,
+    required double? fixedAmountPerPerson,
+  }) {
+    final withIdentity =
+        participants.where((participant) => participant.hasIdentity).toList();
+    if (withIdentity.isEmpty || totalAmount <= 0) return const [];
+
+    try {
+      final calculation = SplitCalculator.calculate(
+        totalAmount: totalAmount,
+        splitMode: splitMode,
+        participants: withIdentity
+            .map(
+              (participant) => SplitParticipantInput(
+                contactId: participant.contactId ??
+                    participant.contactName!.trim(),
+                percent: participant.percent,
+                fixedAmount: participant.fixedAmount,
+              ),
+            )
+            .toList(),
+        includeSelfInEqualSplit: includeSelfInEqualSplit,
+        fixedAmountPerPerson: fixedAmountPerPerson,
+      );
+
+      final result = <SplitWhatsAppParticipant>[];
+      for (var i = 0; i < withIdentity.length; i++) {
+        final participant = withIdentity[i];
+        final share = i < calculation.participantShares.length
+            ? calculation.participantShares[i].shareAmount
+            : 0.0;
+        if (share <= 0) continue;
+        result.add(
+          SplitWhatsAppParticipant(
+            name: participant.contactName?.trim() ?? '',
+            phone: participant.phone,
+            shareAmount: share,
+          ),
+        );
+      }
+      return result;
+    } catch (_) {
+      return const [];
+    }
   }
 }
 

@@ -1107,6 +1107,91 @@ abstract class AppLocalizations {
   /// **'لا يمكن تعديل التشاركية بعد تسديد بعض الذمم'**
   String get transactionSplitSettledEditBlocked;
 
+  /// No description provided for @transactionSplitLinkedBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرتبط بتشاركية'**
+  String get transactionSplitLinkedBadge;
+
+  /// No description provided for @transactionSplitLinkedCannotDelete.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يمكن حذف هذه الذمة لأنها مرتبطة بمعاملة مُشارَكة. احذف المعاملة الأصلية بدلاً من ذلك.'**
+  String get transactionSplitLinkedCannotDelete;
+
+  /// No description provided for @transactionSplitLinkedCannotEdit.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يمكن تعديل هذه الذمة لأنها مرتبطة بمعاملة مُشارَكة.'**
+  String get transactionSplitLinkedCannotEdit;
+
+  /// No description provided for @transactionSplitGoToParent.
+  ///
+  /// In ar, this message translates to:
+  /// **'الانتقال للمعاملة الأصلية'**
+  String get transactionSplitGoToParent;
+
+  /// No description provided for @transactionSplitSendWhatsappAfterSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'إرسال تذكير واتساب للمشاركين'**
+  String get transactionSplitSendWhatsappAfterSave;
+
+  /// No description provided for @contactPhone.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم الهاتف'**
+  String get contactPhone;
+
+  /// No description provided for @contactPhoneHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: 9639xxxxxxxx'**
+  String get contactPhoneHint;
+
+  /// No description provided for @contactPhoneInvalid.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم الهاتف غير صالح'**
+  String get contactPhoneInvalid;
+
+  /// No description provided for @contactEnterNewName.
+  ///
+  /// In ar, this message translates to:
+  /// **'إدخال اسم جديد'**
+  String get contactEnterNewName;
+
+  /// No description provided for @contactPickFromList.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر من جهات الاتصال'**
+  String get contactPickFromList;
+
+  /// No description provided for @whatsappSend.
+  ///
+  /// In ar, this message translates to:
+  /// **'إرسال واتساب'**
+  String get whatsappSend;
+
+  /// No description provided for @whatsappNoPhone.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يوجد رقم هاتف لهذا الشخص'**
+  String get whatsappNoPhone;
+
+  /// No description provided for @whatsappOpenFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر فتح واتساب'**
+  String get whatsappOpenFailed;
+
+  /// No description provided for @whatsappSplitDebtMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرحباً {name}، مستحقك من معاملة «{title}»: {amount} {currency} بتاريخ {date}.'**
+  String whatsappSplitDebtMessage(
+      String name, String title, String amount, String currency, String date);
+
   /// No description provided for @transactionFormDueDate.
   ///
   /// In ar, this message translates to:

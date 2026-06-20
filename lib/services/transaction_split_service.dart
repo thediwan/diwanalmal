@@ -19,12 +19,14 @@ class SplitParticipantDraft {
   const SplitParticipantDraft({
     this.contactId,
     this.contactName,
+    this.phone,
     this.percent,
     this.fixedAmount,
   });
 
   final String? contactId;
   final String? contactName;
+  final String? phone;
   final double? percent;
   final double? fixedAmount;
 
@@ -525,6 +527,39 @@ class TransactionSplitService {
     }
   }
 
+  /// Soft-deletes a split parent and all linked child debts atomically.
+  Future<void> deleteParentTransaction({
+    required String transactionId,
+    required int deleteWindowHours,
+  }) async {
+    final existing = await _db.financeDao.getTransactionById(transactionId);
+    if (existing == null) {
+      throw StateError('Transaction not found');
+    }
+
+    if (!TransactionPolicy.canDelete(
+      createdAt: existing.transaction.createdAt,
+      deleteWindowHours: deleteWindowHours,
+    )) {
+      throw StateError('Transaction delete window expired');
+    }
+
+    final split = await _db.financeDao.getSplitByTransactionId(transactionId);
+    if (split != null) {
+      await _assertSplitDebtsEditable(transactionId);
+    }
+
+    final now = DateTime.now();
+
+    await _db.transaction(() async {
+      if (split != null) {
+        await _removeSplitChildDebts(transactionId);
+        await _db.financeDao.softDeleteSplitByTransactionId(transactionId);
+      }
+      await _db.financeDao.softDeleteTransaction(transactionId);
+    });
+  }
+
   Future<List<_ResolvedParticipant>> _resolveParticipants(
     List<SplitParticipantDraft> drafts,
   ) async {
@@ -541,9 +576,19 @@ class TransactionSplitService {
         if (existing == null) {
           throw ArgumentError('Contact not found');
         }
-        contact = existing;
+        if (draft.phone != null && draft.phone!.trim().isNotEmpty) {
+          contact = await _contacts.updatePhone(
+            contactId: existing.id,
+            phone: draft.phone,
+          );
+        } else {
+          contact = existing;
+        }
       } else {
-        contact = await _contacts.findOrCreateByName(draft.contactName!.trim());
+        contact = await _contacts.findOrCreateByName(
+          draft.contactName!.trim(),
+          phone: draft.phone,
+        );
       }
 
       resolved.add(

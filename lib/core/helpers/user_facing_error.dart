@@ -73,7 +73,21 @@ abstract final class UserFacingError {
     return message(l10n, error);
   }
 
-  /// Goal savings transfer business error codes.
+  /// Transaction and debt business error codes.
+  static String transactionMessage(AppLocalizations l10n, Object error) {
+    if (error is StateError) {
+      return switch (error.message) {
+        'transaction_split_linked_cannot_edit' =>
+          l10n.transactionSplitLinkedCannotEdit,
+        'transaction_split_linked_cannot_delete' =>
+          l10n.transactionSplitLinkedCannotDelete,
+        'Edit window expired' => l10n.transactionEditExpired,
+        _ => message(l10n, error),
+      };
+    }
+    return message(l10n, error);
+  }
+
   static String goalMessage(AppLocalizations l10n, Object error) {
     if (error is StateError) {
       return switch (error.message) {

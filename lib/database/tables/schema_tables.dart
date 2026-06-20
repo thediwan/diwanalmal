@@ -136,6 +136,7 @@ class Contacts extends Table {
   TextColumn get id => text()();
   TextColumn get userId => text().references(AppUsers, #id)();
   TextColumn get name => text().withLength(min: 1, max: 255)();
+  TextColumn get phone => text().nullable().withLength(min: 1, max: 20)();
   TextColumn get notes => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();

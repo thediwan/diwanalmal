@@ -803,6 +803,14 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
     return into(db.contacts).insert(contact);
   }
 
+  /// Updates an existing contact row.
+  Future<bool> updateContactRecord(ContactsCompanion companion) async {
+    final count = await (update(db.contacts)
+          ..where((c) => c.id.equals(companion.id.value)))
+        .write(companion);
+    return count > 0;
+  }
+
   /// Loads a contact by id.
   Future<DbContact?> getContactById(String contactId) {
     return (select(db.contacts)

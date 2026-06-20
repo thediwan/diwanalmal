@@ -8,6 +8,7 @@ import '../database/lazarus_database.dart';
 import '../models/currency.dart';
 import '../models/transaction_category.dart';
 import 'lazarus_database_service.dart';
+import 'transaction_split_service.dart';
 
 /// Input for creating an income or expense transaction.
 class CreateTransactionInput {
@@ -156,6 +157,15 @@ class TransactionService {
       deleteWindowHours: deleteWindowHours,
     )) {
       throw StateError('Transaction delete window expired');
+    }
+
+    final split = await _db.financeDao.getSplitByTransactionId(id);
+    if (split != null) {
+      await TransactionSplitService(_lazarus).deleteParentTransaction(
+        transactionId: id,
+        deleteWindowHours: deleteWindowHours,
+      );
+      return;
     }
 
     final deleted = await _db.financeDao.softDeleteTransaction(id);

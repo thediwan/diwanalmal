@@ -138,7 +138,7 @@ class _TitleBlock extends StatelessWidget {
             color: colors.textPrimary,
           ),
         ),
-        if (item.isShared) ...[
+        if (item.isShared || item.isSplitLinked) ...[
           const SizedBox(height: 4),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -147,7 +147,9 @@ class _TitleBlock extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              context.l10n.transactionSplitSharedBadge,
+              item.isSplitLinked
+                  ? context.l10n.transactionSplitLinkedBadge
+                  : context.l10n.transactionSplitSharedBadge,
               style: AppTextStyles.captionOnSurface(colors).copyWith(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,

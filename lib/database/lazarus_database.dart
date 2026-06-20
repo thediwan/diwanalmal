@@ -67,10 +67,11 @@ class LazarusDatabase extends _$LazarusDatabase {
     await _ensureGoalsWalletColumn();
     await _backfillGoalWallets();
     await _ensureSplitSharingColumns();
+    await _ensureContactsPhoneColumn();
   }
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -192,8 +193,26 @@ class LazarusDatabase extends _$LazarusDatabase {
             await _migrateDebtsToContacts();
             await _createContactsUniqueIndex();
           }
+
+          if (from < 13) {
+            await _ensureContactsPhoneColumn();
+          }
         },
       );
+
+  /// Adds [phone] on [contacts] when missing.
+  Future<void> _ensureContactsPhoneColumn() async {
+    final rows = await customSelect('PRAGMA table_info(contacts)').get();
+    if (rows.isEmpty) return;
+
+    final columnNames =
+        rows.map((row) => row.read<String>('name')).toSet();
+    if (!columnNames.contains('phone')) {
+      await customStatement(
+        'ALTER TABLE contacts ADD COLUMN phone TEXT',
+      );
+    }
+  }
 
   /// Adds split-sharing columns and tables when missing (legacy DB repair).
   Future<void> _ensureSplitSharingColumns() async {

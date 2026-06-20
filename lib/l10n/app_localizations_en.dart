@@ -546,6 +546,54 @@ class AppLocalizationsEn extends AppLocalizations {
       'Cannot edit sharing after some debts were settled';
 
   @override
+  String get transactionSplitLinkedBadge => 'Split linked';
+
+  @override
+  String get transactionSplitLinkedCannotDelete =>
+      'This debt cannot be deleted because it is linked to a shared transaction. Delete the parent transaction instead.';
+
+  @override
+  String get transactionSplitLinkedCannotEdit =>
+      'This debt cannot be edited because it is linked to a shared transaction.';
+
+  @override
+  String get transactionSplitGoToParent => 'Go to parent transaction';
+
+  @override
+  String get transactionSplitSendWhatsappAfterSave =>
+      'Send WhatsApp reminders to participants';
+
+  @override
+  String get contactPhone => 'Phone number';
+
+  @override
+  String get contactPhoneHint => 'e.g. 9639xxxxxxxx';
+
+  @override
+  String get contactPhoneInvalid => 'Invalid phone number';
+
+  @override
+  String get contactEnterNewName => 'Enter a new name';
+
+  @override
+  String get contactPickFromList => 'Pick from contacts';
+
+  @override
+  String get whatsappSend => 'Send WhatsApp';
+
+  @override
+  String get whatsappNoPhone => 'No phone number for this person';
+
+  @override
+  String get whatsappOpenFailed => 'Could not open WhatsApp';
+
+  @override
+  String whatsappSplitDebtMessage(
+      String name, String title, String amount, String currency, String date) {
+    return 'Hello $name, your share from \"$title\" is $amount $currency on $date.';
+  }
+
+  @override
   String get transactionFormDueDate => 'Due date';
 
   @override

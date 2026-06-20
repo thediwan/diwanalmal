@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_form_fields.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
+import '../../../core/theme/app_form_fields.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../database/lazarus_database.dart';
 import '../../../services/contact_service.dart';
 import '../../../services/lazarus_database_service.dart';
@@ -13,15 +13,17 @@ class PersonSelection {
   const PersonSelection({
     this.contactId,
     required this.displayName,
+    this.phone,
   });
 
   final String? contactId;
   final String displayName;
+  final String? phone;
 
   bool get isEmpty => displayName.trim().isEmpty;
 }
 
-/// Autocomplete field for picking an existing contact or typing a new name.
+/// Picker: first tap opens contact list; second tap or "new name" opens keyboard.
 class PersonPickerField extends StatefulWidget {
   const PersonPickerField({
     super.key,
@@ -29,40 +31,61 @@ class PersonPickerField extends StatefulWidget {
     required this.onChanged,
     this.label,
     this.hint,
+    this.showPhoneField = false,
+    this.onWhatsAppTap,
+    this.enabled = true,
   });
 
   final PersonSelection? initialSelection;
   final ValueChanged<PersonSelection> onChanged;
   final String? label;
   final String? hint;
+  final bool showPhoneField;
+  final VoidCallback? onWhatsAppTap;
+  final bool enabled;
 
   @override
   State<PersonPickerField> createState() => _PersonPickerFieldState();
 }
 
 class _PersonPickerFieldState extends State<PersonPickerField> {
-  final _controller = TextEditingController();
-  final _focusNode = FocusNode();
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _nameFocusNode = FocusNode();
   List<DbContact> _contacts = [];
-  PersonSelection? _selection;
+  bool _keyboardMode = false;
+  String? _selectedContactId;
+  String? _selectedPhone;
 
   @override
   void initState() {
     super.initState();
-    _selection = widget.initialSelection;
-    if (_selection != null && _selection!.displayName.isNotEmpty) {
-      _controller.text = _selection!.displayName;
-    }
+    _applyInitial(widget.initialSelection);
     _loadContacts();
+  }
+
+  void _applyInitial(PersonSelection? selection) {
+    if (selection == null) return;
+    _selectedContactId = selection.contactId;
+    _selectedPhone = selection.phone;
+    if (selection.displayName.isNotEmpty) {
+      _nameController.text = selection.displayName;
+      _keyboardMode = false;
+    }
+    if (selection.phone != null && selection.phone!.isNotEmpty) {
+      _phoneController.text = selection.phone!;
+    }
   }
 
   @override
   void didUpdateWidget(covariant PersonPickerField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialSelection != oldWidget.initialSelection &&
-        widget.initialSelection != null) {
-      _selection = widget.initialSelection;
-      _controller.text = widget.initialSelection!.displayName;
+    if (_nameFocusNode.hasFocus) return;
+
+    final newName = widget.initialSelection?.displayName ?? '';
+    final oldName = oldWidget.initialSelection?.displayName ?? '';
+    if (newName != oldName && newName != _nameController.text) {
+      _applyInitial(widget.initialSelection);
     }
   }
 
@@ -75,30 +98,172 @@ class _PersonPickerFieldState extends State<PersonPickerField> {
 
   @override
   void dispose() {
-    _controller.dispose();
-    _focusNode.dispose();
+    _nameController.dispose();
+    _phoneController.dispose();
+    _nameFocusNode.dispose();
     super.dispose();
   }
 
-  Iterable<DbContact> _filterContacts(String query) {
-    final q = query.trim().toLowerCase();
-    if (q.isEmpty) return _contacts;
-    return _contacts.where((c) => c.name.toLowerCase().contains(q));
+  void _emitSelection() {
+    widget.onChanged(
+      PersonSelection(
+        contactId: _selectedContactId,
+        displayName: _nameController.text,
+        phone: _phoneController.text.trim().isEmpty
+            ? _selectedPhone
+            : _phoneController.text.trim(),
+      ),
+    );
   }
 
-  void _emitSelection({String? contactId, required String name}) {
-    final selection = PersonSelection(
-      contactId: contactId,
-      displayName: name.trim(),
+  void _selectContact(DbContact contact) {
+    setState(() {
+      _keyboardMode = false;
+      _selectedContactId = contact.id;
+      _selectedPhone = contact.phone;
+      _nameController.text = contact.name;
+      if (contact.phone != null) {
+        _phoneController.text = contact.phone!;
+      }
+    });
+    _emitSelection();
+  }
+
+  void _enterKeyboardMode() {
+    setState(() {
+      _keyboardMode = true;
+      _selectedContactId = null;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _nameFocusNode.requestFocus();
+    });
+  }
+
+  Future<void> _openContactPicker() async {
+    final l10n = context.l10n;
+    final colors = context.appColors;
+    final searchController = TextEditingController();
+    var filtered = List<DbContact>.from(_contacts);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            void filter(String q) {
+              final query = q.trim().toLowerCase();
+              setSheetState(() {
+                filtered = query.isEmpty
+                    ? List<DbContact>.from(_contacts)
+                    : _contacts
+                        .where((c) => c.name.toLowerCase().contains(query))
+                        .toList();
+              });
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    l10n.contactPickFromList,
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: searchController,
+                    style: AppFormFields.inputTextStyleOf(context),
+                    decoration: AppFormFields.decoration(
+                      context,
+                      hintText: l10n.contactSelectOrAdd,
+                    ),
+                    onChanged: filter,
+                  ),
+                  const SizedBox(height: 8),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(sheetContext).size.height * 0.4,
+                    ),
+                    child: filtered.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(
+                              l10n.contactPickFromList,
+                              style: AppTextStyles.captionOnSurface(colors),
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: filtered.length,
+                            itemBuilder: (context, index) {
+                              final contact = filtered[index];
+                              return ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(contact.name),
+                                subtitle: contact.phone != null
+                                    ? Text(contact.phone!)
+                                    : null,
+                                onTap: () {
+                                  Navigator.pop(sheetContext);
+                                  _selectContact(contact);
+                                },
+                              );
+                            },
+                          ),
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(sheetContext);
+                      _enterKeyboardMode();
+                    },
+                    icon: const Icon(Icons.person_add_outlined),
+                    label: Text(l10n.contactEnterNewName),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
-    _selection = selection;
-    widget.onChanged(selection);
+    searchController.dispose();
+  }
+
+  void _onNameFieldTap() {
+    if (!widget.enabled || _keyboardMode) return;
+
+    if (_nameController.text.trim().isNotEmpty) {
+      _enterKeyboardMode();
+      return;
+    }
+
+    if (_contacts.isNotEmpty) {
+      _openContactPicker();
+      return;
+    }
+
+    _enterKeyboardMode();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.appColors;
+    final hasWhatsApp = widget.onWhatsAppTap != null &&
+        ((_selectedPhone != null && _selectedPhone!.isNotEmpty) ||
+            _phoneController.text.trim().isNotEmpty);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -110,130 +275,67 @@ class _PersonPickerFieldState extends State<PersonPickerField> {
           ),
           const SizedBox(height: 8),
         ],
-        RawAutocomplete<DbContact>(
-          textEditingController: _controller,
-          focusNode: _focusNode,
-          displayStringForOption: (option) => option.name,
-          optionsBuilder: (textEditingValue) {
-            return _filterContacts(textEditingValue.text);
-          },
-          onSelected: (contact) {
-            _controller.text = contact.name;
-            _emitSelection(contactId: contact.id, name: contact.name);
-          },
-          fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-            return TextFormField(
-              controller: controller,
-              focusNode: focusNode,
-              textCapitalization: TextCapitalization.words,
-              style: AppFormFields.inputTextStyleOf(context),
-              decoration: AppFormFields.decoration(
-                context,
-                hintText: widget.hint ?? l10n.contactSelectOrAdd,
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _nameController,
+                focusNode: _nameFocusNode,
+                readOnly: !_keyboardMode || !widget.enabled,
+                enabled: widget.enabled,
+                textCapitalization: TextCapitalization.words,
+                style: AppFormFields.inputTextStyleOf(context),
+                decoration: AppFormFields.decoration(
+                  context,
+                  hintText: widget.hint ?? l10n.contactSelectOrAdd,
+                  suffixIcon: Icon(
+                    _keyboardMode
+                        ? Icons.keyboard_outlined
+                        : Icons.arrow_drop_down,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                onTap: widget.enabled ? _onNameFieldTap : null,
+                onChanged: widget.enabled
+                    ? (_) {
+                        _selectedContactId = null;
+                        _emitSelection();
+                      }
+                    : null,
               ),
-              onChanged: (value) {
-                DbContact? match;
-                for (final contact in _contacts) {
-                  if (contact.name.toLowerCase() ==
-                      value.trim().toLowerCase()) {
-                    match = contact;
-                    break;
+            ),
+            if (hasWhatsApp) ...[
+              const SizedBox(width: 8),
+              IconButton(
+                tooltip: l10n.whatsappSend,
+                onPressed: widget.onWhatsAppTap,
+                icon: const Icon(Icons.chat_outlined),
+                color: const Color(0xFF25D366),
+              ),
+            ],
+          ],
+        ),
+        if (widget.showPhoneField && _keyboardMode) ...[
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _phoneController,
+            enabled: widget.enabled,
+            keyboardType: TextInputType.phone,
+            style: AppFormFields.inputTextStyleOf(context),
+            decoration: AppFormFields.decoration(
+              context,
+              labelText: l10n.contactPhone,
+              hintText: l10n.contactPhoneHint,
+            ),
+            onChanged: widget.enabled
+                ? (_) {
+                    _selectedPhone = _phoneController.text.trim();
+                    _emitSelection();
                   }
-                }
-                _emitSelection(
-                  contactId: match?.id,
-                  name: value,
-                );
-              },
-              onFieldSubmitted: (_) => onFieldSubmitted(),
-            );
-          },
-          optionsViewBuilder: (context, onSelected, options) {
-            if (options.isEmpty) {
-              final typed = _controller.text.trim();
-              if (typed.isEmpty) return const SizedBox.shrink();
-              return _SuggestionPanel(
-                children: [
-                  ListTile(
-                    leading: Icon(Icons.person_add_outlined, color: colors.textSecondary),
-                    title: Text(
-                      l10n.contactAddNewNamed(typed),
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                    onTap: () {
-                      _emitSelection(name: typed);
-                      _focusNode.unfocus();
-                    },
-                  ),
-                ],
-              );
-            }
-
-            return _SuggestionPanel(
-              children: [
-                for (final contact in options)
-                  ListTile(
-                    title: Text(
-                      contact.name,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                    onTap: () => onSelected(contact),
-                  ),
-                if (_controller.text.trim().isNotEmpty &&
-                    !options.any(
-                      (c) =>
-                          c.name.toLowerCase() ==
-                          _controller.text.trim().toLowerCase(),
-                    ))
-                  ListTile(
-                    leading: Icon(Icons.person_add_outlined, color: colors.textSecondary),
-                    title: Text(
-                      l10n.contactAddNewNamed(_controller.text.trim()),
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                    onTap: () {
-                      _emitSelection(name: _controller.text.trim());
-                      _focusNode.unfocus();
-                    },
-                  ),
-              ],
-            );
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _SuggestionPanel extends StatelessWidget {
-  const _SuggestionPanel({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return Align(
-      alignment: AlignmentDirectional.topStart,
-      child: Material(
-        elevation: 4,
-        borderRadius: BorderRadius.circular(12),
-        color: colors.surfaceElevated,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 220, minWidth: 280),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            children: children,
+                : null,
           ),
-        ),
-      ),
+        ],
+      ],
     );
   }
 }

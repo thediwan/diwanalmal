@@ -545,6 +545,54 @@ class AppLocalizationsAr extends AppLocalizations {
       'لا يمكن تعديل التشاركية بعد تسديد بعض الذمم';
 
   @override
+  String get transactionSplitLinkedBadge => 'مرتبط بتشاركية';
+
+  @override
+  String get transactionSplitLinkedCannotDelete =>
+      'لا يمكن حذف هذه الذمة لأنها مرتبطة بمعاملة مُشارَكة. احذف المعاملة الأصلية بدلاً من ذلك.';
+
+  @override
+  String get transactionSplitLinkedCannotEdit =>
+      'لا يمكن تعديل هذه الذمة لأنها مرتبطة بمعاملة مُشارَكة.';
+
+  @override
+  String get transactionSplitGoToParent => 'الانتقال للمعاملة الأصلية';
+
+  @override
+  String get transactionSplitSendWhatsappAfterSave =>
+      'إرسال تذكير واتساب للمشاركين';
+
+  @override
+  String get contactPhone => 'رقم الهاتف';
+
+  @override
+  String get contactPhoneHint => 'مثال: 9639xxxxxxxx';
+
+  @override
+  String get contactPhoneInvalid => 'رقم الهاتف غير صالح';
+
+  @override
+  String get contactEnterNewName => 'إدخال اسم جديد';
+
+  @override
+  String get contactPickFromList => 'اختر من جهات الاتصال';
+
+  @override
+  String get whatsappSend => 'إرسال واتساب';
+
+  @override
+  String get whatsappNoPhone => 'لا يوجد رقم هاتف لهذا الشخص';
+
+  @override
+  String get whatsappOpenFailed => 'تعذّر فتح واتساب';
+
+  @override
+  String whatsappSplitDebtMessage(
+      String name, String title, String amount, String currency, String date) {
+    return 'مرحباً $name، مستحقك من معاملة «$title»: $amount $currency بتاريخ $date.';
+  }
+
+  @override
   String get transactionFormDueDate => 'تاريخ الاستحقاق';
 
   @override

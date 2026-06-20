@@ -31,6 +31,7 @@ class TransactionListItem {
     bool? canEdit,
     bool? canDelete,
     this.isShared = false,
+    this.isSplitLinked = false,
   })  : _isIncome = isIncome,
         _isTransfer = isTransfer,
         _isDebt = isDebt,
@@ -55,6 +56,7 @@ class TransactionListItem {
   final bool? _canEdit;
   final bool? _canDelete;
   final bool isShared;
+  final bool isSplitLinked;
 
   bool get isIncome => _isIncome ?? false;
   bool get isTransfer => _isTransfer ?? false;

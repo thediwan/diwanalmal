@@ -10,7 +10,7 @@ Local financial data is stored in **`lazarus.db`** (SQLite via [Drift](https://d
 
 ## Tables (per product spec)
 
-**Schema version:** 12
+**Schema version:** 13
 
 | Table | Purpose |
 |-------|---------|
@@ -22,7 +22,7 @@ Local financial data is stored in **`lazarus.db`** (SQLite via [Drift](https://d
 | `wallets` | Treasury (خزينة) — container name, icon, subtitle |
 | `wallet_currency_accounts` | Opening balance per currency inside a treasury — **current balance is computed** |
 | `categories` | income / expense |
-| `contacts` | Reusable people for debts and transaction splits |
+| `contacts` | Reusable people for debts and transaction splits (`name`, optional `phone`) |
 | `transactions` | amount, currency, `exchange_rate`, `base_amount`, optional `parent_transaction_id` |
 | `transfers` | Wallet-to-wallet (not income/expense) |
 | `debts` | owed_to_me / i_owe, optional `contact_id` |
@@ -59,6 +59,20 @@ When recording **income** or **expense** with sharing enabled:
 - Child debt transactions reference the parent via `transactions.parent_transaction_id`.
 
 Services: `ContactService`, `TransactionSplitService`, `SplitCalculator`.
+
+## Contacts phone & WhatsApp (v13)
+
+- `contacts.phone` (nullable, max 20) — normalized on save via `PhoneHelper`.
+- `ContactService.findOrCreateByName(name, {phone})` updates phone when contact exists.
+- `WhatsAppService` opens `wa.me/{digits}?text=…` via `url_launcher`.
+- WhatsApp entry points: split participant row, post-save success sheet (shared transactions), debt edit screen.
+- `PersonPickerField`: first tap opens contact list (no keyboard); «new name» or second tap opens keyboard; optional phone field for new contacts.
+
+## Split-linked debt protection (v13)
+
+- Child debt transactions (`parent_transaction_id != null`) are **read-only** in the list and edit screen.
+- `DebtService` rejects independent delete/update of split-linked debts.
+- Deleting the **parent** income/expense cascades soft-delete to split children via `TransactionSplitService.deleteParentTransaction`.
 
 ## Test / seed data
 

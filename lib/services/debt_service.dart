@@ -30,6 +30,7 @@ class CreateDebtEntryInput {
     required this.amount,
     required this.currency,
     this.contactId,
+    this.phone,
     this.parentTransactionId,
     this.dueDate,
     this.notes,
@@ -43,6 +44,7 @@ class CreateDebtEntryInput {
   final double amount;
   final Currency currency;
   final String? contactId;
+  final String? phone;
   final String? parentTransactionId;
   final DateTime? dueDate;
   final String? notes;
@@ -60,6 +62,7 @@ class UpdateDebtEntryInput {
     required this.amount,
     required this.currency,
     this.contactId,
+    this.phone,
     this.dueDate,
     this.notes,
     required this.transactionDate,
@@ -73,6 +76,7 @@ class UpdateDebtEntryInput {
   final double amount;
   final Currency currency;
   final String? contactId;
+  final String? phone;
   final DateTime? dueDate;
   final String? notes;
   final DateTime transactionDate;
@@ -146,10 +150,19 @@ class DebtService {
         throw ArgumentError('Contact not found');
       }
       person = contact.name;
+      if (input.phone != null && input.phone!.trim().isNotEmpty) {
+        await ContactService(_lazarus).updatePhone(
+          contactId: contactId,
+          phone: input.phone,
+        );
+      }
     } else if (person.isEmpty) {
       throw ArgumentError('Person name is required');
     } else {
-      final contact = await ContactService(_lazarus).findOrCreateByName(person);
+      final contact = await ContactService(_lazarus).findOrCreateByName(
+        person,
+        phone: input.phone,
+      );
       contactId = contact.id;
       person = contact.name;
     }
@@ -207,10 +220,19 @@ class DebtService {
         throw ArgumentError('Contact not found');
       }
       person = contact.name;
+      if (input.phone != null && input.phone!.trim().isNotEmpty) {
+        await ContactService(_lazarus).updatePhone(
+          contactId: contactId,
+          phone: input.phone,
+        );
+      }
     } else if (person.isEmpty) {
       throw ArgumentError('Person name is required');
     } else {
-      final contact = await ContactService(_lazarus).findOrCreateByName(person);
+      final contact = await ContactService(_lazarus).findOrCreateByName(
+        person,
+        phone: input.phone,
+      );
       contactId = contact.id;
       person = contact.name;
     }
@@ -309,6 +331,10 @@ class DebtService {
       throw StateError('Debt transaction not found');
     }
 
+    if (existing.transaction.parentTransactionId != null) {
+      throw StateError('transaction_split_linked_cannot_edit');
+    }
+
     if (!TransactionPolicy.canEdit(
       createdAt: existing.transaction.createdAt,
       editWindowDays: editWindowDays,
@@ -327,7 +353,15 @@ class DebtService {
 
     String? contactId = input.contactId;
     if (contactId == null) {
-      contactId = (await ContactService(_lazarus).findOrCreateByName(person)).id;
+      contactId = (await ContactService(_lazarus).findOrCreateByName(
+        person,
+        phone: input.phone,
+      )).id;
+    } else if (input.phone != null && input.phone!.trim().isNotEmpty) {
+      await ContactService(_lazarus).updatePhone(
+        contactId: contactId,
+        phone: input.phone,
+      );
     }
 
     if (input.walletId.trim().isEmpty) {
@@ -487,6 +521,10 @@ class DebtService {
       deleteWindowHours: deleteWindowHours,
     )) {
       throw StateError('Delete window expired');
+    }
+
+    if (existing.transaction.parentTransactionId != null) {
+      throw StateError('transaction_split_linked_cannot_delete');
     }
 
     final debtId = existing.transaction.debtId;

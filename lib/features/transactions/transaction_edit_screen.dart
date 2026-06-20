@@ -28,10 +28,12 @@ import '../../providers/settings_provider.dart';
 import '../../providers/wallet_provider.dart';
 import '../../database/daos/finance_dao.dart';
 import '../../services/category_service.dart';
+import '../../core/helpers/whatsapp_message_helper.dart';
 import '../../services/debt_service.dart';
 import '../../services/lazarus_database_service.dart';
 import '../../services/transaction_split_service.dart';
 import '../../services/transfer_service.dart';
+import '../../services/whatsapp_service.dart';
 import '../contacts/widgets/person_picker_field.dart';
 import 'models/transaction_list_item.dart';
 import 'widgets/debt_settlement_sheet.dart';
@@ -84,6 +86,9 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
   String? _currencyId;
   String? _debtId;
   String? _debtContactId;
+  String? _debtContactPhone;
+  String? _parentTransactionId;
+  TransactionListKind? _parentTransactionKind;
   DebtLedgerDetail? _debtDetail;
 
   bool _splitEnabled = false;
@@ -99,6 +104,8 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
 
   List<TransactionCategory> _expenseCategories = [];
   List<TransactionCategory> _incomeCategories = [];
+
+  bool get _isSplitLinkedDebt => _parentTransactionId != null;
 
   bool get _isTransferLike =>
       widget.kind == TransactionListKind.transfer ||
@@ -161,12 +168,30 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       _debtDetail = detail;
       final tx = detail.ledgerTransaction;
       _createdAt = tx.createdAt;
-      _canEdit = settings.transactionEditWindowDays > 0 &&
-          DateTime.now().difference(_createdAt) <=
-              Duration(days: settings.transactionEditWindowDays);
+      _parentTransactionId = tx.parentTransactionId;
+      if (_parentTransactionId != null) {
+        _canEdit = false;
+        final parentRow = await lazarus.database.financeDao
+            .getTransactionById(_parentTransactionId!);
+        if (parentRow != null) {
+          _parentTransactionKind =
+              parentRow.transaction.type == DatabaseConstants.txIncome
+                  ? TransactionListKind.income
+                  : TransactionListKind.expense;
+        }
+      } else {
+        _canEdit = settings.transactionEditWindowDays > 0 &&
+            DateTime.now().difference(_createdAt) <=
+                Duration(days: settings.transactionEditWindowDays);
+      }
       _transactionDate = tx.transactionDate;
       _debtId = detail.debt.id;
       _debtContactId = detail.debt.contactId;
+      if (_debtContactId != null) {
+        final contact =
+            await lazarus.database.financeDao.getContactById(_debtContactId!);
+        _debtContactPhone = contact?.phone;
+      }
       _currencyId = tx.currencyId;
       _walletId = detail.debt.walletId;
       _personNameController.text = tx.title;
@@ -198,19 +223,26 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
         _splitMode = splitDetail.split.splitMode;
         _splitIncludeSelf = splitDetail.split.includeSelfInEqualSplit;
         _splitFixedAmountPerPerson = splitDetail.split.fixedAmountPerPerson;
-        _splitParticipantRows = splitDetail.participants
-            .map(
-              (p) => SplitParticipantRowState(
-                contactId: p.participant.contactId,
-                contactName: p.contactName,
-                percent: p.participant.sharePercent,
-                fixedAmount: splitDetail.split.splitMode ==
-                        SplitConstants.modeFixedAmount
-                    ? p.participant.shareAmount
-                    : null,
-              ),
-            )
-            .toList();
+        _splitParticipantRows = await Future.wait(
+          splitDetail.participants.map((p) async {
+            String? phone;
+            if (p.participant.contactId.isNotEmpty) {
+              final contact = await lazarus.database.financeDao
+                  .getContactById(p.participant.contactId);
+              phone = contact?.phone;
+            }
+            return SplitParticipantRowState(
+              contactId: p.participant.contactId,
+              contactName: p.contactName,
+              phone: phone,
+              percent: p.participant.sharePercent,
+              fixedAmount: splitDetail.split.splitMode ==
+                      SplitConstants.modeFixedAmount
+                  ? p.participant.shareAmount
+                  : null,
+            );
+          }),
+        );
         _splitParticipants =
             _splitParticipantRows.map((r) => r.toDraft()).toList();
       }
@@ -355,8 +387,51 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
   void _showFormError(Object error) {
     _showFormFeedback(
       FormFeedbackType.error,
-      UserFacingError.message(context.l10n, error),
+      UserFacingError.transactionMessage(context.l10n, error),
     );
+  }
+
+  Future<void> _sendDebtWhatsApp() async {
+    final l10n = context.l10n;
+    final phone = _debtContactPhone;
+    final name = _personNameController.text.trim();
+    final amount = _parsePositiveDouble(_debtAmountController.text);
+    final currency = _currencyById(_currencyId);
+
+    if (phone == null || phone.trim().isEmpty || name.isEmpty || amount == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.whatsappNoPhone)),
+      );
+      return;
+    }
+
+    final message = WhatsAppMessageHelper.splitDebtMessage(
+      l10n: l10n,
+      localeName: Localizations.localeOf(context).toString(),
+      personName: name,
+      transactionTitle: name,
+      shareAmount: amount,
+      currencyCode: currency?.code ?? '',
+      transactionDate: _transactionDate,
+    );
+
+    final opened = await WhatsAppService().openChat(
+      phone: phone,
+      message: message,
+    );
+    if (!mounted) return;
+    if (!opened) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.whatsappOpenFailed)),
+      );
+    }
+  }
+
+  void _goToParentTransaction() {
+    final parentId = _parentTransactionId;
+    final kind = _parentTransactionKind;
+    if (parentId == null || kind == null) return;
+    context.push('/transactions/$parentId/edit', extra: kind);
   }
 
   Future<void> _openSettlementSheet() async {
@@ -515,6 +590,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
             walletId: _walletId!,
             personName: _personNameController.text,
             contactId: _debtContactId,
+            phone: _debtContactPhone,
             amount: _parsePositiveDouble(_debtAmountController.text)!,
             currency: currency,
             dueDate: _dueDate,
@@ -666,6 +742,35 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                       onDismiss: _clearFormFeedback,
                     ),
                   ],
+                  if (_isSplitLinkedDebt) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: colors.accentSurface,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            l10n.transactionSplitLinkedCannotEdit,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: colors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: TextButton(
+                              onPressed: _goToParentTransaction,
+                              child: Text(l10n.transactionSplitGoToParent),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   if (_isTransferLike) ...[
                     Text(
@@ -772,16 +877,26 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                     ],
                   ] else if (_isDebtKind) ...[
                     PersonPickerField(
+                      enabled: _canEdit,
                       label: l10n.transactionFormPersonName,
                       hint: l10n.transactionFormPersonNameHint,
                       initialSelection: PersonSelection(
                         contactId: _debtContactId,
                         displayName: _personNameController.text,
+                        phone: _debtContactPhone,
                       ),
+                      showPhoneField: true,
+                      onWhatsAppTap:
+                          (_debtContactPhone?.trim().isNotEmpty ?? false)
+                              ? _sendDebtWhatsApp
+                              : null,
                       onChanged: (selection) {
                         setState(() {
                           _debtContactId = selection.contactId;
                           _personNameController.text = selection.displayName;
+                          final phone = selection.phone?.trim();
+                          _debtContactPhone =
+                              (phone == null || phone.isEmpty) ? null : phone;
                         });
                       },
                     ),
@@ -1005,6 +1120,12 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                       initialParticipants: _splitParticipantRows,
                       totalAmount: _amountInput.value,
                       currencyCode: sourceCurrency?.code ?? '',
+                      transactionTitle: _activeCategories
+                              .where((c) => c.id == _categoryId)
+                              .firstOrNull
+                              ?.name ??
+                          '',
+                      transactionDate: _transactionDate,
                       onChanged: (state) {
                         _splitEnabled = state.enabled;
                         _splitMode = state.mode;

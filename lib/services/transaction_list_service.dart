@@ -160,6 +160,7 @@ class TransactionListService {
     if (tx.type == DatabaseConstants.txDebtor ||
         tx.type == DatabaseConstants.txCreditor) {
       final isDebtor = tx.type == DatabaseConstants.txDebtor;
+      final isSplitChild = tx.parentTransactionId != null;
       final sign = isDebtor ? '+' : '-';
       final showSecondary =
           row.currencyCode.toUpperCase() != baseCurrencyCode.toUpperCase();
@@ -168,6 +169,7 @@ class TransactionListService {
         dueDate: row.dueDate,
         isPaid: row.debtIsPaid ?? false,
         isDebtor: isDebtor,
+        isSplitChild: isSplitChild,
         localeName: localeName,
         l10n: l10n,
       );
@@ -194,14 +196,17 @@ class TransactionListService {
         isIncome: isDebtor,
         isTransfer: false,
         isDebt: true,
-        canEdit: TransactionPolicy.canEdit(
+        canEdit: !isSplitChild &&
+            TransactionPolicy.canEdit(
           createdAt: createdAt,
           editWindowDays: editWindowDays,
         ),
-        canDelete: TransactionPolicy.canDelete(
+        canDelete: !isSplitChild &&
+            TransactionPolicy.canDelete(
           createdAt: createdAt,
           deleteWindowHours: deleteWindowHours,
         ),
+        isSplitLinked: isSplitChild,
       );
     }
 
@@ -373,14 +378,18 @@ class TransactionListService {
     required DateTime? dueDate,
     required bool isPaid,
     required bool isDebtor,
+    required bool isSplitChild,
     required String localeName,
     required AppLocalizations l10n,
   }) {
     final time = DateFormat.jm(localeName).format(date);
     final kindLabel =
         isDebtor ? l10n.transactionsListDebtReceivable : l10n.transactionsListDebtPayable;
-    if (isPaid) {
+        if (isPaid) {
       return '$time • $kindLabel • ${l10n.transactionsListDebtPaid}';
+    }
+    if (isSplitChild) {
+      return '$time • $kindLabel • ${l10n.transactionSplitLinkedBadge}';
     }
     if (dueDate != null) {
       return '$time • $kindLabel • ${l10n.transactionsListDueDate(DateFormat.MMMd(localeName).format(dueDate))}';
