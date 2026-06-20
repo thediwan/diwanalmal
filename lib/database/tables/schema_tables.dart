@@ -130,6 +130,21 @@ class Categories extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+/// Reusable contacts for debts and transaction splits.
+@DataClassName('DbContact')
+class Contacts extends Table {
+  TextColumn get id => text()();
+  TextColumn get userId => text().references(AppUsers, #id)();
+  TextColumn get name => text().withLength(min: 1, max: 255)();
+  TextColumn get notes => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 /// Income, expense, and debt ledger operations.
 class Transactions extends Table {
   TextColumn get id => text()();
@@ -137,6 +152,8 @@ class Transactions extends Table {
   TextColumn get walletId => text().nullable().references(Wallets, #id)();
   TextColumn get categoryId => text().nullable().references(Categories, #id)();
   TextColumn get debtId => text().nullable().references(Debts, #id)();
+  TextColumn get parentTransactionId =>
+      text().nullable().references(Transactions, #id)();
   TextColumn get type => text()();
   TextColumn get title => text().withLength(min: 1, max: 255)();
   RealColumn get amount => real()();
@@ -184,6 +201,8 @@ class Debts extends Table {
   TextColumn get id => text()();
   TextColumn get userId => text().references(AppUsers, #id)();
   TextColumn get walletId => text().references(Wallets, #id)();
+  TextColumn get contactId =>
+      text().nullable().references(Contacts, #id)();
   TextColumn get personName => text().withLength(min: 1, max: 255)();
   TextColumn get type => text()();
   RealColumn get amount => real()();
@@ -197,6 +216,45 @@ class Debts extends Table {
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Split header for a shared income/expense transaction.
+@DataClassName('DbTransactionSplit')
+class TransactionSplits extends Table {
+  TextColumn get id => text()();
+  TextColumn get userId => text().references(AppUsers, #id)();
+  TextColumn get transactionId =>
+      text().references(Transactions, #id)();
+  TextColumn get splitMode => text()();
+  BoolColumn get includeSelfInEqualSplit =>
+      boolean().withDefault(const Constant(true))();
+  RealColumn get fixedAmountPerPerson => real().nullable()();
+  RealColumn get userShareAmount => real()();
+  RealColumn get totalAmount => real()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// One participant line in a transaction split.
+@DataClassName('DbTransactionSplitParticipant')
+class TransactionSplitParticipants extends Table {
+  TextColumn get id => text()();
+  TextColumn get splitId =>
+      text().references(TransactionSplits, #id)();
+  TextColumn get contactId => text().references(Contacts, #id)();
+  RealColumn get shareAmount => real()();
+  RealColumn get sharePercent => real().nullable()();
+  TextColumn get debtId => text().nullable().references(Debts, #id)();
+  TextColumn get debtTransactionId =>
+      text().nullable().references(Transactions, #id)();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

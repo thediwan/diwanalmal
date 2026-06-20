@@ -473,6 +473,79 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionFormPersonNameRequired => 'Enter a person name';
 
   @override
+  String get contactSelectOrAdd => 'Select a contact or add a new name';
+
+  @override
+  String contactAddNewNamed(String name) {
+    return 'Add \"$name\"';
+  }
+
+  @override
+  String get transactionSplitEnable => 'Enable sharing';
+
+  @override
+  String get transactionSplitModeLabel => 'Split method';
+
+  @override
+  String get transactionSplitModeEqual => 'Equal';
+
+  @override
+  String get transactionSplitModePercent => 'Percent';
+
+  @override
+  String get transactionSplitModeFixed => 'Fixed amount';
+
+  @override
+  String get transactionSplitIncludeSelf => 'Include me in equal split';
+
+  @override
+  String get transactionSplitAddParticipant => 'Add participant';
+
+  @override
+  String transactionSplitParticipantLabel(int index) {
+    return 'Participant $index';
+  }
+
+  @override
+  String get transactionSplitPercentLabel => 'Percent';
+
+  @override
+  String get transactionSplitFixedAmountLabel => 'Fixed amount per person';
+
+  @override
+  String transactionSplitYourShare(String amount, String currency) {
+    return 'Your share: $amount $currency';
+  }
+
+  @override
+  String transactionSplitParticipantShare(
+      String name, String amount, String currency) {
+    return '$name: $amount $currency';
+  }
+
+  @override
+  String get transactionSplitPreviewUnavailable =>
+      'Complete participant details to preview the split';
+
+  @override
+  String get transactionSplitTotalMismatch =>
+      'Share total does not match the transaction amount';
+
+  @override
+  String get transactionSplitPercentExceeds100 => 'Percent total exceeds 100%';
+
+  @override
+  String get transactionSplitParticipantsRequired =>
+      'Add at least one participant';
+
+  @override
+  String get transactionSplitSharedBadge => 'Shared';
+
+  @override
+  String get transactionSplitSettledEditBlocked =>
+      'Cannot edit sharing after some debts were settled';
+
+  @override
   String get transactionFormDueDate => 'Due date';
 
   @override

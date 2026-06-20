@@ -7,6 +7,7 @@ mixin _$FinanceDaoMixin on DatabaseAccessor<LazarusDatabase> {
   $AppUsersTable get appUsers => attachedDatabase.appUsers;
   $WalletsTable get wallets => attachedDatabase.wallets;
   $CategoriesTable get categories => attachedDatabase.categories;
+  $ContactsTable get contacts => attachedDatabase.contacts;
   $CurrenciesTable get currencies => attachedDatabase.currencies;
   $DebtsTable get debts => attachedDatabase.debts;
   $TransactionsTable get transactions => attachedDatabase.transactions;
@@ -15,6 +16,10 @@ mixin _$FinanceDaoMixin on DatabaseAccessor<LazarusDatabase> {
   $GoalsTable get goals => attachedDatabase.goals;
   $WalletCurrencyAccountsTable get walletCurrencyAccounts =>
       attachedDatabase.walletCurrencyAccounts;
+  $TransactionSplitsTable get transactionSplits =>
+      attachedDatabase.transactionSplits;
+  $TransactionSplitParticipantsTable get transactionSplitParticipants =>
+      attachedDatabase.transactionSplitParticipants;
   FinanceDaoManager get managers => FinanceDaoManager(this);
 }
 
@@ -27,6 +32,8 @@ class FinanceDaoManager {
       $$WalletsTableTableManager(_db.attachedDatabase, _db.wallets);
   $$CategoriesTableTableManager get categories =>
       $$CategoriesTableTableManager(_db.attachedDatabase, _db.categories);
+  $$ContactsTableTableManager get contacts =>
+      $$ContactsTableTableManager(_db.attachedDatabase, _db.contacts);
   $$CurrenciesTableTableManager get currencies =>
       $$CurrenciesTableTableManager(_db.attachedDatabase, _db.currencies);
   $$DebtsTableTableManager get debts =>
@@ -42,4 +49,11 @@ class FinanceDaoManager {
   $$WalletCurrencyAccountsTableTableManager get walletCurrencyAccounts =>
       $$WalletCurrencyAccountsTableTableManager(
           _db.attachedDatabase, _db.walletCurrencyAccounts);
+  $$TransactionSplitsTableTableManager get transactionSplits =>
+      $$TransactionSplitsTableTableManager(
+          _db.attachedDatabase, _db.transactionSplits);
+  $$TransactionSplitParticipantsTableTableManager
+      get transactionSplitParticipants =>
+          $$TransactionSplitParticipantsTableTableManager(
+              _db.attachedDatabase, _db.transactionSplitParticipants);
 }

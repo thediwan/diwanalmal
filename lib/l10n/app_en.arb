@@ -170,6 +170,49 @@
   "transactionFormPersonName": "Person name",
   "transactionFormPersonNameHint": "Enter the person's name",
   "transactionFormPersonNameRequired": "Enter a person name",
+  "contactSelectOrAdd": "Select a contact or add a new name",
+  "contactAddNewNamed": "Add \"{name}\"",
+  "@contactAddNewNamed": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "transactionSplitEnable": "Enable sharing",
+  "transactionSplitModeLabel": "Split method",
+  "transactionSplitModeEqual": "Equal",
+  "transactionSplitModePercent": "Percent",
+  "transactionSplitModeFixed": "Fixed amount",
+  "transactionSplitIncludeSelf": "Include me in equal split",
+  "transactionSplitAddParticipant": "Add participant",
+  "transactionSplitParticipantLabel": "Participant {index}",
+  "@transactionSplitParticipantLabel": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  },
+  "transactionSplitPercentLabel": "Percent",
+  "transactionSplitFixedAmountLabel": "Fixed amount per person",
+  "transactionSplitYourShare": "Your share: {amount} {currency}",
+  "@transactionSplitYourShare": {
+    "placeholders": {
+      "amount": { "type": "String" },
+      "currency": { "type": "String" }
+    }
+  },
+  "transactionSplitParticipantShare": "{name}: {amount} {currency}",
+  "@transactionSplitParticipantShare": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "amount": { "type": "String" },
+      "currency": { "type": "String" }
+    }
+  },
+  "transactionSplitPreviewUnavailable": "Complete participant details to preview the split",
+  "transactionSplitTotalMismatch": "Share total does not match the transaction amount",
+  "transactionSplitPercentExceeds100": "Percent total exceeds 100%",
+  "transactionSplitParticipantsRequired": "Add at least one participant",
+  "transactionSplitSharedBadge": "Shared",
+  "transactionSplitSettledEditBlocked": "Cannot edit sharing after some debts were settled",
   "transactionFormDueDate": "Due date",
   "transactionFormDueDateOptional": "Optional — tap to set",
   "transactionFormClearDueDate": "Clear due date",

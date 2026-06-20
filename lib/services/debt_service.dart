@@ -7,7 +7,19 @@ import '../core/helpers/uuid_helper.dart';
 import '../database/daos/finance_dao.dart';
 import '../database/lazarus_database.dart';
 import '../models/currency.dart';
+import 'contact_service.dart';
 import 'lazarus_database_service.dart';
+
+/// Result of creating a debt ledger entry.
+class CreateDebtEntryResult {
+  const CreateDebtEntryResult({
+    required this.debtId,
+    required this.transactionId,
+  });
+
+  final String debtId;
+  final String transactionId;
+}
 
 /// Input for creating a receivable (debtor) or payable (creditor) entry.
 class CreateDebtEntryInput {
@@ -17,6 +29,8 @@ class CreateDebtEntryInput {
     required this.personName,
     required this.amount,
     required this.currency,
+    this.contactId,
+    this.parentTransactionId,
     this.dueDate,
     this.notes,
     required this.transactionDate,
@@ -28,6 +42,8 @@ class CreateDebtEntryInput {
   final String personName;
   final double amount;
   final Currency currency;
+  final String? contactId;
+  final String? parentTransactionId;
   final DateTime? dueDate;
   final String? notes;
   final DateTime transactionDate;
@@ -43,6 +59,7 @@ class UpdateDebtEntryInput {
     required this.personName,
     required this.amount,
     required this.currency,
+    this.contactId,
     this.dueDate,
     this.notes,
     required this.transactionDate,
@@ -55,6 +72,7 @@ class UpdateDebtEntryInput {
   final String personName;
   final double amount;
   final Currency currency;
+  final String? contactId;
   final DateTime? dueDate;
   final String? notes;
   final DateTime transactionDate;
@@ -109,7 +127,7 @@ class DebtService {
   }
 
   /// Creates linked debt + transaction rows (no wallet balance impact yet).
-  Future<void> create(CreateDebtEntryInput input) async {
+  Future<CreateDebtEntryResult> create(CreateDebtEntryInput input) async {
     final userId = await _lazarus.getActiveUserId();
     if (userId == null) {
       throw StateError('No active user for debt entry');
@@ -119,9 +137,21 @@ class DebtService {
       throw ArgumentError('Amount must be greater than zero');
     }
 
-    final person = input.personName.trim();
-    if (person.isEmpty) {
+    var person = input.personName.trim();
+    var contactId = input.contactId;
+
+    if (contactId != null) {
+      final contact = await _db.financeDao.getContactById(contactId);
+      if (contact == null) {
+        throw ArgumentError('Contact not found');
+      }
+      person = contact.name;
+    } else if (person.isEmpty) {
       throw ArgumentError('Person name is required');
+    } else {
+      final contact = await ContactService(_lazarus).findOrCreateByName(person);
+      contactId = contact.id;
+      person = contact.name;
     }
 
     if (input.walletId.trim().isEmpty) {
@@ -142,44 +172,131 @@ class DebtService {
     final trimmedNotes =
         input.notes?.trim().isEmpty ?? true ? null : input.notes!.trim();
 
-    await _db.transaction(() async {
-      await _db.financeDao.insertDebt(
-        DebtsCompanion.insert(
-          id: debtId,
+    await _db.transaction(() => _insertDebtRecords(
           userId: userId,
-          walletId: input.walletId,
-          personName: person,
-          type: debtTypeForTransaction(input.type),
-          amount: input.amount,
-          currencyId: input.currency.id,
-          exchangeRate: input.currency.rateToBase,
+          debtId: debtId,
+          txId: txId,
+          input: input,
+          person: person,
+          contactId: contactId,
           baseAmount: baseAmount,
-          dueDate: Value(input.dueDate),
-          notes: Value(trimmedNotes),
-          createdAt: now,
-          updatedAt: now,
-        ),
-      );
+          trimmedNotes: trimmedNotes,
+          now: now,
+        ));
 
-      await _db.financeDao.insertTransaction(
-        TransactionsCompanion.insert(
-          id: txId,
-          userId: userId,
-          walletId: Value(input.walletId),
-          debtId: Value(debtId),
-          type: input.type,
-          title: person,
-          amount: input.amount,
-          currencyId: input.currency.id,
-          exchangeRate: input.currency.rateToBase,
-          baseAmount: baseAmount,
-          notes: Value(trimmedNotes),
-          transactionDate: input.transactionDate,
-          createdAt: now,
-          updatedAt: now,
-        ),
-      );
-    });
+    return CreateDebtEntryResult(debtId: debtId, transactionId: txId);
+  }
+
+  /// Inserts debt rows without opening a nested transaction (for split batches).
+  Future<CreateDebtEntryResult> createLinked(CreateDebtEntryInput input) async {
+    final userId = await _lazarus.getActiveUserId();
+    if (userId == null) {
+      throw StateError('No active user for debt entry');
+    }
+
+    if (input.amount <= 0) {
+      throw ArgumentError('Amount must be greater than zero');
+    }
+
+    var person = input.personName.trim();
+    var contactId = input.contactId;
+
+    if (contactId != null) {
+      final contact = await _db.financeDao.getContactById(contactId);
+      if (contact == null) {
+        throw ArgumentError('Contact not found');
+      }
+      person = contact.name;
+    } else if (person.isEmpty) {
+      throw ArgumentError('Person name is required');
+    } else {
+      final contact = await ContactService(_lazarus).findOrCreateByName(person);
+      contactId = contact.id;
+      person = contact.name;
+    }
+
+    if (input.walletId.trim().isEmpty) {
+      throw ArgumentError('Wallet is required');
+    }
+
+    if (!DatabaseConstants.isDebtLedgerType(input.type)) {
+      throw ArgumentError('Invalid debt transaction type');
+    }
+
+    final now = DateTime.now();
+    final debtId = UuidHelper.generate();
+    final txId = UuidHelper.generate();
+    final baseAmount = CurrencyFormatter.toBaseAmount(
+      input.amount,
+      input.currency.rateToBase,
+    );
+    final trimmedNotes =
+        input.notes?.trim().isEmpty ?? true ? null : input.notes!.trim();
+
+    await _insertDebtRecords(
+      userId: userId,
+      debtId: debtId,
+      txId: txId,
+      input: input,
+      person: person,
+      contactId: contactId,
+      baseAmount: baseAmount,
+      trimmedNotes: trimmedNotes,
+      now: now,
+    );
+
+    return CreateDebtEntryResult(debtId: debtId, transactionId: txId);
+  }
+
+  Future<void> _insertDebtRecords({
+    required String userId,
+    required String debtId,
+    required String txId,
+    required CreateDebtEntryInput input,
+    required String person,
+    required String? contactId,
+    required double baseAmount,
+    required String? trimmedNotes,
+    required DateTime now,
+  }) async {
+    await _db.financeDao.insertDebt(
+      DebtsCompanion.insert(
+        id: debtId,
+        userId: userId,
+        walletId: input.walletId,
+        contactId: Value(contactId),
+        personName: person,
+        type: debtTypeForTransaction(input.type),
+        amount: input.amount,
+        currencyId: input.currency.id,
+        exchangeRate: input.currency.rateToBase,
+        baseAmount: baseAmount,
+        dueDate: Value(input.dueDate),
+        notes: Value(trimmedNotes),
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
+
+    await _db.financeDao.insertTransaction(
+      TransactionsCompanion.insert(
+        id: txId,
+        userId: userId,
+        walletId: Value(input.walletId),
+        debtId: Value(debtId),
+        parentTransactionId: Value(input.parentTransactionId),
+        type: input.type,
+        title: person,
+        amount: input.amount,
+        currencyId: input.currency.id,
+        exchangeRate: input.currency.rateToBase,
+        baseAmount: baseAmount,
+        notes: Value(trimmedNotes),
+        transactionDate: input.transactionDate,
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
   }
 
   /// Updates debt + transaction when still within the edit window.
@@ -208,6 +325,11 @@ class DebtService {
       throw ArgumentError('Person name is required');
     }
 
+    String? contactId = input.contactId;
+    if (contactId == null) {
+      contactId = (await ContactService(_lazarus).findOrCreateByName(person)).id;
+    }
+
     if (input.walletId.trim().isEmpty) {
       throw ArgumentError('Wallet is required');
     }
@@ -230,6 +352,7 @@ class DebtService {
         DebtsCompanion(
           id: Value(input.debtId),
           walletId: Value(input.walletId),
+          contactId: Value(contactId),
           personName: Value(person),
           type: Value(debtTypeForTransaction(input.type)),
           amount: Value(input.amount),

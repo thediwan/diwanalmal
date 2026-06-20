@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/constants/split_constants.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/database_constants.dart';
 import '../../core/extensions/context_l10n.dart';
@@ -29,14 +30,16 @@ import '../../database/daos/finance_dao.dart';
 import '../../services/category_service.dart';
 import '../../services/debt_service.dart';
 import '../../services/lazarus_database_service.dart';
-import '../../services/transaction_service.dart';
+import '../../services/transaction_split_service.dart';
 import '../../services/transfer_service.dart';
+import '../contacts/widgets/person_picker_field.dart';
 import 'models/transaction_list_item.dart';
 import 'widgets/debt_settlement_sheet.dart';
 import 'widgets/form_feedback_banner.dart';
 import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_currency_pills.dart';
 import 'widgets/transaction_numeric_keypad.dart';
+import 'widgets/transaction_split_section.dart';
 import 'widgets/transaction_wallet_carousel.dart';
 import '../../core/extensions/context_feedback.dart';
 
@@ -80,7 +83,15 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
   String? _categoryId;
   String? _currencyId;
   String? _debtId;
+  String? _debtContactId;
   DebtLedgerDetail? _debtDetail;
+
+  bool _splitEnabled = false;
+  String _splitMode = SplitConstants.modeEqual;
+  bool _splitIncludeSelf = true;
+  double? _splitFixedAmountPerPerson;
+  List<SplitParticipantRowState> _splitParticipantRows = const [];
+  List<SplitParticipantDraft> _splitParticipants = const [];
   String? _sourceCurrencyId;
   String? _targetCurrencyId;
   String? _sourceWalletId;
@@ -155,6 +166,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
               Duration(days: settings.transactionEditWindowDays);
       _transactionDate = tx.transactionDate;
       _debtId = detail.debt.id;
+      _debtContactId = detail.debt.contactId;
       _currencyId = tx.currencyId;
       _walletId = detail.debt.walletId;
       _personNameController.text = tx.title;
@@ -178,6 +190,30 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       _currencyId = tx.currencyId;
       _amountInput.setValue(tx.amount);
       _notesController.text = tx.notes ?? '';
+
+      final splitDetail = await TransactionSplitService(lazarus)
+          .getDetailByTransactionId(widget.id);
+      if (splitDetail != null) {
+        _splitEnabled = true;
+        _splitMode = splitDetail.split.splitMode;
+        _splitIncludeSelf = splitDetail.split.includeSelfInEqualSplit;
+        _splitFixedAmountPerPerson = splitDetail.split.fixedAmountPerPerson;
+        _splitParticipantRows = splitDetail.participants
+            .map(
+              (p) => SplitParticipantRowState(
+                contactId: p.participant.contactId,
+                contactName: p.contactName,
+                percent: p.participant.sharePercent,
+                fixedAmount: splitDetail.split.splitMode ==
+                        SplitConstants.modeFixedAmount
+                    ? p.participant.shareAmount
+                    : null,
+              ),
+            )
+            .toList();
+        _splitParticipants =
+            _splitParticipantRows.map((r) => r.toDraft()).toList();
+      }
     }
 
     if (!mounted) return;
@@ -429,6 +465,14 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
       return;
     }
 
+    if (!_isTransferLike &&
+        !_isDebtKind &&
+        _splitEnabled &&
+        _splitParticipants.where((p) => p.hasIdentity).isEmpty) {
+      _showFormWarning(l10n.transactionSplitParticipantsRequired);
+      return;
+    }
+
     final settings = context.read<SettingsProvider>();
     setState(() => _isSaving = true);
 
@@ -470,6 +514,7 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
             type: txType,
             walletId: _walletId!,
             personName: _personNameController.text,
+            contactId: _debtContactId,
             amount: _parsePositiveDouble(_debtAmountController.text)!,
             currency: currency,
             dueDate: _dueDate,
@@ -487,15 +532,23 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
           return;
         }
 
-        await TransactionService(LazarusDatabaseService.instance).update(
-          input: UpdateTransactionInput(
-            id: widget.id,
+        await TransactionSplitService(LazarusDatabaseService.instance).update(
+          input: UpdateSplitTransactionInput(
+            transactionId: widget.id,
             walletId: _walletId!,
             categoryId: categoryId,
+            type: widget.kind == TransactionListKind.income
+                ? DatabaseConstants.txIncome
+                : DatabaseConstants.txExpense,
             amount: _amountInput.value,
             currency: currency,
             notes: _notesController.text,
             transactionDate: _transactionDate,
+            splitEnabled: _splitEnabled,
+            splitMode: _splitMode,
+            includeSelfInEqualSplit: _splitIncludeSelf,
+            fixedAmountPerPerson: _splitFixedAmountPerPerson,
+            participants: _splitParticipants,
           ),
           editWindowDays: settings.transactionEditWindowDays,
         );
@@ -718,20 +771,19 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                       ),
                     ],
                   ] else if (_isDebtKind) ...[
-                    Text(
-                      l10n.transactionFormPersonName,
-                      style: AppFormFields.sectionLabelStyleOf(context),
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _personNameController,
-                      enabled: _canEdit,
-                      textCapitalization: TextCapitalization.words,
-                      style: AppFormFields.inputTextStyleOf(context),
-                      decoration: AppFormFields.decoration(
-                        context,
-                        hintText: l10n.transactionFormPersonNameHint,
+                    PersonPickerField(
+                      label: l10n.transactionFormPersonName,
+                      hint: l10n.transactionFormPersonNameHint,
+                      initialSelection: PersonSelection(
+                        contactId: _debtContactId,
+                        displayName: _personNameController.text,
                       ),
+                      onChanged: (selection) {
+                        setState(() {
+                          _debtContactId = selection.contactId;
+                          _personNameController.text = selection.displayName;
+                        });
+                      },
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -944,6 +996,23 @@ class _TransactionEditScreenState extends State<TransactionEditScreen> {
                         onMoreTap: _openCategoriesManager,
                       ),
                     ],
+                    const SizedBox(height: 16),
+                    TransactionSplitSection(
+                      initialEnabled: _splitEnabled,
+                      initialMode: _splitMode,
+                      initialIncludeSelf: _splitIncludeSelf,
+                      initialFixedAmountPerPerson: _splitFixedAmountPerPerson,
+                      initialParticipants: _splitParticipantRows,
+                      totalAmount: _amountInput.value,
+                      currencyCode: sourceCurrency?.code ?? '',
+                      onChanged: (state) {
+                        _splitEnabled = state.enabled;
+                        _splitMode = state.mode;
+                        _splitIncludeSelf = state.includeSelfInEqualSplit;
+                        _splitFixedAmountPerPerson = state.fixedAmountPerPerson;
+                        _splitParticipants = state.participants;
+                      },
+                    ),
                   ],
                   const SizedBox(height: 16),
                   TextFormField(

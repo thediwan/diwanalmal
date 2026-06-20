@@ -10,6 +10,8 @@ Local financial data is stored in **`lazarus.db`** (SQLite via [Drift](https://d
 
 ## Tables (per product spec)
 
+**Schema version:** 12
+
 | Table | Purpose |
 |-------|---------|
 | `app_users` | Users (UUID, soft delete) |
@@ -20,9 +22,12 @@ Local financial data is stored in **`lazarus.db`** (SQLite via [Drift](https://d
 | `wallets` | Treasury (خزينة) — container name, icon, subtitle |
 | `wallet_currency_accounts` | Opening balance per currency inside a treasury — **current balance is computed** |
 | `categories` | income / expense |
-| `transactions` | amount, currency, `exchange_rate`, `base_amount` |
+| `contacts` | Reusable people for debts and transaction splits |
+| `transactions` | amount, currency, `exchange_rate`, `base_amount`, optional `parent_transaction_id` |
 | `transfers` | Wallet-to-wallet (not income/expense) |
-| `debts` | owed_to_me / i_owe |
+| `debts` | owed_to_me / i_owe, optional `contact_id` |
+| `transaction_splits` | Split header for shared income/expense |
+| `transaction_split_participants` | Per-person share lines linked to debts |
 | `debt_payments` | Partial repayments |
 | `budgets` | Monthly category budgets |
 | `goals` | Financial goals |
@@ -42,6 +47,18 @@ wallet_balance =
 ```
 
 Implemented in `FinanceDao.computeWalletBalance()`.
+
+## Transaction split sharing (v12)
+
+When recording **income** or **expense** with sharing enabled:
+
+- The **full amount** hits the wallet (expense − / income +).
+- Each participant's share creates a linked **debt** ledger entry (`debtor` for expense, `creditor` for income).
+- Split modes: equal, percent, fixed amount per person.
+- Contacts are stored in `contacts` and reused across debts and splits.
+- Child debt transactions reference the parent via `transactions.parent_transaction_id`.
+
+Services: `ContactService`, `TransactionSplitService`, `SplitCalculator`.
 
 ## Test / seed data
 

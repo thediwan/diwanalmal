@@ -17,6 +17,9 @@ part 'finance_dao.g.dart';
   WalletCurrencyAccounts,
   Currencies,
   Categories,
+  Contacts,
+  TransactionSplits,
+  TransactionSplitParticipants,
 ])
 class FinanceDao extends DatabaseAccessor<LazarusDatabase>
     with _$FinanceDaoMixin {
@@ -692,6 +695,12 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
       );
     }
 
+    // Hide split-generated debt ledger rows from the "all" tab to avoid clutter.
+    if (filter.tab == ActivityFeedTab.all &&
+        filter.advancedTypeFilter == null) {
+      query.where(t.parentTransactionId.isNull());
+    }
+
     if (filter.walletId != null && filter.walletId!.isNotEmpty) {
       query.where(t.walletId.equals(filter.walletId!));
     }
@@ -725,21 +734,177 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
       ])
       ..limit(limit, offset: offset);
 
-    return query.get().then(
-          (rows) => rows
-              .map(
-                (row) => TransactionWithWalletMeta(
-                  transaction: row.readTable(t),
-                  currencyCode: row.readTable(c).code,
-                  categoryIconKey: row.readTableOrNull(cat)?.icon,
-                  categoryColorHex: row.readTableOrNull(cat)?.color,
-                  walletName: row.readTableOrNull(w)?.name ?? '',
-                  dueDate: row.readTableOrNull(d)?.dueDate,
-                  debtIsPaid: row.readTableOrNull(d)?.isPaid,
-                ),
-              )
-              .toList(),
-        );
+    return query.get().then((rows) async {
+      final splitTxIds = await _transactionIdsWithActiveSplit(
+        rows.map((row) => row.readTable(t).id).toList(),
+      );
+      return rows
+          .map(
+            (row) => TransactionWithWalletMeta(
+              transaction: row.readTable(t),
+              currencyCode: row.readTable(c).code,
+              categoryIconKey: row.readTableOrNull(cat)?.icon,
+              categoryColorHex: row.readTableOrNull(cat)?.color,
+              walletName: row.readTableOrNull(w)?.name ?? '',
+              dueDate: row.readTableOrNull(d)?.dueDate,
+              debtIsPaid: row.readTableOrNull(d)?.isPaid,
+              isShared: splitTxIds.contains(row.readTable(t).id),
+            ),
+          )
+          .toList();
+    });
+  }
+
+  Future<Set<String>> _transactionIdsWithActiveSplit(
+    List<String> transactionIds,
+  ) async {
+    if (transactionIds.isEmpty) return {};
+
+    final splits = await (select(db.transactionSplits)
+          ..where((s) => s.transactionId.isIn(transactionIds))
+          ..where((s) => s.deletedAt.isNull()))
+        .get();
+
+    return splits.map((s) => s.transactionId).toSet();
+  }
+
+  /// Active contacts for the user, sorted by name.
+  Future<List<DbContact>> getActiveContacts(String userId) {
+    return (select(db.contacts)
+          ..where((c) => c.userId.equals(userId))
+          ..where((c) => c.deletedAt.isNull())
+          ..orderBy([(c) => OrderingTerm.asc(c.name)]))
+        .get();
+  }
+
+  /// Case-insensitive contact lookup by trimmed name.
+  Future<DbContact?> findContactByName({
+    required String userId,
+    required String name,
+  }) async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return null;
+
+    final rows = await (select(db.contacts)
+          ..where((c) => c.userId.equals(userId))
+          ..where((c) => c.deletedAt.isNull()))
+        .get();
+
+    for (final contact in rows) {
+      if (contact.name.trim().toLowerCase() == trimmed.toLowerCase()) {
+        return contact;
+      }
+    }
+    return null;
+  }
+
+  /// Persists a new contact row.
+  Future<void> insertContact(ContactsCompanion contact) {
+    return into(db.contacts).insert(contact);
+  }
+
+  /// Loads a contact by id.
+  Future<DbContact?> getContactById(String contactId) {
+    return (select(db.contacts)
+          ..where((c) => c.id.equals(contactId))
+          ..where((c) => c.deletedAt.isNull()))
+        .getSingleOrNull();
+  }
+
+  /// Persists a transaction split header.
+  Future<void> insertTransactionSplit(TransactionSplitsCompanion split) {
+    return into(db.transactionSplits).insert(split);
+  }
+
+  /// Persists one split participant line.
+  Future<void> insertTransactionSplitParticipant(
+    TransactionSplitParticipantsCompanion participant,
+  ) {
+    return into(db.transactionSplitParticipants).insert(participant);
+  }
+
+  /// Active split header for a parent transaction.
+  Future<DbTransactionSplit?> getSplitByTransactionId(
+    String transactionId,
+  ) {
+    return (select(db.transactionSplits)
+          ..where((s) => s.transactionId.equals(transactionId))
+          ..where((s) => s.deletedAt.isNull()))
+        .getSingleOrNull();
+  }
+
+  /// Participant lines with contact names for a split.
+  Future<List<SplitParticipantDetail>> getSplitParticipants(
+    String splitId,
+  ) async {
+    final p = db.transactionSplitParticipants;
+    final c = db.contacts;
+    final rows = await (select(p).join([
+      innerJoin(c, c.id.equalsExp(p.contactId)),
+    ])
+          ..where(p.splitId.equals(splitId))
+          ..orderBy([OrderingTerm.asc(p.sortOrder)]))
+        .get();
+
+    return rows
+        .map(
+          (row) => SplitParticipantDetail(
+            participant: row.readTable(p),
+            contactName: row.readTable(c).name,
+          ),
+        )
+        .toList();
+  }
+
+  /// Full split detail for a parent transaction id.
+  Future<TransactionSplitDetail?> getSplitDetailByTransactionId(
+    String transactionId,
+  ) async {
+    final split = await getSplitByTransactionId(transactionId);
+    if (split == null) return null;
+
+    final participants = await getSplitParticipants(split.id);
+    return TransactionSplitDetail(
+      split: split,
+      participants: participants,
+    );
+  }
+
+  /// Soft-deletes a split header and its participant rows (debts handled separately).
+  Future<void> softDeleteSplitByTransactionId(String transactionId) async {
+    final now = DateTime.now();
+    await (update(db.transactionSplits)
+          ..where((s) => s.transactionId.equals(transactionId)))
+        .write(TransactionSplitsCompanion(
+          deletedAt: Value(now),
+          updatedAt: Value(now),
+        ));
+  }
+
+  /// Child debt ledger transactions linked to a parent split transaction.
+  Future<List<Transaction>> getSplitChildTransactions(
+    String parentTransactionId,
+  ) {
+    return (select(db.transactions)
+          ..where((t) => t.parentTransactionId.equals(parentTransactionId))
+          ..where((t) => t.deletedAt.isNull()))
+        .get();
+  }
+
+  /// Updates participant debt/debtTransaction references after creation.
+  Future<void> updateSplitParticipantLinks({
+    required String participantId,
+    String? debtId,
+    String? debtTransactionId,
+  }) {
+    return (update(db.transactionSplitParticipants)
+          ..where((p) => p.id.equals(participantId)))
+        .write(TransactionSplitParticipantsCompanion(
+          debtId: debtId == null ? const Value.absent() : Value(debtId),
+          debtTransactionId: debtTransactionId == null
+              ? const Value.absent()
+              : Value(debtTransactionId),
+        ));
   }
 
   /// Filtered wallet transfers for the transactions list (newest first).
@@ -1076,11 +1241,13 @@ class TransactionWithWalletMeta extends TransactionWithMeta {
     required this.walletName,
     this.dueDate,
     this.debtIsPaid,
+    this.isShared = false,
   });
 
   final String walletName;
   final DateTime? dueDate;
   final bool? debtIsPaid;
+  final bool isShared;
 }
 
 class TransferWithMeta {
@@ -1130,4 +1297,26 @@ class DebtLedgerDetail {
   }
 
   bool get isFullyPaid => debt.isPaid || remaining <= 0.000001;
+}
+
+/// One participant row in a transaction split with display name.
+class SplitParticipantDetail {
+  const SplitParticipantDetail({
+    required this.participant,
+    required this.contactName,
+  });
+
+  final DbTransactionSplitParticipant participant;
+  final String contactName;
+}
+
+/// Split header with participant lines.
+class TransactionSplitDetail {
+  const TransactionSplitDetail({
+    required this.split,
+    required this.participants,
+  });
+
+  final DbTransactionSplit split;
+  final List<SplitParticipantDetail> participants;
 }

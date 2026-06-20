@@ -472,6 +472,79 @@ class AppLocalizationsAr extends AppLocalizations {
   String get transactionFormPersonNameRequired => 'أدخل اسم الشخص';
 
   @override
+  String get contactSelectOrAdd => 'اختر جهة اتصال أو أضف اسمًا جديدًا';
+
+  @override
+  String contactAddNewNamed(String name) {
+    return 'إضافة \"$name\"';
+  }
+
+  @override
+  String get transactionSplitEnable => 'تفعيل التشاركية';
+
+  @override
+  String get transactionSplitModeLabel => 'طريقة التوزيع';
+
+  @override
+  String get transactionSplitModeEqual => 'بالتساوي';
+
+  @override
+  String get transactionSplitModePercent => 'بنسب';
+
+  @override
+  String get transactionSplitModeFixed => 'مبلغ ثابت';
+
+  @override
+  String get transactionSplitIncludeSelf => 'أنا مشارك في التقسيم المتساوي';
+
+  @override
+  String get transactionSplitAddParticipant => 'إضافة مشارك';
+
+  @override
+  String transactionSplitParticipantLabel(int index) {
+    return 'المشارك $index';
+  }
+
+  @override
+  String get transactionSplitPercentLabel => 'النسبة';
+
+  @override
+  String get transactionSplitFixedAmountLabel => 'المبلغ الثابت لكل شخص';
+
+  @override
+  String transactionSplitYourShare(String amount, String currency) {
+    return 'حصتك: $amount $currency';
+  }
+
+  @override
+  String transactionSplitParticipantShare(
+      String name, String amount, String currency) {
+    return '$name: $amount $currency';
+  }
+
+  @override
+  String get transactionSplitPreviewUnavailable =>
+      'أكمل بيانات المشاركين لمعاينة التوزيع';
+
+  @override
+  String get transactionSplitTotalMismatch =>
+      'مجموع الحصص لا يساوي مبلغ المعاملة';
+
+  @override
+  String get transactionSplitPercentExceeds100 => 'مجموع النسب يتجاوز 100%';
+
+  @override
+  String get transactionSplitParticipantsRequired =>
+      'أضف مشاركًا واحدًا على الأقل';
+
+  @override
+  String get transactionSplitSharedBadge => 'مُشارَك';
+
+  @override
+  String get transactionSplitSettledEditBlocked =>
+      'لا يمكن تعديل التشاركية بعد تسديد بعض الذمم';
+
+  @override
   String get transactionFormDueDate => 'تاريخ الاستحقاق';
 
   @override

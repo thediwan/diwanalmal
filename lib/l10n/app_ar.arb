@@ -170,6 +170,49 @@
   "transactionFormPersonName": "اسم الشخص",
   "transactionFormPersonNameHint": "أدخل اسم الشخص",
   "transactionFormPersonNameRequired": "أدخل اسم الشخص",
+  "contactSelectOrAdd": "اختر جهة اتصال أو أضف اسمًا جديدًا",
+  "contactAddNewNamed": "إضافة \"{name}\"",
+  "@contactAddNewNamed": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "transactionSplitEnable": "تفعيل التشاركية",
+  "transactionSplitModeLabel": "طريقة التوزيع",
+  "transactionSplitModeEqual": "بالتساوي",
+  "transactionSplitModePercent": "بنسب",
+  "transactionSplitModeFixed": "مبلغ ثابت",
+  "transactionSplitIncludeSelf": "أنا مشارك في التقسيم المتساوي",
+  "transactionSplitAddParticipant": "إضافة مشارك",
+  "transactionSplitParticipantLabel": "المشارك {index}",
+  "@transactionSplitParticipantLabel": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  },
+  "transactionSplitPercentLabel": "النسبة",
+  "transactionSplitFixedAmountLabel": "المبلغ الثابت لكل شخص",
+  "transactionSplitYourShare": "حصتك: {amount} {currency}",
+  "@transactionSplitYourShare": {
+    "placeholders": {
+      "amount": { "type": "String" },
+      "currency": { "type": "String" }
+    }
+  },
+  "transactionSplitParticipantShare": "{name}: {amount} {currency}",
+  "@transactionSplitParticipantShare": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "amount": { "type": "String" },
+      "currency": { "type": "String" }
+    }
+  },
+  "transactionSplitPreviewUnavailable": "أكمل بيانات المشاركين لمعاينة التوزيع",
+  "transactionSplitTotalMismatch": "مجموع الحصص لا يساوي مبلغ المعاملة",
+  "transactionSplitPercentExceeds100": "مجموع النسب يتجاوز 100%",
+  "transactionSplitParticipantsRequired": "أضف مشاركًا واحدًا على الأقل",
+  "transactionSplitSharedBadge": "مُشارَك",
+  "transactionSplitSettledEditBlocked": "لا يمكن تعديل التشاركية بعد تسديد بعض الذمم",
   "transactionFormDueDate": "تاريخ الاستحقاق",
   "transactionFormDueDateOptional": "اختياري — اضغط للتحديد",
   "transactionFormClearDueDate": "مسح تاريخ الاستحقاق",

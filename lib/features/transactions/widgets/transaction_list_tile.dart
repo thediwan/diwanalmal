@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/transaction_icon_styles.dart';
+import '../../../core/extensions/context_l10n.dart';
 import '../../../core/extensions/context_theme.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../models/transaction_list_item.dart';
@@ -137,6 +138,23 @@ class _TitleBlock extends StatelessWidget {
             color: colors.textPrimary,
           ),
         ),
+        if (item.isShared) ...[
+          const SizedBox(height: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: colors.accentSurface,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              context.l10n.transactionSplitSharedBadge,
+              style: AppTextStyles.captionOnSurface(colors).copyWith(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
         const SizedBox(height: 4),
         Text(
           item.subtitle,

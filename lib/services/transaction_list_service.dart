@@ -226,6 +226,7 @@ class TransactionListService {
         walletName: row.walletName,
         localeName: localeName,
         unknownWalletLabel: l10n.transactionsListUnknownWallet,
+        sharedSuffix: row.isShared ? l10n.transactionSplitSharedBadge : null,
       ),
       primaryAmount:
           '${CurrencyFormatter.formatCodeFirst(tx.baseAmount, baseCurrencyCode)}$sign',
@@ -247,6 +248,7 @@ class TransactionListService {
         createdAt: createdAt,
         deleteWindowHours: deleteWindowHours,
       ),
+      isShared: row.isShared,
     );
   }
 
@@ -391,10 +393,13 @@ class TransactionListService {
     required String walletName,
     required String localeName,
     required String unknownWalletLabel,
+    String? sharedSuffix,
   }) {
     final time = DateFormat.jm(localeName).format(date);
     final wallet = walletName.trim().isEmpty ? unknownWalletLabel : walletName;
-    return '$time • $wallet';
+    final base = '$time • $wallet';
+    if (sharedSuffix == null || sharedSuffix.isEmpty) return base;
+    return '$base • $sharedSuffix';
   }
 
   String _formatDayHeader(

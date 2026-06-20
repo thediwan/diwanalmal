@@ -24,9 +24,12 @@ part 'lazarus_database.g.dart';
     Wallets,
     WalletCurrencyAccounts,
     Categories,
+    Contacts,
     Transactions,
     Transfers,
     Debts,
+    TransactionSplits,
+    TransactionSplitParticipants,
     DebtPayments,
     Budgets,
     Goals,
@@ -63,10 +66,11 @@ class LazarusDatabase extends _$LazarusDatabase {
     await _ensureDebtsWalletColumn();
     await _ensureGoalsWalletColumn();
     await _backfillGoalWallets();
+    await _ensureSplitSharingColumns();
   }
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -74,6 +78,7 @@ class LazarusDatabase extends _$LazarusDatabase {
           await m.createAll();
           await _createCurrencyUniqueIndex();
           await _createBaseCurrencyUniqueIndex();
+          await _createContactsUniqueIndex();
         },
         beforeOpen: (details) async {
           await ensureLegacySchemaRepairs();
@@ -178,8 +183,97 @@ class LazarusDatabase extends _$LazarusDatabase {
             await _ensureGoalsWalletColumn();
             await _backfillGoalWallets();
           }
+
+          if (from < 12) {
+            await m.createTable(contacts);
+            await m.createTable(transactionSplits);
+            await m.createTable(transactionSplitParticipants);
+            await _ensureSplitSharingColumns();
+            await _migrateDebtsToContacts();
+            await _createContactsUniqueIndex();
+          }
         },
       );
+
+  /// Adds split-sharing columns and tables when missing (legacy DB repair).
+  Future<void> _ensureSplitSharingColumns() async {
+    final txRows = await customSelect('PRAGMA table_info(transactions)').get();
+    final txColumns =
+        txRows.map((row) => row.read<String>('name')).toSet();
+    if (!txColumns.contains('parent_transaction_id')) {
+      await customStatement(
+        'ALTER TABLE transactions ADD COLUMN parent_transaction_id TEXT REFERENCES transactions(id)',
+      );
+    }
+
+    final debtRows = await customSelect('PRAGMA table_info(debts)').get();
+    if (debtRows.isNotEmpty) {
+      final debtColumns =
+          debtRows.map((row) => row.read<String>('name')).toSet();
+      if (!debtColumns.contains('contact_id')) {
+        await customStatement(
+          'ALTER TABLE debts ADD COLUMN contact_id TEXT REFERENCES contacts(id)',
+        );
+      }
+    }
+  }
+
+  /// Creates contacts from existing debt person names and links debts.
+  Future<void> _migrateDebtsToContacts() async {
+    final debtRows = await customSelect('''
+      SELECT DISTINCT user_id, TRIM(person_name) AS name
+      FROM debts
+      WHERE deleted_at IS NULL
+        AND TRIM(person_name) != ''
+    ''').get();
+
+    final now = DateTime.now();
+    for (final row in debtRows) {
+      final userId = row.read<String>('user_id');
+      final name = row.read<String>('name');
+      final existing = await customSelect(
+        '''
+        SELECT id FROM contacts
+        WHERE user_id = ? AND LOWER(TRIM(name)) = LOWER(?)
+          AND deleted_at IS NULL
+        LIMIT 1
+        ''',
+        variables: [Variable<String>(userId), Variable<String>(name)],
+      ).getSingleOrNull();
+
+      final contactId = existing?.read<String>('id') ?? UuidHelper.generate();
+      if (existing == null) {
+        await into(contacts).insert(
+          ContactsCompanion.insert(
+            id: contactId,
+            userId: userId,
+            name: name,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+      }
+
+      await customStatement(
+        '''
+        UPDATE debts
+        SET contact_id = ?
+        WHERE user_id = ?
+          AND LOWER(TRIM(person_name)) = LOWER(?)
+          AND contact_id IS NULL
+        ''',
+        [contactId, userId, name],
+      );
+    }
+  }
+
+  Future<void> _createContactsUniqueIndex() async {
+    await customStatement('''
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_contacts_user_name_active
+      ON contacts (user_id, name)
+      WHERE deleted_at IS NULL
+    ''');
+  }
 
   /// Adds [debt_id] and nullable [wallet_id] on [transactions] when missing.
   Future<void> _ensureTransactionDebtColumns() async {

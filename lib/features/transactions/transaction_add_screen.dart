@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/constants/split_constants.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/database_constants.dart';
 import '../../core/extensions/context_l10n.dart';
@@ -29,13 +30,15 @@ import '../../providers/wallet_provider.dart';
 import '../../services/category_service.dart';
 import '../../services/debt_service.dart';
 import '../../services/lazarus_database_service.dart';
-import '../../services/transaction_service.dart';
+import '../../services/transaction_split_service.dart';
 import '../../services/transfer_service.dart';
+import '../contacts/widgets/person_picker_field.dart';
 import 'models/transaction_entry_type.dart';
 import 'widgets/form_feedback_banner.dart';
 import 'widgets/transaction_category_grid.dart';
 import 'widgets/transaction_currency_pills.dart';
 import 'widgets/transaction_numeric_keypad.dart';
+import 'widgets/transaction_split_section.dart';
 import 'widgets/transaction_type_toggle.dart';
 import 'widgets/transaction_wallet_carousel.dart';
 
@@ -65,6 +68,13 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
   final _exchangeRateController = TextEditingController();
   final _personNameController = TextEditingController();
   final _debtAmountController = TextEditingController();
+
+  String? _debtContactId;
+  bool _splitEnabled = false;
+  String _splitMode = SplitConstants.modeEqual;
+  bool _splitIncludeSelf = true;
+  double? _splitFixedAmountPerPerson;
+  List<SplitParticipantDraft> _splitParticipants = const [];
 
   bool _isExpense = true;
   TransactionEntryType _entryType = TransactionEntryType.expense;
@@ -679,11 +689,18 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
       return;
     }
 
+    if (_splitEnabled && _splitParticipants.where((p) => p.hasIdentity).isEmpty) {
+      _showFormWarning(l10n.transactionSplitParticipantsRequired);
+      return;
+    }
+
     setState(() => _isSaving = true);
 
     try {
-      await TransactionService(LazarusDatabaseService.instance).create(
-        CreateTransactionInput(
+      final splitService =
+          TransactionSplitService(LazarusDatabaseService.instance);
+      await splitService.create(
+        CreateSplitTransactionInput(
           walletId: _selectedWalletId!,
           category: category,
           type: _isExpense
@@ -693,6 +710,11 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
           currency: currency,
           notes: _notesController.text,
           transactionDate: _transactionDate,
+          splitEnabled: _splitEnabled,
+          splitMode: _splitMode,
+          includeSelfInEqualSplit: _splitIncludeSelf,
+          fixedAmountPerPerson: _splitFixedAmountPerPerson,
+          participants: _splitParticipants,
         ),
       );
 
@@ -813,6 +835,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
           type: txType,
           walletId: _selectedWalletId!,
           personName: person,
+          contactId: _debtContactId,
           amount: amount,
           currency: currency,
           dueDate: _dueDate,
@@ -839,7 +862,13 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
     _amountInput.reset();
     _transferAmountController.clear();
     _personNameController.clear();
+    _debtContactId = null;
     _debtAmountController.clear();
+    _splitEnabled = false;
+    _splitMode = SplitConstants.modeEqual;
+    _splitIncludeSelf = true;
+    _splitFixedAmountPerPerson = null;
+    _splitParticipants = const [];
     _notesController.clear();
     _dueDate = null;
     _transactionDate = DateTime.now();
@@ -930,19 +959,14 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                         ),
                         const SizedBox(height: 20),
                         if (_isDebtMode) ...[
-                          Text(
-                            l10n.transactionFormPersonName,
-                            style: AppFormFields.sectionLabelStyleOf(context),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _personNameController,
-                            textCapitalization: TextCapitalization.words,
-                            style: AppFormFields.inputTextStyleOf(context),
-                            decoration: AppFormFields.decoration(
-                              context,
-                              hintText: l10n.transactionFormPersonNameHint,
-                            ),
+                          PersonPickerField(
+                            label: l10n.transactionFormPersonName,
+                            hint: l10n.transactionFormPersonNameHint,
+                            onChanged: (selection) {
+                              _debtContactId = selection.contactId;
+                              _personNameController.text =
+                                  selection.displayName;
+                            },
                           ),
                           const SizedBox(height: 20),
                           Text(
@@ -1167,6 +1191,24 @@ class _TransactionAddScreenState extends State<TransactionAddScreen>
                               onMoreTap: _showMoreCategoriesPlaceholder,
                             ),
                           ],
+                          const SizedBox(height: 22),
+                          _SectionHeader(
+                            title: l10n.transactionSplitEnable,
+                            icon: Icons.groups_outlined,
+                          ),
+                          const SizedBox(height: 10),
+                          TransactionSplitSection(
+                            totalAmount: _amountInput.value,
+                            currencyCode: _selectedCurrency?.code ?? '',
+                            onChanged: (state) {
+                              _splitEnabled = state.enabled;
+                              _splitMode = state.mode;
+                              _splitIncludeSelf = state.includeSelfInEqualSplit;
+                              _splitFixedAmountPerPerson =
+                                  state.fixedAmountPerPerson;
+                              _splitParticipants = state.participants;
+                            },
+                          ),
                         ],
                         const SizedBox(height: 22),
                         _SectionHeader(

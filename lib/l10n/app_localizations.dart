@@ -986,6 +986,127 @@ abstract class AppLocalizations {
   /// **'أدخل اسم الشخص'**
   String get transactionFormPersonNameRequired;
 
+  /// No description provided for @contactSelectOrAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر جهة اتصال أو أضف اسمًا جديدًا'**
+  String get contactSelectOrAdd;
+
+  /// No description provided for @contactAddNewNamed.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة \"{name}\"'**
+  String contactAddNewNamed(String name);
+
+  /// No description provided for @transactionSplitEnable.
+  ///
+  /// In ar, this message translates to:
+  /// **'تفعيل التشاركية'**
+  String get transactionSplitEnable;
+
+  /// No description provided for @transactionSplitModeLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'طريقة التوزيع'**
+  String get transactionSplitModeLabel;
+
+  /// No description provided for @transactionSplitModeEqual.
+  ///
+  /// In ar, this message translates to:
+  /// **'بالتساوي'**
+  String get transactionSplitModeEqual;
+
+  /// No description provided for @transactionSplitModePercent.
+  ///
+  /// In ar, this message translates to:
+  /// **'بنسب'**
+  String get transactionSplitModePercent;
+
+  /// No description provided for @transactionSplitModeFixed.
+  ///
+  /// In ar, this message translates to:
+  /// **'مبلغ ثابت'**
+  String get transactionSplitModeFixed;
+
+  /// No description provided for @transactionSplitIncludeSelf.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنا مشارك في التقسيم المتساوي'**
+  String get transactionSplitIncludeSelf;
+
+  /// No description provided for @transactionSplitAddParticipant.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة مشارك'**
+  String get transactionSplitAddParticipant;
+
+  /// No description provided for @transactionSplitParticipantLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'المشارك {index}'**
+  String transactionSplitParticipantLabel(int index);
+
+  /// No description provided for @transactionSplitPercentLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'النسبة'**
+  String get transactionSplitPercentLabel;
+
+  /// No description provided for @transactionSplitFixedAmountLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ الثابت لكل شخص'**
+  String get transactionSplitFixedAmountLabel;
+
+  /// No description provided for @transactionSplitYourShare.
+  ///
+  /// In ar, this message translates to:
+  /// **'حصتك: {amount} {currency}'**
+  String transactionSplitYourShare(String amount, String currency);
+
+  /// No description provided for @transactionSplitParticipantShare.
+  ///
+  /// In ar, this message translates to:
+  /// **'{name}: {amount} {currency}'**
+  String transactionSplitParticipantShare(
+      String name, String amount, String currency);
+
+  /// No description provided for @transactionSplitPreviewUnavailable.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكمل بيانات المشاركين لمعاينة التوزيع'**
+  String get transactionSplitPreviewUnavailable;
+
+  /// No description provided for @transactionSplitTotalMismatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'مجموع الحصص لا يساوي مبلغ المعاملة'**
+  String get transactionSplitTotalMismatch;
+
+  /// No description provided for @transactionSplitPercentExceeds100.
+  ///
+  /// In ar, this message translates to:
+  /// **'مجموع النسب يتجاوز 100%'**
+  String get transactionSplitPercentExceeds100;
+
+  /// No description provided for @transactionSplitParticipantsRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف مشاركًا واحدًا على الأقل'**
+  String get transactionSplitParticipantsRequired;
+
+  /// No description provided for @transactionSplitSharedBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'مُشارَك'**
+  String get transactionSplitSharedBadge;
+
+  /// No description provided for @transactionSplitSettledEditBlocked.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يمكن تعديل التشاركية بعد تسديد بعض الذمم'**
+  String get transactionSplitSettledEditBlocked;
+
   /// No description provided for @transactionFormDueDate.
   ///
   /// In ar, this message translates to:
