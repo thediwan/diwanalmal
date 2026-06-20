@@ -22,6 +22,7 @@ import 'services/auth_service.dart';
 import 'services/biometric_service.dart';
 import 'services/backup_notification_service.dart';
 import 'services/backup_scheduler_service.dart';
+import 'services/background_workmanager_registry.dart';
 import 'services/backup_service.dart';
 import 'services/budget_service.dart';
 import 'services/category_service.dart';
@@ -79,10 +80,9 @@ Future<void> _bootstrapApp() async {
   );
   await backupService.mergeBackgroundBackupMarker();
   await backupService.syncBackupLocationConfig();
-  if (BackupSchedulerService.isBackgroundSchedulingSupported) {
+  if (BackgroundWorkmanagerRegistry.isSupported) {
     await BackupNotificationService.initialize();
-    await BackupSchedulerService.register();
-    await ReportSchedulerService.register();
+    await BackgroundWorkmanagerRegistry.ensureInitialized();
   }
   final backupScheduler = BackupSchedulerService(hiveService, backupService);
   final reportScheduler = ReportSchedulerService(hiveService);
@@ -118,14 +118,29 @@ Future<void> _bootstrapApp() async {
     profileProvider.load(),
   ]);
 
-  await backupScheduler.scheduleFromSettings();
-  await reportScheduler.scheduleNextMonthlyRun();
+  await _runNonFatalStartupTask(
+    'backup schedule',
+    () => backupScheduler.scheduleFromSettings(),
+  );
+  await _runNonFatalStartupTask(
+    'report schedule',
+    () => reportScheduler.scheduleNextMonthlyRun(),
+  );
   if (settingsProvider.hasAccount && settingsProvider.isSecuritySetupComplete) {
-    await backupScheduler.runCatchUpIfDue(
-      onSettingsChanged: () => settingsProvider.reloadFromStorage(),
+    await _runNonFatalStartupTask(
+      'backup catch-up',
+      () => backupScheduler.runCatchUpIfDue(
+        onSettingsChanged: () => settingsProvider.reloadFromStorage(),
+      ),
     );
-    await reportScheduler.runCatchUpIfNeeded();
-    await monthlyReportProvider.ensurePreviousMonth();
+    await _runNonFatalStartupTask(
+      'report catch-up',
+      () => reportScheduler.runCatchUpIfNeeded(),
+    );
+    await _runNonFatalStartupTask(
+      'monthly report ensure',
+      () => monthlyReportProvider.ensurePreviousMonth(),
+    );
   }
 
   final appRouter = AppRouter(settingsProvider);
@@ -148,6 +163,19 @@ Future<void> _bootstrapApp() async {
       child: BaytAlmalApp(router: appRouter.router),
     ),
   );
+}
+
+/// Runs optional startup work without blocking app launch on failure.
+Future<void> _runNonFatalStartupTask(
+  String label,
+  Future<void> Function() task,
+) async {
+  try {
+    await task();
+  } catch (e, st) {
+    debugPrint('Non-fatal startup ($label) failed: $e');
+    debugPrint('$st');
+  }
 }
 
 class BaytAlmalApp extends StatelessWidget {

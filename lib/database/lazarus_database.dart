@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 import '../core/helpers/app_storage_paths.dart';
+import '../core/helpers/database_open_guard.dart';
 import 'daos/finance_dao.dart';
 import 'tables/schema_tables.dart';
 import '../core/helpers/uuid_helper.dart';
@@ -42,7 +43,11 @@ class LazarusDatabase extends _$LazarusDatabase {
   LazarusDatabase(super.executor);
 
   /// Opens `lazarus.db` in app documents directory.
-  static Future<LazarusDatabase> open() async {
+  static Future<LazarusDatabase> open() {
+    return DatabaseOpenGuard.openSafely(_connect);
+  }
+
+  static Future<LazarusDatabase> _connect() async {
     if (Platform.isAndroid) {
       final cacheDir = await getTemporaryDirectory();
       sqlite.sqlite3.tempDirectory = cacheDir.path;
@@ -69,6 +74,30 @@ class LazarusDatabase extends _$LazarusDatabase {
     await _backfillGoalWallets();
     await _ensureSplitSharingColumns();
     await _ensureContactsPhoneColumn();
+    await _ensureMonthlyReportsSchema();
+  }
+
+  Future<bool> _tableExists(String name) async {
+    final row = await customSelect(
+      "SELECT 1 AS ok FROM sqlite_master WHERE type = 'table' AND name = ?",
+      variables: [Variable<String>(name)],
+    ).getSingleOrNull();
+    return row != null;
+  }
+
+  Future<void> _ensureMonthlyReportsSchema() async {
+    if (!await _tableExists('monthly_reports')) {
+      final migrator = Migrator(this);
+      await migrator.createTable(monthlyReports);
+    }
+    await _ensureMonthlyReportsIndex();
+  }
+
+  Future<void> _ensureMonthlyReportsIndex() async {
+    await customStatement('''
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_monthly_reports_user_period
+      ON monthly_reports (user_id, year, month)
+    ''');
   }
 
   @override
@@ -191,9 +220,15 @@ class LazarusDatabase extends _$LazarusDatabase {
           }
 
           if (from < 12) {
-            await m.createTable(contacts);
-            await m.createTable(transactionSplits);
-            await m.createTable(transactionSplitParticipants);
+            if (!await _tableExists('contacts')) {
+              await m.createTable(contacts);
+            }
+            if (!await _tableExists('transaction_splits')) {
+              await m.createTable(transactionSplits);
+            }
+            if (!await _tableExists('transaction_split_participants')) {
+              await m.createTable(transactionSplitParticipants);
+            }
             await _ensureSplitSharingColumns();
             await _migrateDebtsToContacts();
             await _createContactsUniqueIndex();
@@ -204,11 +239,7 @@ class LazarusDatabase extends _$LazarusDatabase {
           }
 
           if (from < 14) {
-            await m.createTable(monthlyReports);
-            await customStatement('''
-              CREATE UNIQUE INDEX IF NOT EXISTS idx_monthly_reports_user_period
-              ON monthly_reports (user_id, year, month)
-            ''');
+            await _ensureMonthlyReportsSchema();
           }
         },
       );

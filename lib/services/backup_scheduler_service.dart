@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:workmanager/workmanager.dart';
 
-import '../backup/backup_background.dart';
 import '../core/constants/backup_constants.dart';
 import '../core/helpers/backup_schedule_helper.dart';
 import '../models/app_settings.dart';
@@ -9,10 +8,10 @@ import 'backup_notification_service.dart';
 import 'backup_service.dart';
 import 'hive_service.dart';
 
-/// Schedules daily one-off WorkManager backups and resume catch-up.
-///
-/// Background scheduling is **Android/iOS only**. Desktop builds skip
-/// WorkManager calls so startup is not blocked by missing plugins.
+  /// Schedules daily one-off WorkManager backups and resume catch-up.
+  ///
+  /// Call [BackgroundWorkmanagerRegistry.ensureInitialized] once from [main]
+  /// before using this service on mobile.
 class BackupSchedulerService {
   BackupSchedulerService(this._hiveService, this._backupService);
 
@@ -27,11 +26,8 @@ class BackupSchedulerService {
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS);
 
-  /// Registers WorkManager callback (call once from [main] on mobile only).
-  static Future<void> register() async {
-    if (!isBackgroundSchedulingSupported) return;
-    await Workmanager().initialize(backupCallbackDispatcher);
-  }
+  /// No-op — Workmanager is initialized via [BackgroundWorkmanagerRegistry].
+  static Future<void> register() async {}
 
   /// Schedules the next run from current Hive settings.
   Future<void> scheduleFromSettings() async {

@@ -35,8 +35,16 @@ Reports store immutable KPI snapshots + JSON breakdowns. Surplus can be carried 
 - Cross-currency conversion derived internally from both currencies' `rateToBase`
 - Manual rate edits during transfer persist to the `currencies` table via `CurrencyProvider.updateCurrency`
 
+## Persistence & Startup (v14+)
+
+- **DB open:** `DatabaseOpenGuard` (`lib/core/helpers/database_open_guard.dart`) — sidecar backup before open, idempotent v14 repair, restore-on-failure (never wipes user data).
+- **Migrations:** Idempotent v12/v14 table creation in `LazarusDatabase`; `ensureLegacySchemaRepairs()` includes `monthly_reports`.
+- **Workmanager:** Single init via `BackgroundWorkmanagerRegistry.ensureInitialized()` in `main.dart`.
+- **Startup:** Backup/report scheduling and monthly report catch-up are non-fatal (logged, do not block launch).
+
 ## Last Updated
 
+2026-06-20 — Database upgrade hardening: `DatabaseOpenGuard`, idempotent v14 migration, single Workmanager init, non-fatal startup tasks.
 2026-06-20 — Transactions list: full title display; notes preview limited to 2 words in list tile only.
 2026-06-20 — Transaction add screen: income category grid (income-only), expense overflow category picker (7+More), notes keyboard scroll fix.
 2026-06-20 — Transfer exchange rate unified with currency form (`ExchangeRateDisplay`); manual edits update stored rates.

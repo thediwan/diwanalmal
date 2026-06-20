@@ -20,10 +20,8 @@ class ReportSchedulerService {
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS);
 
-  static Future<void> register() async {
-    if (!isBackgroundSchedulingSupported) return;
-    await Workmanager().initialize(backupCallbackDispatcher);
-  }
+  /// No-op — Workmanager is initialized via [BackgroundWorkmanagerRegistry].
+  static Future<void> register() async {}
 
   Future<void> scheduleNextMonthlyRun() async {
     if (!isBackgroundSchedulingSupported) return;
