@@ -181,6 +181,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               context.push('/settings/currencies'),
                         ),
                         ProfileSettingsTile(
+                          icon: Icons.pie_chart_outline,
+                          title: l10n.settingsBudgets,
+                          subtitle: l10n.settingsBudgetsSubtitle,
+                          onTap: () => context.push('/budgets'),
+                        ),
+                        ProfileSettingsTile(
+                          icon: Icons.description_outlined,
+                          title: l10n.settingsMonthlyReports,
+                          subtitle: l10n.settingsMonthlyReportsSubtitle,
+                          onTap: () => context.push('/reports'),
+                        ),
+                        ProfileSettingsTile(
                           icon: Icons.language,
                           title: l10n.profileLanguage,
                           subtitle: settings.locale.languageCode == 'en'

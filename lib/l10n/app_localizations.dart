@@ -3519,6 +3519,480 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'لقد حققت هدفك المالي'**
   String get goalAchievedSubtitle;
+
+  /// No description provided for @commonSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ'**
+  String get commonSave;
+
+  /// No description provided for @budgetsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الميزانيات الشهرية'**
+  String get budgetsTitle;
+
+  /// No description provided for @budgetAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة ميزانية'**
+  String get budgetAdd;
+
+  /// No description provided for @budgetAddTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ميزانية جديدة'**
+  String get budgetAddTitle;
+
+  /// No description provided for @budgetEditTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل الميزانية'**
+  String get budgetEditTitle;
+
+  /// No description provided for @budgetSelectedMonth.
+  ///
+  /// In ar, this message translates to:
+  /// **'الشهر'**
+  String get budgetSelectedMonth;
+
+  /// No description provided for @budgetCopyPrevious.
+  ///
+  /// In ar, this message translates to:
+  /// **'نسخ من الشهر السابق'**
+  String get budgetCopyPrevious;
+
+  /// No description provided for @budgetCopySuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم نسخ {count} ميزانية'**
+  String budgetCopySuccess(int count);
+
+  /// No description provided for @budgetCopyEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد ميزانيات في الشهر السابق'**
+  String get budgetCopyEmpty;
+
+  /// No description provided for @budgetEmptyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد ميزانيات'**
+  String get budgetEmptyTitle;
+
+  /// No description provided for @budgetEmptySubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدّد ميزانيات شهرية لتتبع أدائك المالي'**
+  String get budgetEmptySubtitle;
+
+  /// No description provided for @budgetOverBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجاوز'**
+  String get budgetOverBadge;
+
+  /// No description provided for @budgetPercentUsed.
+  ///
+  /// In ar, this message translates to:
+  /// **'{percent}% مستخدم'**
+  String budgetPercentUsed(String percent);
+
+  /// No description provided for @budgetCategoryLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفئة'**
+  String get budgetCategoryLabel;
+
+  /// No description provided for @budgetCategoryHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر فئة المصروف'**
+  String get budgetCategoryHint;
+
+  /// No description provided for @budgetCategoryRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر فئة المصروف'**
+  String get budgetCategoryRequired;
+
+  /// No description provided for @budgetAmountLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'مبلغ الميزانية'**
+  String get budgetAmountLabel;
+
+  /// No description provided for @budgetAmountInvalid.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل مبلغاً صالحاً أكبر من صفر'**
+  String get budgetAmountInvalid;
+
+  /// No description provided for @budgetCategoryExists.
+  ///
+  /// In ar, this message translates to:
+  /// **'توجد ميزانية لهذه الفئة في هذا الشهر'**
+  String get budgetCategoryExists;
+
+  /// No description provided for @budgetSaveSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ الميزانية'**
+  String get budgetSaveSuccess;
+
+  /// No description provided for @budgetSaveError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر حفظ الميزانية'**
+  String get budgetSaveError;
+
+  /// No description provided for @settingsMonthlyReports.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقارير الشهرية'**
+  String get settingsMonthlyReports;
+
+  /// No description provided for @settingsMonthlyReportsSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملخص مالي شهري وتصدير PDF'**
+  String get settingsMonthlyReportsSubtitle;
+
+  /// No description provided for @settingsBudgets.
+  ///
+  /// In ar, this message translates to:
+  /// **'الميزانيات'**
+  String get settingsBudgets;
+
+  /// No description provided for @settingsBudgetsSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدود الإنفاق الشهرية حسب الفئة'**
+  String get settingsBudgetsSubtitle;
+
+  /// No description provided for @reportsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقارير الشهرية'**
+  String get reportsTitle;
+
+  /// No description provided for @reportsEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد تقارير بعد'**
+  String get reportsEmpty;
+
+  /// No description provided for @reportsEmptySubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيُنشأ تقريرك الشهري تلقائياً'**
+  String get reportsEmptySubtitle;
+
+  /// No description provided for @reportStatusDraft.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسودة'**
+  String get reportStatusDraft;
+
+  /// No description provided for @reportStatusFinalized.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكتمل'**
+  String get reportStatusFinalized;
+
+  /// No description provided for @reportExportPdf.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصدير PDF'**
+  String get reportExportPdf;
+
+  /// No description provided for @reportCompareTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقارنة التقارير'**
+  String get reportCompareTitle;
+
+  /// No description provided for @reportSelectMonthA.
+  ///
+  /// In ar, this message translates to:
+  /// **'الشهر الأول'**
+  String get reportSelectMonthA;
+
+  /// No description provided for @reportSelectMonthB.
+  ///
+  /// In ar, this message translates to:
+  /// **'الشهر الثاني'**
+  String get reportSelectMonthB;
+
+  /// No description provided for @reportSectionInsights.
+  ///
+  /// In ar, this message translates to:
+  /// **'رؤى مالية'**
+  String get reportSectionInsights;
+
+  /// No description provided for @reportSectionExpenses.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحليل المصروفات'**
+  String get reportSectionExpenses;
+
+  /// No description provided for @reportSectionIncome.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحليل الدخل'**
+  String get reportSectionIncome;
+
+  /// No description provided for @reportSectionSavings.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحليل الادخار'**
+  String get reportSectionSavings;
+
+  /// No description provided for @reportSectionBudgets.
+  ///
+  /// In ar, this message translates to:
+  /// **'أداء الميزانية'**
+  String get reportSectionBudgets;
+
+  /// No description provided for @reportSectionSurplus.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفائض والترحيل'**
+  String get reportSectionSurplus;
+
+  /// No description provided for @reportSectionTrend.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاتجاهات'**
+  String get reportSectionTrend;
+
+  /// No description provided for @reportKpiIncome.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدخل'**
+  String get reportKpiIncome;
+
+  /// No description provided for @reportKpiExpense.
+  ///
+  /// In ar, this message translates to:
+  /// **'المصروف'**
+  String get reportKpiExpense;
+
+  /// No description provided for @reportKpiSurplus.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفائض'**
+  String get reportKpiSurplus;
+
+  /// No description provided for @reportKpiSavingsRate.
+  ///
+  /// In ar, this message translates to:
+  /// **'معدل الادخار'**
+  String get reportKpiSavingsRate;
+
+  /// No description provided for @reportMonthlySurplus.
+  ///
+  /// In ar, this message translates to:
+  /// **'فائض الشهر'**
+  String get reportMonthlySurplus;
+
+  /// No description provided for @reportPreviousCarryover.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرحّل من الشهر السابق'**
+  String get reportPreviousCarryover;
+
+  /// No description provided for @reportAvailableSurplus.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفائض المتاح'**
+  String get reportAvailableSurplus;
+
+  /// No description provided for @reportTransferToGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحويل إلى هدف'**
+  String get reportTransferToGoal;
+
+  /// No description provided for @reportCarryForward.
+  ///
+  /// In ar, this message translates to:
+  /// **'ترحيل للشهر القادم'**
+  String get reportCarryForward;
+
+  /// No description provided for @reportSurplusSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تمت معالجة الفائض بنجاح'**
+  String get reportSurplusSuccess;
+
+  /// No description provided for @reportManageBudgets.
+  ///
+  /// In ar, this message translates to:
+  /// **'إدارة الميزانيات'**
+  String get reportManageBudgets;
+
+  /// No description provided for @reportNoBudgets.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تُحدَّد ميزانيات لهذا الشهر'**
+  String get reportNoBudgets;
+
+  /// No description provided for @reportBannerReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقرير الشهر جاهز للمراجعة'**
+  String get reportBannerReady;
+
+  /// No description provided for @reportBannerOpen.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض التقرير'**
+  String get reportBannerOpen;
+
+  /// No description provided for @reportMoMUp.
+  ///
+  /// In ar, this message translates to:
+  /// **'+{percent}%'**
+  String reportMoMUp(String percent);
+
+  /// No description provided for @reportMoMDown.
+  ///
+  /// In ar, this message translates to:
+  /// **'-{percent}%'**
+  String reportMoMDown(String percent);
+
+  /// No description provided for @reportInsightLargestCategory.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكبر فئة إنفاق: {category} ({percent}%)'**
+  String reportInsightLargestCategory(String category, String percent);
+
+  /// No description provided for @reportInsightCategoryIncrease.
+  ///
+  /// In ar, this message translates to:
+  /// **'ارتفع إنفاق {category} بنسبة {percent}% عن الشهر السابق'**
+  String reportInsightCategoryIncrease(String category, String percent);
+
+  /// No description provided for @reportInsightCategoryDecrease.
+  ///
+  /// In ar, this message translates to:
+  /// **'انخفض إنفاق {category} بنسبة {percent}% عن الشهر السابق'**
+  String reportInsightCategoryDecrease(String category, String percent);
+
+  /// No description provided for @reportInsightSavingsRate.
+  ///
+  /// In ar, this message translates to:
+  /// **'ادخرت {rate}% من دخلك هذا الشهر'**
+  String reportInsightSavingsRate(String rate);
+
+  /// No description provided for @reportInsightIncomeUp.
+  ///
+  /// In ar, this message translates to:
+  /// **'ارتفع دخلك بنسبة {percent}% عن الشهر السابق'**
+  String reportInsightIncomeUp(String percent);
+
+  /// No description provided for @reportInsightIncomeDown.
+  ///
+  /// In ar, this message translates to:
+  /// **'انخفض دخلك بنسبة {percent}% عن الشهر السابق'**
+  String reportInsightIncomeDown(String percent);
+
+  /// No description provided for @reportInsightIncomeFlat.
+  ///
+  /// In ar, this message translates to:
+  /// **'دخلك مستقر مقارنة بالشهر السابق'**
+  String get reportInsightIncomeFlat;
+
+  /// No description provided for @reportInsightBudgetOnTrack.
+  ///
+  /// In ar, this message translates to:
+  /// **'جميع ميزانياتك ضمن الحدود'**
+  String get reportInsightBudgetOnTrack;
+
+  /// No description provided for @reportInsightBudgetOver.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجاوزت ميزانية {category} ({percent}%)'**
+  String reportInsightBudgetOver(String category, String percent);
+
+  /// No description provided for @reportInsightSurplusToGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحويل جزء من الفائض إلى {goal} قد يُسرّع تحقيق الهدف بـ {months} أشهر'**
+  String reportInsightSurplusToGoal(String goal, String months);
+
+  /// No description provided for @reportPdfCoverTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقرير المالي الشهري'**
+  String get reportPdfCoverTitle;
+
+  /// No description provided for @reportPdfSummary.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملخص التنفيذي'**
+  String get reportPdfSummary;
+
+  /// No description provided for @reportPdfExpenses.
+  ///
+  /// In ar, this message translates to:
+  /// **'المصروفات'**
+  String get reportPdfExpenses;
+
+  /// No description provided for @reportPdfIncome.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدخل'**
+  String get reportPdfIncome;
+
+  /// No description provided for @reportPdfSavings.
+  ///
+  /// In ar, this message translates to:
+  /// **'الادخار'**
+  String get reportPdfSavings;
+
+  /// No description provided for @reportPdfBudgets.
+  ///
+  /// In ar, this message translates to:
+  /// **'الميزانيات'**
+  String get reportPdfBudgets;
+
+  /// No description provided for @reportPdfGoals.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأهداف'**
+  String get reportPdfGoals;
+
+  /// No description provided for @reportPdfSurplus.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفائض'**
+  String get reportPdfSurplus;
+
+  /// No description provided for @reportPdfInsights.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرؤى والتوصيات'**
+  String get reportPdfInsights;
+
+  /// No description provided for @reportPdfExportSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تصدير التقرير'**
+  String get reportPdfExportSuccess;
+
+  /// No description provided for @reportPdfExportError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر تصدير التقرير'**
+  String get reportPdfExportError;
+
+  /// No description provided for @currencyNotFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملة غير موجودة'**
+  String get currencyNotFound;
 }
 
 class _AppLocalizationsDelegate

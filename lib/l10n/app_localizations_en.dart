@@ -1868,4 +1868,270 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get goalAchievedSubtitle => 'You\'ve reached your financial goal';
+
+  @override
+  String get commonSave => 'Save';
+
+  @override
+  String get budgetsTitle => 'Monthly budgets';
+
+  @override
+  String get budgetAdd => 'Add budget';
+
+  @override
+  String get budgetAddTitle => 'New budget';
+
+  @override
+  String get budgetEditTitle => 'Edit budget';
+
+  @override
+  String get budgetSelectedMonth => 'Month';
+
+  @override
+  String get budgetCopyPrevious => 'Copy from previous month';
+
+  @override
+  String budgetCopySuccess(int count) {
+    return 'Copied $count budget(s)';
+  }
+
+  @override
+  String get budgetCopyEmpty => 'No budgets in the previous month';
+
+  @override
+  String get budgetEmptyTitle => 'No budgets yet';
+
+  @override
+  String get budgetEmptySubtitle =>
+      'Set monthly budgets to track spending performance';
+
+  @override
+  String get budgetOverBadge => 'Over';
+
+  @override
+  String budgetPercentUsed(String percent) {
+    return '$percent% used';
+  }
+
+  @override
+  String get budgetCategoryLabel => 'Category';
+
+  @override
+  String get budgetCategoryHint => 'Select expense category';
+
+  @override
+  String get budgetCategoryRequired => 'Select an expense category';
+
+  @override
+  String get budgetAmountLabel => 'Budget amount';
+
+  @override
+  String get budgetAmountInvalid => 'Enter a valid amount greater than zero';
+
+  @override
+  String get budgetCategoryExists =>
+      'A budget for this category already exists this month';
+
+  @override
+  String get budgetSaveSuccess => 'Budget saved';
+
+  @override
+  String get budgetSaveError => 'Could not save budget';
+
+  @override
+  String get settingsMonthlyReports => 'Monthly reports';
+
+  @override
+  String get settingsMonthlyReportsSubtitle =>
+      'Monthly financial summary and PDF export';
+
+  @override
+  String get settingsBudgets => 'Budgets';
+
+  @override
+  String get settingsBudgetsSubtitle => 'Monthly spending limits by category';
+
+  @override
+  String get reportsTitle => 'Monthly reports';
+
+  @override
+  String get reportsEmpty => 'No reports yet';
+
+  @override
+  String get reportsEmptySubtitle =>
+      'Your monthly report will be generated automatically';
+
+  @override
+  String get reportStatusDraft => 'Draft';
+
+  @override
+  String get reportStatusFinalized => 'Finalized';
+
+  @override
+  String get reportExportPdf => 'Export PDF';
+
+  @override
+  String get reportCompareTitle => 'Compare reports';
+
+  @override
+  String get reportSelectMonthA => 'First month';
+
+  @override
+  String get reportSelectMonthB => 'Second month';
+
+  @override
+  String get reportSectionInsights => 'Financial insights';
+
+  @override
+  String get reportSectionExpenses => 'Expense analysis';
+
+  @override
+  String get reportSectionIncome => 'Income analysis';
+
+  @override
+  String get reportSectionSavings => 'Savings analysis';
+
+  @override
+  String get reportSectionBudgets => 'Budget performance';
+
+  @override
+  String get reportSectionSurplus => 'Surplus & carryover';
+
+  @override
+  String get reportSectionTrend => 'Trends';
+
+  @override
+  String get reportKpiIncome => 'Income';
+
+  @override
+  String get reportKpiExpense => 'Expense';
+
+  @override
+  String get reportKpiSurplus => 'Surplus';
+
+  @override
+  String get reportKpiSavingsRate => 'Savings rate';
+
+  @override
+  String get reportMonthlySurplus => 'Monthly surplus';
+
+  @override
+  String get reportPreviousCarryover => 'Carried from previous month';
+
+  @override
+  String get reportAvailableSurplus => 'Available surplus';
+
+  @override
+  String get reportTransferToGoal => 'Transfer to goal';
+
+  @override
+  String get reportCarryForward => 'Carry forward';
+
+  @override
+  String get reportSurplusSuccess => 'Surplus handled successfully';
+
+  @override
+  String get reportManageBudgets => 'Manage budgets';
+
+  @override
+  String get reportNoBudgets => 'No budgets set for this month';
+
+  @override
+  String get reportBannerReady => 'Your monthly report is ready';
+
+  @override
+  String get reportBannerOpen => 'View report';
+
+  @override
+  String reportMoMUp(String percent) {
+    return '+$percent%';
+  }
+
+  @override
+  String reportMoMDown(String percent) {
+    return '-$percent%';
+  }
+
+  @override
+  String reportInsightLargestCategory(String category, String percent) {
+    return 'Largest spending category: $category ($percent%)';
+  }
+
+  @override
+  String reportInsightCategoryIncrease(String category, String percent) {
+    return 'Your $category spending increased by $percent% vs last month';
+  }
+
+  @override
+  String reportInsightCategoryDecrease(String category, String percent) {
+    return 'Your $category spending decreased by $percent% vs last month';
+  }
+
+  @override
+  String reportInsightSavingsRate(String rate) {
+    return 'You saved $rate% of your income this month';
+  }
+
+  @override
+  String reportInsightIncomeUp(String percent) {
+    return 'Income increased by $percent% vs last month';
+  }
+
+  @override
+  String reportInsightIncomeDown(String percent) {
+    return 'Income decreased by $percent% vs last month';
+  }
+
+  @override
+  String get reportInsightIncomeFlat =>
+      'Income is stable compared to last month';
+
+  @override
+  String get reportInsightBudgetOnTrack => 'All budgets are on track';
+
+  @override
+  String reportInsightBudgetOver(String category, String percent) {
+    return 'Over budget on $category ($percent%)';
+  }
+
+  @override
+  String reportInsightSurplusToGoal(String goal, String months) {
+    return 'Moving part of your surplus to $goal could reach the goal $months months sooner';
+  }
+
+  @override
+  String get reportPdfCoverTitle => 'Monthly Financial Report';
+
+  @override
+  String get reportPdfSummary => 'Executive summary';
+
+  @override
+  String get reportPdfExpenses => 'Expenses';
+
+  @override
+  String get reportPdfIncome => 'Income';
+
+  @override
+  String get reportPdfSavings => 'Savings';
+
+  @override
+  String get reportPdfBudgets => 'Budgets';
+
+  @override
+  String get reportPdfGoals => 'Goals';
+
+  @override
+  String get reportPdfSurplus => 'Surplus';
+
+  @override
+  String get reportPdfInsights => 'Insights & recommendations';
+
+  @override
+  String get reportPdfExportSuccess => 'Report exported';
+
+  @override
+  String get reportPdfExportError => 'Could not export report';
+
+  @override
+  String get currencyNotFound => 'Currency not found';
 }

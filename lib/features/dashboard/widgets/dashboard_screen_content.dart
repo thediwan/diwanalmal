@@ -18,6 +18,7 @@ import 'dashboard_header.dart';
 import 'dashboard_monthly_summary.dart';
 import 'dashboard_quick_actions.dart';
 import 'dashboard_recent_transactions.dart';
+import 'dashboard_report_banner.dart';
 import 'dashboard_section_divider.dart';
 
 /// Shared dashboard sections — layout-agnostic content widgets.
@@ -83,11 +84,14 @@ class DashboardScreenContent extends StatelessWidget {
         baseCode: baseCode,
       ),
       const DashboardSectionDivider(),
+      const DashboardReportBanner(),
       DashboardMonthlySummary(
         baseCode: baseCode,
         monthlyIncome: data.monthlyIncome,
         monthlyExpense: data.monthlyExpense,
         debts: data.debts,
+        incomeChangePct: data.incomeChangePct,
+        expenseChangePct: data.expenseChangePct,
         onDebtsTap: () => context.go('/transactions?tab=debt'),
       ),
       const DashboardSectionDivider(),

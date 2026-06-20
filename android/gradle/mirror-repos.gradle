@@ -1,0 +1,15 @@
+// Applied from settings.gradle so Flutter plugins resolve AndroidX when Google Maven is unreachable.
+def mirrorRepositories = {
+    maven { url = uri("https://maven.aliyun.com/repository/google") }
+    maven { url = uri("https://maven.aliyun.com/repository/public") }
+    google()
+    mavenCentral()
+    maven { url = uri("https://dl.google.com/dl/android/maven2/") }
+}
+
+gradle.beforeProject { project ->
+    project.buildscript {
+        repositories mirrorRepositories
+    }
+    project.repositories mirrorRepositories
+}

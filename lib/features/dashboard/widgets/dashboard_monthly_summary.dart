@@ -15,6 +15,8 @@ class DashboardMonthlySummary extends StatelessWidget {
     required this.monthlyIncome,
     required this.monthlyExpense,
     required this.debts,
+    this.incomeChangePct,
+    this.expenseChangePct,
     this.onDebtsTap,
   });
 
@@ -22,7 +24,24 @@ class DashboardMonthlySummary extends StatelessWidget {
   final double monthlyIncome;
   final double monthlyExpense;
   final double debts;
+  final double? incomeChangePct;
+  final double? expenseChangePct;
   final VoidCallback? onDebtsTap;
+
+  String? _formatChange(BuildContext context, double? change, bool isExpense) {
+    if (change == null) return null;
+    final l10n = context.l10n;
+    final value = change.abs().toStringAsFixed(0);
+    if (change > 0) {
+      return isExpense
+          ? l10n.reportMoMUp(value)
+          : l10n.reportMoMUp(value);
+    }
+    if (change < 0) {
+      return l10n.reportMoMDown(value);
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +63,7 @@ class DashboardMonthlySummary extends StatelessWidget {
                     baseCode,
                   ),
                   valueColor: AppColors.success,
-                  changeText: l10n.dashboardIncomeChange(12),
+                  changeText: _formatChange(context, incomeChangePct, false),
                   changeColor: AppColors.success,
                 ),
               ),
@@ -57,9 +76,7 @@ class DashboardMonthlySummary extends StatelessWidget {
                     baseCode,
                   ),
                   valueColor: AppColors.expense,
-                  changeText: monthlyExpense > 0
-                      ? l10n.dashboardExpenseChange(5)
-                      : null,
+                  changeText: _formatChange(context, expenseChangePct, true),
                   changeColor: AppColors.expense,
                 ),
               ),

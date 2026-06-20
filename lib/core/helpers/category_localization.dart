@@ -13,6 +13,21 @@ abstract final class CategoryLocalization {
     }
     return category.name;
   }
+
+  /// Resolves a stored category name using system-category l10n when applicable.
+  static String displayName(
+    AppLocalizations l10n,
+    String categoryId,
+    String fallback,
+  ) {
+    if (categoryId == DatabaseConstants.systemGeneralIncomeCategoryId) {
+      return l10n.categoryGeneralIncome;
+    }
+    if (categoryId == DatabaseConstants.systemGeneralExpenseCategoryId) {
+      return l10n.categoryGeneralExpense;
+    }
+    return fallback;
+  }
 }
 
 extension TransactionCategoryLocalization on TransactionCategory {

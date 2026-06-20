@@ -1856,4 +1856,265 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get goalAchievedSubtitle => 'لقد حققت هدفك المالي';
+
+  @override
+  String get commonSave => 'حفظ';
+
+  @override
+  String get budgetsTitle => 'الميزانيات الشهرية';
+
+  @override
+  String get budgetAdd => 'إضافة ميزانية';
+
+  @override
+  String get budgetAddTitle => 'ميزانية جديدة';
+
+  @override
+  String get budgetEditTitle => 'تعديل الميزانية';
+
+  @override
+  String get budgetSelectedMonth => 'الشهر';
+
+  @override
+  String get budgetCopyPrevious => 'نسخ من الشهر السابق';
+
+  @override
+  String budgetCopySuccess(int count) {
+    return 'تم نسخ $count ميزانية';
+  }
+
+  @override
+  String get budgetCopyEmpty => 'لا توجد ميزانيات في الشهر السابق';
+
+  @override
+  String get budgetEmptyTitle => 'لا توجد ميزانيات';
+
+  @override
+  String get budgetEmptySubtitle => 'حدّد ميزانيات شهرية لتتبع أدائك المالي';
+
+  @override
+  String get budgetOverBadge => 'تجاوز';
+
+  @override
+  String budgetPercentUsed(String percent) {
+    return '$percent% مستخدم';
+  }
+
+  @override
+  String get budgetCategoryLabel => 'الفئة';
+
+  @override
+  String get budgetCategoryHint => 'اختر فئة المصروف';
+
+  @override
+  String get budgetCategoryRequired => 'اختر فئة المصروف';
+
+  @override
+  String get budgetAmountLabel => 'مبلغ الميزانية';
+
+  @override
+  String get budgetAmountInvalid => 'أدخل مبلغاً صالحاً أكبر من صفر';
+
+  @override
+  String get budgetCategoryExists => 'توجد ميزانية لهذه الفئة في هذا الشهر';
+
+  @override
+  String get budgetSaveSuccess => 'تم حفظ الميزانية';
+
+  @override
+  String get budgetSaveError => 'تعذر حفظ الميزانية';
+
+  @override
+  String get settingsMonthlyReports => 'التقارير الشهرية';
+
+  @override
+  String get settingsMonthlyReportsSubtitle => 'ملخص مالي شهري وتصدير PDF';
+
+  @override
+  String get settingsBudgets => 'الميزانيات';
+
+  @override
+  String get settingsBudgetsSubtitle => 'حدود الإنفاق الشهرية حسب الفئة';
+
+  @override
+  String get reportsTitle => 'التقارير الشهرية';
+
+  @override
+  String get reportsEmpty => 'لا توجد تقارير بعد';
+
+  @override
+  String get reportsEmptySubtitle => 'سيُنشأ تقريرك الشهري تلقائياً';
+
+  @override
+  String get reportStatusDraft => 'مسودة';
+
+  @override
+  String get reportStatusFinalized => 'مكتمل';
+
+  @override
+  String get reportExportPdf => 'تصدير PDF';
+
+  @override
+  String get reportCompareTitle => 'مقارنة التقارير';
+
+  @override
+  String get reportSelectMonthA => 'الشهر الأول';
+
+  @override
+  String get reportSelectMonthB => 'الشهر الثاني';
+
+  @override
+  String get reportSectionInsights => 'رؤى مالية';
+
+  @override
+  String get reportSectionExpenses => 'تحليل المصروفات';
+
+  @override
+  String get reportSectionIncome => 'تحليل الدخل';
+
+  @override
+  String get reportSectionSavings => 'تحليل الادخار';
+
+  @override
+  String get reportSectionBudgets => 'أداء الميزانية';
+
+  @override
+  String get reportSectionSurplus => 'الفائض والترحيل';
+
+  @override
+  String get reportSectionTrend => 'الاتجاهات';
+
+  @override
+  String get reportKpiIncome => 'الدخل';
+
+  @override
+  String get reportKpiExpense => 'المصروف';
+
+  @override
+  String get reportKpiSurplus => 'الفائض';
+
+  @override
+  String get reportKpiSavingsRate => 'معدل الادخار';
+
+  @override
+  String get reportMonthlySurplus => 'فائض الشهر';
+
+  @override
+  String get reportPreviousCarryover => 'مرحّل من الشهر السابق';
+
+  @override
+  String get reportAvailableSurplus => 'الفائض المتاح';
+
+  @override
+  String get reportTransferToGoal => 'تحويل إلى هدف';
+
+  @override
+  String get reportCarryForward => 'ترحيل للشهر القادم';
+
+  @override
+  String get reportSurplusSuccess => 'تمت معالجة الفائض بنجاح';
+
+  @override
+  String get reportManageBudgets => 'إدارة الميزانيات';
+
+  @override
+  String get reportNoBudgets => 'لم تُحدَّد ميزانيات لهذا الشهر';
+
+  @override
+  String get reportBannerReady => 'تقرير الشهر جاهز للمراجعة';
+
+  @override
+  String get reportBannerOpen => 'عرض التقرير';
+
+  @override
+  String reportMoMUp(String percent) {
+    return '+$percent%';
+  }
+
+  @override
+  String reportMoMDown(String percent) {
+    return '-$percent%';
+  }
+
+  @override
+  String reportInsightLargestCategory(String category, String percent) {
+    return 'أكبر فئة إنفاق: $category ($percent%)';
+  }
+
+  @override
+  String reportInsightCategoryIncrease(String category, String percent) {
+    return 'ارتفع إنفاق $category بنسبة $percent% عن الشهر السابق';
+  }
+
+  @override
+  String reportInsightCategoryDecrease(String category, String percent) {
+    return 'انخفض إنفاق $category بنسبة $percent% عن الشهر السابق';
+  }
+
+  @override
+  String reportInsightSavingsRate(String rate) {
+    return 'ادخرت $rate% من دخلك هذا الشهر';
+  }
+
+  @override
+  String reportInsightIncomeUp(String percent) {
+    return 'ارتفع دخلك بنسبة $percent% عن الشهر السابق';
+  }
+
+  @override
+  String reportInsightIncomeDown(String percent) {
+    return 'انخفض دخلك بنسبة $percent% عن الشهر السابق';
+  }
+
+  @override
+  String get reportInsightIncomeFlat => 'دخلك مستقر مقارنة بالشهر السابق';
+
+  @override
+  String get reportInsightBudgetOnTrack => 'جميع ميزانياتك ضمن الحدود';
+
+  @override
+  String reportInsightBudgetOver(String category, String percent) {
+    return 'تجاوزت ميزانية $category ($percent%)';
+  }
+
+  @override
+  String reportInsightSurplusToGoal(String goal, String months) {
+    return 'تحويل جزء من الفائض إلى $goal قد يُسرّع تحقيق الهدف بـ $months أشهر';
+  }
+
+  @override
+  String get reportPdfCoverTitle => 'التقرير المالي الشهري';
+
+  @override
+  String get reportPdfSummary => 'الملخص التنفيذي';
+
+  @override
+  String get reportPdfExpenses => 'المصروفات';
+
+  @override
+  String get reportPdfIncome => 'الدخل';
+
+  @override
+  String get reportPdfSavings => 'الادخار';
+
+  @override
+  String get reportPdfBudgets => 'الميزانيات';
+
+  @override
+  String get reportPdfGoals => 'الأهداف';
+
+  @override
+  String get reportPdfSurplus => 'الفائض';
+
+  @override
+  String get reportPdfInsights => 'الرؤى والتوصيات';
+
+  @override
+  String get reportPdfExportSuccess => 'تم تصدير التقرير';
+
+  @override
+  String get reportPdfExportError => 'تعذر تصدير التقرير';
+
+  @override
+  String get currencyNotFound => 'العملة غير موجودة';
 }

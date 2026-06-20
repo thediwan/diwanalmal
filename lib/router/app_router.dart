@@ -36,6 +36,11 @@ import '../features/goals/goal_plan_screen.dart';
 import '../features/goals/goal_savings_form_screen.dart';
 import '../features/goals/models/goal_draft.dart';
 import '../features/goals/models/goal_savings_mode.dart';
+import '../features/budgets/budget_form_screen.dart';
+import '../features/budgets/budgets_screen.dart';
+import '../features/reports/presentation/screens/monthly_report_screen.dart';
+import '../features/reports/presentation/screens/report_compare_screen.dart';
+import '../features/reports/presentation/screens/reports_list_screen.dart';
 import '../features/wallets/wallet_form_screen.dart';
 import '../features/wallets/wallets_screen.dart';
 import '../providers/settings_provider.dart';
@@ -137,6 +142,45 @@ class AppRouter {
             builder: (context, state) {
               final id = state.pathParameters['id']!;
               return CategoryFormScreen(categoryId: id);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/budgets',
+        builder: (context, state) => const BudgetsScreen(),
+        routes: [
+          GoRoute(
+            path: 'add',
+            builder: (context, state) {
+              final year = int.tryParse(state.uri.queryParameters['year'] ?? '');
+              final month = int.tryParse(state.uri.queryParameters['month'] ?? '');
+              return BudgetFormScreen(initialYear: year, initialMonth: month);
+            },
+          ),
+          GoRoute(
+            path: ':id/edit',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return BudgetFormScreen(budgetId: id);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/reports',
+        builder: (context, state) => const ReportsListScreen(),
+        routes: [
+          GoRoute(
+            path: 'compare',
+            builder: (context, state) => const ReportCompareScreen(),
+          ),
+          GoRoute(
+            path: ':year/:month',
+            builder: (context, state) {
+              final year = int.parse(state.pathParameters['year']!);
+              final month = int.parse(state.pathParameters['month']!);
+              return MonthlyReportScreen(year: year, month: month);
             },
           ),
         ],

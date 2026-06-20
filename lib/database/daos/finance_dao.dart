@@ -2,7 +2,10 @@ import 'package:drift/drift.dart';
 
 import '../lazarus_database.dart';
 import '../tables/schema_tables.dart';
+import '../../core/constants/database_constants.dart';
+import '../../core/constants/report_constants.dart';
 import '../../core/helpers/activity_feed_search.dart';
+import '../../core/helpers/uuid_helper.dart';
 
 part 'finance_dao.g.dart';
 
@@ -20,6 +23,8 @@ part 'finance_dao.g.dart';
   Contacts,
   TransactionSplits,
   TransactionSplitParticipants,
+  Budgets,
+  MonthlyReports,
 ])
 class FinanceDao extends DatabaseAccessor<LazarusDatabase>
     with _$FinanceDaoMixin {
@@ -1115,6 +1120,453 @@ class FinanceDao extends DatabaseAccessor<LazarusDatabase>
     if (walletCurrency.rateToBase == 0) return 0;
     return base / walletCurrency.rateToBase;
   }
+
+  DateTime _monthStart(int year, int month) => DateTime(year, month);
+
+  DateTime _monthEnd(int year, int month) => DateTime(year, month + 1);
+
+  /// Expense totals grouped by category for a calendar month.
+  Future<List<CategoryAmountBreakdown>> sumExpensesByCategory({
+    required String userId,
+    required int year,
+    required int month,
+  }) async {
+    return _sumTransactionsByCategory(
+      userId: userId,
+      type: DatabaseConstants.txExpense,
+      year: year,
+      month: month,
+    );
+  }
+
+  /// Income totals grouped by category for a calendar month.
+  Future<List<CategoryAmountBreakdown>> sumIncomeByCategory({
+    required String userId,
+    required int year,
+    required int month,
+  }) async {
+    return _sumTransactionsByCategory(
+      userId: userId,
+      type: DatabaseConstants.txIncome,
+      year: year,
+      month: month,
+    );
+  }
+
+  Future<List<CategoryAmountBreakdown>> _sumTransactionsByCategory({
+    required String userId,
+    required String type,
+    required int year,
+    required int month,
+  }) async {
+    final start = _monthStart(year, month);
+    final end = _monthEnd(year, month);
+    final t = db.transactions;
+    final c = db.categories;
+
+    final rows = await (select(t)
+          ..where((row) => row.userId.equals(userId))
+          ..where((row) => row.type.equals(type))
+          ..where((row) => row.deletedAt.isNull())
+          ..where((row) => row.transactionDate.isBiggerOrEqualValue(start))
+          ..where((row) => row.transactionDate.isSmallerThanValue(end)))
+        .join([
+      leftOuterJoin(c, c.id.equalsExp(t.categoryId)),
+    ]).get();
+
+    final totalsByCategory = <String, _CategoryAccumulator>{};
+    for (final row in rows) {
+      final tx = row.readTable(t);
+      final cat = row.readTableOrNull(c);
+      final categoryId = tx.categoryId ?? 'unknown';
+      final acc = totalsByCategory.putIfAbsent(
+        categoryId,
+        () => _CategoryAccumulator(
+          categoryId: categoryId,
+          categoryName: cat?.name ?? categoryId,
+          iconKey: cat?.icon,
+          colorHex: cat?.color,
+        ),
+      );
+      acc.totalBase += tx.baseAmount;
+    }
+
+    final totalAll =
+        totalsByCategory.values.fold<double>(0, (sum, a) => sum + a.totalBase);
+
+    final result = totalsByCategory.values
+        .map(
+          (acc) => CategoryAmountBreakdown(
+            categoryId: acc.categoryId,
+            categoryName: acc.categoryName,
+            iconKey: acc.iconKey,
+            colorHex: acc.colorHex,
+            totalBase: acc.totalBase,
+            percentOfTotal:
+                totalAll <= 0 ? 0 : (acc.totalBase / totalAll) * 100,
+          ),
+        )
+        .toList()
+      ..sort((a, b) => b.totalBase.compareTo(a.totalBase));
+
+    return result;
+  }
+
+  /// Goal deposits (transfers into goal wallets) in base currency for a month.
+  Future<double> sumGoalDepositsBase({
+    required String userId,
+    required int year,
+    required int month,
+  }) async {
+    final goalWalletIds = await getGoalWalletIds(userId);
+    if (goalWalletIds.isEmpty) return 0;
+
+    final start = _monthStart(year, month);
+    final end = _monthEnd(year, month);
+
+    final rows = await (select(db.transfers)
+          ..where((tr) => tr.userId.equals(userId))
+          ..where((tr) => tr.deletedAt.isNull())
+          ..where((tr) => tr.toWalletId.isIn(goalWalletIds.toList()))
+          ..where((tr) => tr.transactionDate.isBiggerOrEqualValue(start))
+          ..where((tr) => tr.transactionDate.isSmallerThanValue(end)))
+        .get();
+
+    return rows.fold<double>(0, (sum, tr) => sum + tr.baseAmount);
+  }
+
+  /// Income, expense, and goal savings per month for trend charts.
+  Future<List<MonthlyTrendPoint>> getMonthlyTrend({
+    required String userId,
+    required int monthsBack,
+  }) async {
+    final now = DateTime.now();
+    final points = <MonthlyTrendPoint>[];
+
+    for (var i = monthsBack - 1; i >= 0; i--) {
+      final date = DateTime(now.year, now.month - i);
+      final year = date.year;
+      final month = date.month;
+      final income = await sumMonthlyIncomeBase(
+        userId: userId,
+        year: year,
+        month: month,
+      );
+      final expense = await sumMonthlyExpenseBase(
+        userId: userId,
+        year: year,
+        month: month,
+      );
+      final savings = await sumGoalDepositsBase(
+        userId: userId,
+        year: year,
+        month: month,
+      );
+      points.add(
+        MonthlyTrendPoint(
+          year: year,
+          month: month,
+          income: income,
+          expense: expense,
+          goalSavings: savings,
+          surplus: income - expense,
+        ),
+      );
+    }
+
+    return points;
+  }
+
+  /// Budget rows with actual expense spend for the same month.
+  Future<List<BudgetWithActual>> getBudgetsWithActuals({
+    required String userId,
+    required int year,
+    required int month,
+  }) async {
+    final budgets = await getBudgetsForMonth(
+      userId: userId,
+      year: year,
+      month: month,
+    );
+    if (budgets.isEmpty) return [];
+
+    final expenseByCategory = await sumExpensesByCategory(
+      userId: userId,
+      year: year,
+      month: month,
+    );
+    final actualMap = {
+      for (final row in expenseByCategory) row.categoryId: row.totalBase,
+    };
+
+    final c = db.categories;
+    final cur = db.currencies;
+    final result = <BudgetWithActual>[];
+
+    for (final budget in budgets) {
+      final category = await (select(c)
+            ..where((cat) => cat.id.equals(budget.categoryId)))
+          .getSingleOrNull();
+      final currency = await (select(cur)
+            ..where((row) => row.id.equals(budget.currencyId)))
+          .getSingleOrNull();
+      final actual = actualMap[budget.categoryId] ?? 0;
+      result.add(
+        BudgetWithActual(
+          budget: budget,
+          categoryName: category?.name ?? budget.categoryId,
+          categoryIconKey: category?.icon,
+          categoryColorHex: category?.color,
+          currencyCode: currency?.code ?? '',
+          actualBase: actual,
+          percentUsed: budget.amount <= 0 ? 0 : (actual / budget.amount) * 100,
+          remaining: budget.amount - actual,
+        ),
+      );
+    }
+
+    return result..sort((a, b) => b.percentUsed.compareTo(a.percentUsed));
+  }
+
+  /// All budget rows for a user in a calendar month.
+  Future<List<Budget>> getBudgetsForMonth({
+    required String userId,
+    required int year,
+    required int month,
+  }) {
+    return (select(db.budgets)
+          ..where((b) => b.userId.equals(userId))
+          ..where((b) => b.year.equals(year))
+          ..where((b) => b.month.equals(month))
+          ..orderBy([(b) => OrderingTerm.asc(b.createdAt)]))
+        .get();
+  }
+
+  /// Loads one budget by id for the active user.
+  Future<Budget?> getBudgetById({
+    required String userId,
+    required String budgetId,
+  }) {
+    return (select(db.budgets)
+          ..where((b) => b.userId.equals(userId))
+          ..where((b) => b.id.equals(budgetId)))
+        .getSingleOrNull();
+  }
+
+  /// Finds budget for category in a given month.
+  Future<Budget?> getBudgetForCategoryMonth({
+    required String userId,
+    required String categoryId,
+    required int year,
+    required int month,
+  }) {
+    return (select(db.budgets)
+          ..where((b) => b.userId.equals(userId))
+          ..where((b) => b.categoryId.equals(categoryId))
+          ..where((b) => b.year.equals(year))
+          ..where((b) => b.month.equals(month)))
+        .getSingleOrNull();
+  }
+
+  /// Inserts or replaces a budget row.
+  Future<void> upsertBudget(BudgetsCompanion budget) {
+    return into(db.budgets).insertOnConflictUpdate(budget);
+  }
+
+  /// Deletes a budget row.
+  Future<int> deleteBudget({
+    required String userId,
+    required String budgetId,
+  }) {
+    return (delete(db.budgets)
+          ..where((b) => b.userId.equals(userId))
+          ..where((b) => b.id.equals(budgetId)))
+        .go();
+  }
+
+  /// Copies all budgets from the previous calendar month.
+  Future<int> copyBudgetsFromPreviousMonth({
+    required String userId,
+    required int year,
+    required int month,
+  }) async {
+    final previous = DateTime(year, month - 1);
+    final source = await getBudgetsForMonth(
+      userId: userId,
+      year: previous.year,
+      month: previous.month,
+    );
+    if (source.isEmpty) return 0;
+
+    final now = DateTime.now();
+    var copied = 0;
+    for (final row in source) {
+      final existing = await getBudgetForCategoryMonth(
+        userId: userId,
+        categoryId: row.categoryId,
+        year: year,
+        month: month,
+      );
+      if (existing != null) continue;
+
+      await upsertBudget(
+        BudgetsCompanion.insert(
+          id: UuidHelper.generate(),
+          userId: userId,
+          categoryId: row.categoryId,
+          month: month,
+          year: year,
+          amount: row.amount,
+          currencyId: row.currencyId,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+      copied++;
+    }
+    return copied;
+  }
+
+  /// Monthly report for a specific calendar month.
+  Future<MonthlyReportRow?> getMonthlyReport({
+    required String userId,
+    required int year,
+    required int month,
+  }) {
+    return (select(db.monthlyReports)
+          ..where((r) => r.userId.equals(userId))
+          ..where((r) => r.year.equals(year))
+          ..where((r) => r.month.equals(month)))
+        .getSingleOrNull();
+  }
+
+  /// Most recent finalized report before [year]/[month].
+  Future<MonthlyReportRow?> getPreviousFinalizedReport({
+    required String userId,
+    required int year,
+    required int month,
+  }) async {
+    final target = DateTime(year, month);
+    final rows = await (select(db.monthlyReports)
+          ..where((r) => r.userId.equals(userId))
+          ..where((r) => r.status.equals(ReportConstants.statusFinalized))
+          ..orderBy([(r) => OrderingTerm.desc(r.year), (r) => OrderingTerm.desc(r.month)]))
+        .get();
+
+    for (final row in rows) {
+      final rowDate = DateTime(row.year, row.month);
+      if (rowDate.isBefore(target)) return row;
+    }
+    return null;
+  }
+
+  /// Carryover amount from the immediately previous finalized report.
+  Future<double> getPreviousCarryoverIn({
+    required String userId,
+    required int year,
+    required int month,
+  }) async {
+    final previous = await getPreviousFinalizedReport(
+      userId: userId,
+      year: year,
+      month: month,
+    );
+    return previous?.carriedForwardAmount ?? 0;
+  }
+
+  /// All monthly reports for a user, newest first.
+  Future<List<MonthlyReportRow>> listMonthlyReports(String userId) {
+    return (select(db.monthlyReports)
+          ..where((r) => r.userId.equals(userId))
+          ..orderBy([
+            (r) => OrderingTerm.desc(r.year),
+            (r) => OrderingTerm.desc(r.month),
+          ]))
+        .get();
+  }
+
+  /// Inserts or updates a monthly report snapshot.
+  Future<void> upsertMonthlyReport(MonthlyReportsCompanion report) {
+    return into(db.monthlyReports).insertOnConflictUpdate(report);
+  }
+
+  /// Updates disposition fields on an existing report.
+  Future<bool> updateMonthlyReportRow(MonthlyReportRow report) {
+    return update(db.monthlyReports).replace(report);
+  }
+}
+
+class _CategoryAccumulator {
+  _CategoryAccumulator({
+    required this.categoryId,
+    required this.categoryName,
+    this.iconKey,
+    this.colorHex,
+  });
+
+  final String categoryId;
+  final String categoryName;
+  final String? iconKey;
+  final String? colorHex;
+  double totalBase = 0;
+}
+
+class CategoryAmountBreakdown {
+  const CategoryAmountBreakdown({
+    required this.categoryId,
+    required this.categoryName,
+    this.iconKey,
+    this.colorHex,
+    required this.totalBase,
+    required this.percentOfTotal,
+  });
+
+  final String categoryId;
+  final String categoryName;
+  final String? iconKey;
+  final String? colorHex;
+  final double totalBase;
+  final double percentOfTotal;
+}
+
+class MonthlyTrendPoint {
+  const MonthlyTrendPoint({
+    required this.year,
+    required this.month,
+    required this.income,
+    required this.expense,
+    required this.goalSavings,
+    required this.surplus,
+  });
+
+  final int year;
+  final int month;
+  final double income;
+  final double expense;
+  final double goalSavings;
+  final double surplus;
+}
+
+class BudgetWithActual {
+  const BudgetWithActual({
+    required this.budget,
+    required this.categoryName,
+    this.categoryIconKey,
+    this.categoryColorHex,
+    required this.currencyCode,
+    required this.actualBase,
+    required this.percentUsed,
+    required this.remaining,
+  });
+
+  final Budget budget;
+  final String categoryName;
+  final String? categoryIconKey;
+  final String? categoryColorHex;
+  final String currencyCode;
+  final double actualBase;
+  final double percentUsed;
+  final double remaining;
 }
 
 class TreasuryWithAccounts {

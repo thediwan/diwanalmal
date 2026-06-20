@@ -10,7 +10,7 @@ Local financial data is stored in **`lazarus.db`** (SQLite via [Drift](https://d
 
 ## Tables (per product spec)
 
-**Schema version:** 13
+**Schema version:** 14
 
 | Table | Purpose |
 |-------|---------|
@@ -30,6 +30,7 @@ Local financial data is stored in **`lazarus.db`** (SQLite via [Drift](https://d
 | `transaction_split_participants` | Per-person share lines linked to debts |
 | `debt_payments` | Partial repayments |
 | `budgets` | Monthly category budgets |
+| `monthly_reports` | Frozen monthly financial report snapshots |
 | `goals` | Financial goals |
 | `attachments` | Local file paths |
 

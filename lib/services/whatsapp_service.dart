@@ -1,6 +1,5 @@
-import 'package:url_launcher/url_launcher.dart';
-
 import '../core/helpers/phone_helper.dart';
+import 'external_url_launcher.dart';
 
 /// Opens WhatsApp chats via wa.me deep links.
 class WhatsAppService {
@@ -16,7 +15,6 @@ class WhatsAppService {
       'https://wa.me/$digits?text=${Uri.encodeComponent(message)}',
     );
 
-    if (!await canLaunchUrl(uri)) return false;
-    return launchUrl(uri, mode: LaunchMode.externalApplication);
+    return ExternalUrlLauncher.open(uri.toString());
   }
 }

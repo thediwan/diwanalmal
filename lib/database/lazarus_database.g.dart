@@ -9170,6 +9170,1190 @@ class GoalsCompanion extends UpdateCompanion<FinancialGoal> {
   }
 }
 
+class $MonthlyReportsTable extends MonthlyReports
+    with TableInfo<$MonthlyReportsTable, MonthlyReportRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MonthlyReportsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES app_users (id)'));
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<int> year = GeneratedColumn<int>(
+      'year', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _monthMeta = const VerificationMeta('month');
+  @override
+  late final GeneratedColumn<int> month = GeneratedColumn<int>(
+      'month', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _baseCurrencyCodeMeta =
+      const VerificationMeta('baseCurrencyCode');
+  @override
+  late final GeneratedColumn<String> baseCurrencyCode = GeneratedColumn<String>(
+      'base_currency_code', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 8),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _totalIncomeMeta =
+      const VerificationMeta('totalIncome');
+  @override
+  late final GeneratedColumn<double> totalIncome = GeneratedColumn<double>(
+      'total_income', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _totalExpenseMeta =
+      const VerificationMeta('totalExpense');
+  @override
+  late final GeneratedColumn<double> totalExpense = GeneratedColumn<double>(
+      'total_expense', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _surplusMeta =
+      const VerificationMeta('surplus');
+  @override
+  late final GeneratedColumn<double> surplus = GeneratedColumn<double>(
+      'surplus', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _totalGoalSavingsMeta =
+      const VerificationMeta('totalGoalSavings');
+  @override
+  late final GeneratedColumn<double> totalGoalSavings = GeneratedColumn<double>(
+      'total_goal_savings', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _savingsRateMeta =
+      const VerificationMeta('savingsRate');
+  @override
+  late final GeneratedColumn<double> savingsRate = GeneratedColumn<double>(
+      'savings_rate', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _previousCarryoverInMeta =
+      const VerificationMeta('previousCarryoverIn');
+  @override
+  late final GeneratedColumn<double> previousCarryoverIn =
+      GeneratedColumn<double>('previous_carryover_in', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(0));
+  static const VerificationMeta _availableSurplusMeta =
+      const VerificationMeta('availableSurplus');
+  @override
+  late final GeneratedColumn<double> availableSurplus = GeneratedColumn<double>(
+      'available_surplus', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _incomeChangePctMeta =
+      const VerificationMeta('incomeChangePct');
+  @override
+  late final GeneratedColumn<double> incomeChangePct = GeneratedColumn<double>(
+      'income_change_pct', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _expenseChangePctMeta =
+      const VerificationMeta('expenseChangePct');
+  @override
+  late final GeneratedColumn<double> expenseChangePct = GeneratedColumn<double>(
+      'expense_change_pct', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _savingsChangePctMeta =
+      const VerificationMeta('savingsChangePct');
+  @override
+  late final GeneratedColumn<double> savingsChangePct = GeneratedColumn<double>(
+      'savings_change_pct', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _surplusActionMeta =
+      const VerificationMeta('surplusAction');
+  @override
+  late final GeneratedColumn<String> surplusAction = GeneratedColumn<String>(
+      'surplus_action', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _allocatedAmountMeta =
+      const VerificationMeta('allocatedAmount');
+  @override
+  late final GeneratedColumn<double> allocatedAmount = GeneratedColumn<double>(
+      'allocated_amount', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _goalIdMeta = const VerificationMeta('goalId');
+  @override
+  late final GeneratedColumn<String> goalId = GeneratedColumn<String>(
+      'goal_id', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES goals (id)'));
+  static const VerificationMeta _carriedForwardAmountMeta =
+      const VerificationMeta('carriedForwardAmount');
+  @override
+  late final GeneratedColumn<double> carriedForwardAmount =
+      GeneratedColumn<double>('carried_forward_amount', aliasedName, true,
+          type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _snapshotJsonMeta =
+      const VerificationMeta('snapshotJson');
+  @override
+  late final GeneratedColumn<String> snapshotJson = GeneratedColumn<String>(
+      'snapshot_json', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _generatedAtMeta =
+      const VerificationMeta('generatedAt');
+  @override
+  late final GeneratedColumn<DateTime> generatedAt = GeneratedColumn<DateTime>(
+      'generated_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _finalizedAtMeta =
+      const VerificationMeta('finalizedAt');
+  @override
+  late final GeneratedColumn<DateTime> finalizedAt = GeneratedColumn<DateTime>(
+      'finalized_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        year,
+        month,
+        status,
+        baseCurrencyCode,
+        totalIncome,
+        totalExpense,
+        surplus,
+        totalGoalSavings,
+        savingsRate,
+        previousCarryoverIn,
+        availableSurplus,
+        incomeChangePct,
+        expenseChangePct,
+        savingsChangePct,
+        surplusAction,
+        allocatedAmount,
+        goalId,
+        carriedForwardAmount,
+        snapshotJson,
+        generatedAt,
+        finalizedAt,
+        createdAt,
+        updatedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'monthly_reports';
+  @override
+  VerificationContext validateIntegrity(Insertable<MonthlyReportRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+          _yearMeta, year.isAcceptableOrUnknown(data['year']!, _yearMeta));
+    } else if (isInserting) {
+      context.missing(_yearMeta);
+    }
+    if (data.containsKey('month')) {
+      context.handle(
+          _monthMeta, month.isAcceptableOrUnknown(data['month']!, _monthMeta));
+    } else if (isInserting) {
+      context.missing(_monthMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('base_currency_code')) {
+      context.handle(
+          _baseCurrencyCodeMeta,
+          baseCurrencyCode.isAcceptableOrUnknown(
+              data['base_currency_code']!, _baseCurrencyCodeMeta));
+    } else if (isInserting) {
+      context.missing(_baseCurrencyCodeMeta);
+    }
+    if (data.containsKey('total_income')) {
+      context.handle(
+          _totalIncomeMeta,
+          totalIncome.isAcceptableOrUnknown(
+              data['total_income']!, _totalIncomeMeta));
+    }
+    if (data.containsKey('total_expense')) {
+      context.handle(
+          _totalExpenseMeta,
+          totalExpense.isAcceptableOrUnknown(
+              data['total_expense']!, _totalExpenseMeta));
+    }
+    if (data.containsKey('surplus')) {
+      context.handle(_surplusMeta,
+          surplus.isAcceptableOrUnknown(data['surplus']!, _surplusMeta));
+    }
+    if (data.containsKey('total_goal_savings')) {
+      context.handle(
+          _totalGoalSavingsMeta,
+          totalGoalSavings.isAcceptableOrUnknown(
+              data['total_goal_savings']!, _totalGoalSavingsMeta));
+    }
+    if (data.containsKey('savings_rate')) {
+      context.handle(
+          _savingsRateMeta,
+          savingsRate.isAcceptableOrUnknown(
+              data['savings_rate']!, _savingsRateMeta));
+    }
+    if (data.containsKey('previous_carryover_in')) {
+      context.handle(
+          _previousCarryoverInMeta,
+          previousCarryoverIn.isAcceptableOrUnknown(
+              data['previous_carryover_in']!, _previousCarryoverInMeta));
+    }
+    if (data.containsKey('available_surplus')) {
+      context.handle(
+          _availableSurplusMeta,
+          availableSurplus.isAcceptableOrUnknown(
+              data['available_surplus']!, _availableSurplusMeta));
+    }
+    if (data.containsKey('income_change_pct')) {
+      context.handle(
+          _incomeChangePctMeta,
+          incomeChangePct.isAcceptableOrUnknown(
+              data['income_change_pct']!, _incomeChangePctMeta));
+    }
+    if (data.containsKey('expense_change_pct')) {
+      context.handle(
+          _expenseChangePctMeta,
+          expenseChangePct.isAcceptableOrUnknown(
+              data['expense_change_pct']!, _expenseChangePctMeta));
+    }
+    if (data.containsKey('savings_change_pct')) {
+      context.handle(
+          _savingsChangePctMeta,
+          savingsChangePct.isAcceptableOrUnknown(
+              data['savings_change_pct']!, _savingsChangePctMeta));
+    }
+    if (data.containsKey('surplus_action')) {
+      context.handle(
+          _surplusActionMeta,
+          surplusAction.isAcceptableOrUnknown(
+              data['surplus_action']!, _surplusActionMeta));
+    }
+    if (data.containsKey('allocated_amount')) {
+      context.handle(
+          _allocatedAmountMeta,
+          allocatedAmount.isAcceptableOrUnknown(
+              data['allocated_amount']!, _allocatedAmountMeta));
+    }
+    if (data.containsKey('goal_id')) {
+      context.handle(_goalIdMeta,
+          goalId.isAcceptableOrUnknown(data['goal_id']!, _goalIdMeta));
+    }
+    if (data.containsKey('carried_forward_amount')) {
+      context.handle(
+          _carriedForwardAmountMeta,
+          carriedForwardAmount.isAcceptableOrUnknown(
+              data['carried_forward_amount']!, _carriedForwardAmountMeta));
+    }
+    if (data.containsKey('snapshot_json')) {
+      context.handle(
+          _snapshotJsonMeta,
+          snapshotJson.isAcceptableOrUnknown(
+              data['snapshot_json']!, _snapshotJsonMeta));
+    } else if (isInserting) {
+      context.missing(_snapshotJsonMeta);
+    }
+    if (data.containsKey('generated_at')) {
+      context.handle(
+          _generatedAtMeta,
+          generatedAt.isAcceptableOrUnknown(
+              data['generated_at']!, _generatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_generatedAtMeta);
+    }
+    if (data.containsKey('finalized_at')) {
+      context.handle(
+          _finalizedAtMeta,
+          finalizedAt.isAcceptableOrUnknown(
+              data['finalized_at']!, _finalizedAtMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MonthlyReportRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MonthlyReportRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+      year: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}year'])!,
+      month: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}month'])!,
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+      baseCurrencyCode: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}base_currency_code'])!,
+      totalIncome: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}total_income'])!,
+      totalExpense: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}total_expense'])!,
+      surplus: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}surplus'])!,
+      totalGoalSavings: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}total_goal_savings'])!,
+      savingsRate: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}savings_rate'])!,
+      previousCarryoverIn: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}previous_carryover_in'])!,
+      availableSurplus: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}available_surplus'])!,
+      incomeChangePct: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}income_change_pct']),
+      expenseChangePct: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}expense_change_pct']),
+      savingsChangePct: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}savings_change_pct']),
+      surplusAction: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}surplus_action']),
+      allocatedAmount: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}allocated_amount']),
+      goalId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}goal_id']),
+      carriedForwardAmount: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}carried_forward_amount']),
+      snapshotJson: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}snapshot_json'])!,
+      generatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}generated_at'])!,
+      finalizedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}finalized_at']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $MonthlyReportsTable createAlias(String alias) {
+    return $MonthlyReportsTable(attachedDatabase, alias);
+  }
+}
+
+class MonthlyReportRow extends DataClass
+    implements Insertable<MonthlyReportRow> {
+  final String id;
+  final String userId;
+  final int year;
+  final int month;
+  final String status;
+  final String baseCurrencyCode;
+  final double totalIncome;
+  final double totalExpense;
+  final double surplus;
+  final double totalGoalSavings;
+  final double savingsRate;
+  final double previousCarryoverIn;
+  final double availableSurplus;
+  final double? incomeChangePct;
+  final double? expenseChangePct;
+  final double? savingsChangePct;
+  final String? surplusAction;
+  final double? allocatedAmount;
+  final String? goalId;
+  final double? carriedForwardAmount;
+  final String snapshotJson;
+  final DateTime generatedAt;
+  final DateTime? finalizedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const MonthlyReportRow(
+      {required this.id,
+      required this.userId,
+      required this.year,
+      required this.month,
+      required this.status,
+      required this.baseCurrencyCode,
+      required this.totalIncome,
+      required this.totalExpense,
+      required this.surplus,
+      required this.totalGoalSavings,
+      required this.savingsRate,
+      required this.previousCarryoverIn,
+      required this.availableSurplus,
+      this.incomeChangePct,
+      this.expenseChangePct,
+      this.savingsChangePct,
+      this.surplusAction,
+      this.allocatedAmount,
+      this.goalId,
+      this.carriedForwardAmount,
+      required this.snapshotJson,
+      required this.generatedAt,
+      this.finalizedAt,
+      required this.createdAt,
+      required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['user_id'] = Variable<String>(userId);
+    map['year'] = Variable<int>(year);
+    map['month'] = Variable<int>(month);
+    map['status'] = Variable<String>(status);
+    map['base_currency_code'] = Variable<String>(baseCurrencyCode);
+    map['total_income'] = Variable<double>(totalIncome);
+    map['total_expense'] = Variable<double>(totalExpense);
+    map['surplus'] = Variable<double>(surplus);
+    map['total_goal_savings'] = Variable<double>(totalGoalSavings);
+    map['savings_rate'] = Variable<double>(savingsRate);
+    map['previous_carryover_in'] = Variable<double>(previousCarryoverIn);
+    map['available_surplus'] = Variable<double>(availableSurplus);
+    if (!nullToAbsent || incomeChangePct != null) {
+      map['income_change_pct'] = Variable<double>(incomeChangePct);
+    }
+    if (!nullToAbsent || expenseChangePct != null) {
+      map['expense_change_pct'] = Variable<double>(expenseChangePct);
+    }
+    if (!nullToAbsent || savingsChangePct != null) {
+      map['savings_change_pct'] = Variable<double>(savingsChangePct);
+    }
+    if (!nullToAbsent || surplusAction != null) {
+      map['surplus_action'] = Variable<String>(surplusAction);
+    }
+    if (!nullToAbsent || allocatedAmount != null) {
+      map['allocated_amount'] = Variable<double>(allocatedAmount);
+    }
+    if (!nullToAbsent || goalId != null) {
+      map['goal_id'] = Variable<String>(goalId);
+    }
+    if (!nullToAbsent || carriedForwardAmount != null) {
+      map['carried_forward_amount'] = Variable<double>(carriedForwardAmount);
+    }
+    map['snapshot_json'] = Variable<String>(snapshotJson);
+    map['generated_at'] = Variable<DateTime>(generatedAt);
+    if (!nullToAbsent || finalizedAt != null) {
+      map['finalized_at'] = Variable<DateTime>(finalizedAt);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  MonthlyReportsCompanion toCompanion(bool nullToAbsent) {
+    return MonthlyReportsCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      year: Value(year),
+      month: Value(month),
+      status: Value(status),
+      baseCurrencyCode: Value(baseCurrencyCode),
+      totalIncome: Value(totalIncome),
+      totalExpense: Value(totalExpense),
+      surplus: Value(surplus),
+      totalGoalSavings: Value(totalGoalSavings),
+      savingsRate: Value(savingsRate),
+      previousCarryoverIn: Value(previousCarryoverIn),
+      availableSurplus: Value(availableSurplus),
+      incomeChangePct: incomeChangePct == null && nullToAbsent
+          ? const Value.absent()
+          : Value(incomeChangePct),
+      expenseChangePct: expenseChangePct == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expenseChangePct),
+      savingsChangePct: savingsChangePct == null && nullToAbsent
+          ? const Value.absent()
+          : Value(savingsChangePct),
+      surplusAction: surplusAction == null && nullToAbsent
+          ? const Value.absent()
+          : Value(surplusAction),
+      allocatedAmount: allocatedAmount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(allocatedAmount),
+      goalId:
+          goalId == null && nullToAbsent ? const Value.absent() : Value(goalId),
+      carriedForwardAmount: carriedForwardAmount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(carriedForwardAmount),
+      snapshotJson: Value(snapshotJson),
+      generatedAt: Value(generatedAt),
+      finalizedAt: finalizedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(finalizedAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory MonthlyReportRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MonthlyReportRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String>(json['userId']),
+      year: serializer.fromJson<int>(json['year']),
+      month: serializer.fromJson<int>(json['month']),
+      status: serializer.fromJson<String>(json['status']),
+      baseCurrencyCode: serializer.fromJson<String>(json['baseCurrencyCode']),
+      totalIncome: serializer.fromJson<double>(json['totalIncome']),
+      totalExpense: serializer.fromJson<double>(json['totalExpense']),
+      surplus: serializer.fromJson<double>(json['surplus']),
+      totalGoalSavings: serializer.fromJson<double>(json['totalGoalSavings']),
+      savingsRate: serializer.fromJson<double>(json['savingsRate']),
+      previousCarryoverIn:
+          serializer.fromJson<double>(json['previousCarryoverIn']),
+      availableSurplus: serializer.fromJson<double>(json['availableSurplus']),
+      incomeChangePct: serializer.fromJson<double?>(json['incomeChangePct']),
+      expenseChangePct: serializer.fromJson<double?>(json['expenseChangePct']),
+      savingsChangePct: serializer.fromJson<double?>(json['savingsChangePct']),
+      surplusAction: serializer.fromJson<String?>(json['surplusAction']),
+      allocatedAmount: serializer.fromJson<double?>(json['allocatedAmount']),
+      goalId: serializer.fromJson<String?>(json['goalId']),
+      carriedForwardAmount:
+          serializer.fromJson<double?>(json['carriedForwardAmount']),
+      snapshotJson: serializer.fromJson<String>(json['snapshotJson']),
+      generatedAt: serializer.fromJson<DateTime>(json['generatedAt']),
+      finalizedAt: serializer.fromJson<DateTime?>(json['finalizedAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String>(userId),
+      'year': serializer.toJson<int>(year),
+      'month': serializer.toJson<int>(month),
+      'status': serializer.toJson<String>(status),
+      'baseCurrencyCode': serializer.toJson<String>(baseCurrencyCode),
+      'totalIncome': serializer.toJson<double>(totalIncome),
+      'totalExpense': serializer.toJson<double>(totalExpense),
+      'surplus': serializer.toJson<double>(surplus),
+      'totalGoalSavings': serializer.toJson<double>(totalGoalSavings),
+      'savingsRate': serializer.toJson<double>(savingsRate),
+      'previousCarryoverIn': serializer.toJson<double>(previousCarryoverIn),
+      'availableSurplus': serializer.toJson<double>(availableSurplus),
+      'incomeChangePct': serializer.toJson<double?>(incomeChangePct),
+      'expenseChangePct': serializer.toJson<double?>(expenseChangePct),
+      'savingsChangePct': serializer.toJson<double?>(savingsChangePct),
+      'surplusAction': serializer.toJson<String?>(surplusAction),
+      'allocatedAmount': serializer.toJson<double?>(allocatedAmount),
+      'goalId': serializer.toJson<String?>(goalId),
+      'carriedForwardAmount': serializer.toJson<double?>(carriedForwardAmount),
+      'snapshotJson': serializer.toJson<String>(snapshotJson),
+      'generatedAt': serializer.toJson<DateTime>(generatedAt),
+      'finalizedAt': serializer.toJson<DateTime?>(finalizedAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  MonthlyReportRow copyWith(
+          {String? id,
+          String? userId,
+          int? year,
+          int? month,
+          String? status,
+          String? baseCurrencyCode,
+          double? totalIncome,
+          double? totalExpense,
+          double? surplus,
+          double? totalGoalSavings,
+          double? savingsRate,
+          double? previousCarryoverIn,
+          double? availableSurplus,
+          Value<double?> incomeChangePct = const Value.absent(),
+          Value<double?> expenseChangePct = const Value.absent(),
+          Value<double?> savingsChangePct = const Value.absent(),
+          Value<String?> surplusAction = const Value.absent(),
+          Value<double?> allocatedAmount = const Value.absent(),
+          Value<String?> goalId = const Value.absent(),
+          Value<double?> carriedForwardAmount = const Value.absent(),
+          String? snapshotJson,
+          DateTime? generatedAt,
+          Value<DateTime?> finalizedAt = const Value.absent(),
+          DateTime? createdAt,
+          DateTime? updatedAt}) =>
+      MonthlyReportRow(
+        id: id ?? this.id,
+        userId: userId ?? this.userId,
+        year: year ?? this.year,
+        month: month ?? this.month,
+        status: status ?? this.status,
+        baseCurrencyCode: baseCurrencyCode ?? this.baseCurrencyCode,
+        totalIncome: totalIncome ?? this.totalIncome,
+        totalExpense: totalExpense ?? this.totalExpense,
+        surplus: surplus ?? this.surplus,
+        totalGoalSavings: totalGoalSavings ?? this.totalGoalSavings,
+        savingsRate: savingsRate ?? this.savingsRate,
+        previousCarryoverIn: previousCarryoverIn ?? this.previousCarryoverIn,
+        availableSurplus: availableSurplus ?? this.availableSurplus,
+        incomeChangePct: incomeChangePct.present
+            ? incomeChangePct.value
+            : this.incomeChangePct,
+        expenseChangePct: expenseChangePct.present
+            ? expenseChangePct.value
+            : this.expenseChangePct,
+        savingsChangePct: savingsChangePct.present
+            ? savingsChangePct.value
+            : this.savingsChangePct,
+        surplusAction:
+            surplusAction.present ? surplusAction.value : this.surplusAction,
+        allocatedAmount: allocatedAmount.present
+            ? allocatedAmount.value
+            : this.allocatedAmount,
+        goalId: goalId.present ? goalId.value : this.goalId,
+        carriedForwardAmount: carriedForwardAmount.present
+            ? carriedForwardAmount.value
+            : this.carriedForwardAmount,
+        snapshotJson: snapshotJson ?? this.snapshotJson,
+        generatedAt: generatedAt ?? this.generatedAt,
+        finalizedAt: finalizedAt.present ? finalizedAt.value : this.finalizedAt,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  MonthlyReportRow copyWithCompanion(MonthlyReportsCompanion data) {
+    return MonthlyReportRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      year: data.year.present ? data.year.value : this.year,
+      month: data.month.present ? data.month.value : this.month,
+      status: data.status.present ? data.status.value : this.status,
+      baseCurrencyCode: data.baseCurrencyCode.present
+          ? data.baseCurrencyCode.value
+          : this.baseCurrencyCode,
+      totalIncome:
+          data.totalIncome.present ? data.totalIncome.value : this.totalIncome,
+      totalExpense: data.totalExpense.present
+          ? data.totalExpense.value
+          : this.totalExpense,
+      surplus: data.surplus.present ? data.surplus.value : this.surplus,
+      totalGoalSavings: data.totalGoalSavings.present
+          ? data.totalGoalSavings.value
+          : this.totalGoalSavings,
+      savingsRate:
+          data.savingsRate.present ? data.savingsRate.value : this.savingsRate,
+      previousCarryoverIn: data.previousCarryoverIn.present
+          ? data.previousCarryoverIn.value
+          : this.previousCarryoverIn,
+      availableSurplus: data.availableSurplus.present
+          ? data.availableSurplus.value
+          : this.availableSurplus,
+      incomeChangePct: data.incomeChangePct.present
+          ? data.incomeChangePct.value
+          : this.incomeChangePct,
+      expenseChangePct: data.expenseChangePct.present
+          ? data.expenseChangePct.value
+          : this.expenseChangePct,
+      savingsChangePct: data.savingsChangePct.present
+          ? data.savingsChangePct.value
+          : this.savingsChangePct,
+      surplusAction: data.surplusAction.present
+          ? data.surplusAction.value
+          : this.surplusAction,
+      allocatedAmount: data.allocatedAmount.present
+          ? data.allocatedAmount.value
+          : this.allocatedAmount,
+      goalId: data.goalId.present ? data.goalId.value : this.goalId,
+      carriedForwardAmount: data.carriedForwardAmount.present
+          ? data.carriedForwardAmount.value
+          : this.carriedForwardAmount,
+      snapshotJson: data.snapshotJson.present
+          ? data.snapshotJson.value
+          : this.snapshotJson,
+      generatedAt:
+          data.generatedAt.present ? data.generatedAt.value : this.generatedAt,
+      finalizedAt:
+          data.finalizedAt.present ? data.finalizedAt.value : this.finalizedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MonthlyReportRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('year: $year, ')
+          ..write('month: $month, ')
+          ..write('status: $status, ')
+          ..write('baseCurrencyCode: $baseCurrencyCode, ')
+          ..write('totalIncome: $totalIncome, ')
+          ..write('totalExpense: $totalExpense, ')
+          ..write('surplus: $surplus, ')
+          ..write('totalGoalSavings: $totalGoalSavings, ')
+          ..write('savingsRate: $savingsRate, ')
+          ..write('previousCarryoverIn: $previousCarryoverIn, ')
+          ..write('availableSurplus: $availableSurplus, ')
+          ..write('incomeChangePct: $incomeChangePct, ')
+          ..write('expenseChangePct: $expenseChangePct, ')
+          ..write('savingsChangePct: $savingsChangePct, ')
+          ..write('surplusAction: $surplusAction, ')
+          ..write('allocatedAmount: $allocatedAmount, ')
+          ..write('goalId: $goalId, ')
+          ..write('carriedForwardAmount: $carriedForwardAmount, ')
+          ..write('snapshotJson: $snapshotJson, ')
+          ..write('generatedAt: $generatedAt, ')
+          ..write('finalizedAt: $finalizedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+        id,
+        userId,
+        year,
+        month,
+        status,
+        baseCurrencyCode,
+        totalIncome,
+        totalExpense,
+        surplus,
+        totalGoalSavings,
+        savingsRate,
+        previousCarryoverIn,
+        availableSurplus,
+        incomeChangePct,
+        expenseChangePct,
+        savingsChangePct,
+        surplusAction,
+        allocatedAmount,
+        goalId,
+        carriedForwardAmount,
+        snapshotJson,
+        generatedAt,
+        finalizedAt,
+        createdAt,
+        updatedAt
+      ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MonthlyReportRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.year == this.year &&
+          other.month == this.month &&
+          other.status == this.status &&
+          other.baseCurrencyCode == this.baseCurrencyCode &&
+          other.totalIncome == this.totalIncome &&
+          other.totalExpense == this.totalExpense &&
+          other.surplus == this.surplus &&
+          other.totalGoalSavings == this.totalGoalSavings &&
+          other.savingsRate == this.savingsRate &&
+          other.previousCarryoverIn == this.previousCarryoverIn &&
+          other.availableSurplus == this.availableSurplus &&
+          other.incomeChangePct == this.incomeChangePct &&
+          other.expenseChangePct == this.expenseChangePct &&
+          other.savingsChangePct == this.savingsChangePct &&
+          other.surplusAction == this.surplusAction &&
+          other.allocatedAmount == this.allocatedAmount &&
+          other.goalId == this.goalId &&
+          other.carriedForwardAmount == this.carriedForwardAmount &&
+          other.snapshotJson == this.snapshotJson &&
+          other.generatedAt == this.generatedAt &&
+          other.finalizedAt == this.finalizedAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class MonthlyReportsCompanion extends UpdateCompanion<MonthlyReportRow> {
+  final Value<String> id;
+  final Value<String> userId;
+  final Value<int> year;
+  final Value<int> month;
+  final Value<String> status;
+  final Value<String> baseCurrencyCode;
+  final Value<double> totalIncome;
+  final Value<double> totalExpense;
+  final Value<double> surplus;
+  final Value<double> totalGoalSavings;
+  final Value<double> savingsRate;
+  final Value<double> previousCarryoverIn;
+  final Value<double> availableSurplus;
+  final Value<double?> incomeChangePct;
+  final Value<double?> expenseChangePct;
+  final Value<double?> savingsChangePct;
+  final Value<String?> surplusAction;
+  final Value<double?> allocatedAmount;
+  final Value<String?> goalId;
+  final Value<double?> carriedForwardAmount;
+  final Value<String> snapshotJson;
+  final Value<DateTime> generatedAt;
+  final Value<DateTime?> finalizedAt;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const MonthlyReportsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.year = const Value.absent(),
+    this.month = const Value.absent(),
+    this.status = const Value.absent(),
+    this.baseCurrencyCode = const Value.absent(),
+    this.totalIncome = const Value.absent(),
+    this.totalExpense = const Value.absent(),
+    this.surplus = const Value.absent(),
+    this.totalGoalSavings = const Value.absent(),
+    this.savingsRate = const Value.absent(),
+    this.previousCarryoverIn = const Value.absent(),
+    this.availableSurplus = const Value.absent(),
+    this.incomeChangePct = const Value.absent(),
+    this.expenseChangePct = const Value.absent(),
+    this.savingsChangePct = const Value.absent(),
+    this.surplusAction = const Value.absent(),
+    this.allocatedAmount = const Value.absent(),
+    this.goalId = const Value.absent(),
+    this.carriedForwardAmount = const Value.absent(),
+    this.snapshotJson = const Value.absent(),
+    this.generatedAt = const Value.absent(),
+    this.finalizedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MonthlyReportsCompanion.insert({
+    required String id,
+    required String userId,
+    required int year,
+    required int month,
+    required String status,
+    required String baseCurrencyCode,
+    this.totalIncome = const Value.absent(),
+    this.totalExpense = const Value.absent(),
+    this.surplus = const Value.absent(),
+    this.totalGoalSavings = const Value.absent(),
+    this.savingsRate = const Value.absent(),
+    this.previousCarryoverIn = const Value.absent(),
+    this.availableSurplus = const Value.absent(),
+    this.incomeChangePct = const Value.absent(),
+    this.expenseChangePct = const Value.absent(),
+    this.savingsChangePct = const Value.absent(),
+    this.surplusAction = const Value.absent(),
+    this.allocatedAmount = const Value.absent(),
+    this.goalId = const Value.absent(),
+    this.carriedForwardAmount = const Value.absent(),
+    required String snapshotJson,
+    required DateTime generatedAt,
+    this.finalizedAt = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        userId = Value(userId),
+        year = Value(year),
+        month = Value(month),
+        status = Value(status),
+        baseCurrencyCode = Value(baseCurrencyCode),
+        snapshotJson = Value(snapshotJson),
+        generatedAt = Value(generatedAt),
+        createdAt = Value(createdAt),
+        updatedAt = Value(updatedAt);
+  static Insertable<MonthlyReportRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? year,
+    Expression<int>? month,
+    Expression<String>? status,
+    Expression<String>? baseCurrencyCode,
+    Expression<double>? totalIncome,
+    Expression<double>? totalExpense,
+    Expression<double>? surplus,
+    Expression<double>? totalGoalSavings,
+    Expression<double>? savingsRate,
+    Expression<double>? previousCarryoverIn,
+    Expression<double>? availableSurplus,
+    Expression<double>? incomeChangePct,
+    Expression<double>? expenseChangePct,
+    Expression<double>? savingsChangePct,
+    Expression<String>? surplusAction,
+    Expression<double>? allocatedAmount,
+    Expression<String>? goalId,
+    Expression<double>? carriedForwardAmount,
+    Expression<String>? snapshotJson,
+    Expression<DateTime>? generatedAt,
+    Expression<DateTime>? finalizedAt,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (year != null) 'year': year,
+      if (month != null) 'month': month,
+      if (status != null) 'status': status,
+      if (baseCurrencyCode != null) 'base_currency_code': baseCurrencyCode,
+      if (totalIncome != null) 'total_income': totalIncome,
+      if (totalExpense != null) 'total_expense': totalExpense,
+      if (surplus != null) 'surplus': surplus,
+      if (totalGoalSavings != null) 'total_goal_savings': totalGoalSavings,
+      if (savingsRate != null) 'savings_rate': savingsRate,
+      if (previousCarryoverIn != null)
+        'previous_carryover_in': previousCarryoverIn,
+      if (availableSurplus != null) 'available_surplus': availableSurplus,
+      if (incomeChangePct != null) 'income_change_pct': incomeChangePct,
+      if (expenseChangePct != null) 'expense_change_pct': expenseChangePct,
+      if (savingsChangePct != null) 'savings_change_pct': savingsChangePct,
+      if (surplusAction != null) 'surplus_action': surplusAction,
+      if (allocatedAmount != null) 'allocated_amount': allocatedAmount,
+      if (goalId != null) 'goal_id': goalId,
+      if (carriedForwardAmount != null)
+        'carried_forward_amount': carriedForwardAmount,
+      if (snapshotJson != null) 'snapshot_json': snapshotJson,
+      if (generatedAt != null) 'generated_at': generatedAt,
+      if (finalizedAt != null) 'finalized_at': finalizedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MonthlyReportsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? userId,
+      Value<int>? year,
+      Value<int>? month,
+      Value<String>? status,
+      Value<String>? baseCurrencyCode,
+      Value<double>? totalIncome,
+      Value<double>? totalExpense,
+      Value<double>? surplus,
+      Value<double>? totalGoalSavings,
+      Value<double>? savingsRate,
+      Value<double>? previousCarryoverIn,
+      Value<double>? availableSurplus,
+      Value<double?>? incomeChangePct,
+      Value<double?>? expenseChangePct,
+      Value<double?>? savingsChangePct,
+      Value<String?>? surplusAction,
+      Value<double?>? allocatedAmount,
+      Value<String?>? goalId,
+      Value<double?>? carriedForwardAmount,
+      Value<String>? snapshotJson,
+      Value<DateTime>? generatedAt,
+      Value<DateTime?>? finalizedAt,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt,
+      Value<int>? rowid}) {
+    return MonthlyReportsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      year: year ?? this.year,
+      month: month ?? this.month,
+      status: status ?? this.status,
+      baseCurrencyCode: baseCurrencyCode ?? this.baseCurrencyCode,
+      totalIncome: totalIncome ?? this.totalIncome,
+      totalExpense: totalExpense ?? this.totalExpense,
+      surplus: surplus ?? this.surplus,
+      totalGoalSavings: totalGoalSavings ?? this.totalGoalSavings,
+      savingsRate: savingsRate ?? this.savingsRate,
+      previousCarryoverIn: previousCarryoverIn ?? this.previousCarryoverIn,
+      availableSurplus: availableSurplus ?? this.availableSurplus,
+      incomeChangePct: incomeChangePct ?? this.incomeChangePct,
+      expenseChangePct: expenseChangePct ?? this.expenseChangePct,
+      savingsChangePct: savingsChangePct ?? this.savingsChangePct,
+      surplusAction: surplusAction ?? this.surplusAction,
+      allocatedAmount: allocatedAmount ?? this.allocatedAmount,
+      goalId: goalId ?? this.goalId,
+      carriedForwardAmount: carriedForwardAmount ?? this.carriedForwardAmount,
+      snapshotJson: snapshotJson ?? this.snapshotJson,
+      generatedAt: generatedAt ?? this.generatedAt,
+      finalizedAt: finalizedAt ?? this.finalizedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<int>(year.value);
+    }
+    if (month.present) {
+      map['month'] = Variable<int>(month.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (baseCurrencyCode.present) {
+      map['base_currency_code'] = Variable<String>(baseCurrencyCode.value);
+    }
+    if (totalIncome.present) {
+      map['total_income'] = Variable<double>(totalIncome.value);
+    }
+    if (totalExpense.present) {
+      map['total_expense'] = Variable<double>(totalExpense.value);
+    }
+    if (surplus.present) {
+      map['surplus'] = Variable<double>(surplus.value);
+    }
+    if (totalGoalSavings.present) {
+      map['total_goal_savings'] = Variable<double>(totalGoalSavings.value);
+    }
+    if (savingsRate.present) {
+      map['savings_rate'] = Variable<double>(savingsRate.value);
+    }
+    if (previousCarryoverIn.present) {
+      map['previous_carryover_in'] =
+          Variable<double>(previousCarryoverIn.value);
+    }
+    if (availableSurplus.present) {
+      map['available_surplus'] = Variable<double>(availableSurplus.value);
+    }
+    if (incomeChangePct.present) {
+      map['income_change_pct'] = Variable<double>(incomeChangePct.value);
+    }
+    if (expenseChangePct.present) {
+      map['expense_change_pct'] = Variable<double>(expenseChangePct.value);
+    }
+    if (savingsChangePct.present) {
+      map['savings_change_pct'] = Variable<double>(savingsChangePct.value);
+    }
+    if (surplusAction.present) {
+      map['surplus_action'] = Variable<String>(surplusAction.value);
+    }
+    if (allocatedAmount.present) {
+      map['allocated_amount'] = Variable<double>(allocatedAmount.value);
+    }
+    if (goalId.present) {
+      map['goal_id'] = Variable<String>(goalId.value);
+    }
+    if (carriedForwardAmount.present) {
+      map['carried_forward_amount'] =
+          Variable<double>(carriedForwardAmount.value);
+    }
+    if (snapshotJson.present) {
+      map['snapshot_json'] = Variable<String>(snapshotJson.value);
+    }
+    if (generatedAt.present) {
+      map['generated_at'] = Variable<DateTime>(generatedAt.value);
+    }
+    if (finalizedAt.present) {
+      map['finalized_at'] = Variable<DateTime>(finalizedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MonthlyReportsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('year: $year, ')
+          ..write('month: $month, ')
+          ..write('status: $status, ')
+          ..write('baseCurrencyCode: $baseCurrencyCode, ')
+          ..write('totalIncome: $totalIncome, ')
+          ..write('totalExpense: $totalExpense, ')
+          ..write('surplus: $surplus, ')
+          ..write('totalGoalSavings: $totalGoalSavings, ')
+          ..write('savingsRate: $savingsRate, ')
+          ..write('previousCarryoverIn: $previousCarryoverIn, ')
+          ..write('availableSurplus: $availableSurplus, ')
+          ..write('incomeChangePct: $incomeChangePct, ')
+          ..write('expenseChangePct: $expenseChangePct, ')
+          ..write('savingsChangePct: $savingsChangePct, ')
+          ..write('surplusAction: $surplusAction, ')
+          ..write('allocatedAmount: $allocatedAmount, ')
+          ..write('goalId: $goalId, ')
+          ..write('carriedForwardAmount: $carriedForwardAmount, ')
+          ..write('snapshotJson: $snapshotJson, ')
+          ..write('generatedAt: $generatedAt, ')
+          ..write('finalizedAt: $finalizedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $AttachmentsTable extends Attachments
     with TableInfo<$AttachmentsTable, Attachment> {
   @override
@@ -9680,6 +10864,7 @@ abstract class _$LazarusDatabase extends GeneratedDatabase {
   late final $DebtPaymentsTable debtPayments = $DebtPaymentsTable(this);
   late final $BudgetsTable budgets = $BudgetsTable(this);
   late final $GoalsTable goals = $GoalsTable(this);
+  late final $MonthlyReportsTable monthlyReports = $MonthlyReportsTable(this);
   late final $AttachmentsTable attachments = $AttachmentsTable(this);
   late final FinanceDao financeDao = FinanceDao(this as LazarusDatabase);
   @override
@@ -9704,6 +10889,7 @@ abstract class _$LazarusDatabase extends GeneratedDatabase {
         debtPayments,
         budgets,
         goals,
+        monthlyReports,
         attachments
       ];
 }
@@ -9925,6 +11111,21 @@ final class $$AppUsersTableReferences
         .filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_goalsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$MonthlyReportsTable, List<MonthlyReportRow>>
+      _monthlyReportsRefsTable(_$LazarusDatabase db) =>
+          MultiTypedResultKey.fromTable(db.monthlyReports,
+              aliasName: $_aliasNameGenerator(
+                  db.appUsers.id, db.monthlyReports.userId));
+
+  $$MonthlyReportsTableProcessedTableManager get monthlyReportsRefs {
+    final manager = $$MonthlyReportsTableTableManager($_db, $_db.monthlyReports)
+        .filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_monthlyReportsRefsTable($_db));
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: cache));
   }
@@ -10243,6 +11444,27 @@ class $$AppUsersTableFilterComposer
             $$GoalsTableFilterComposer(
               $db: $db,
               $table: $db.goals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> monthlyReportsRefs(
+      Expression<bool> Function($$MonthlyReportsTableFilterComposer f) f) {
+    final $$MonthlyReportsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.monthlyReports,
+        getReferencedColumn: (t) => t.userId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$MonthlyReportsTableFilterComposer(
+              $db: $db,
+              $table: $db.monthlyReports,
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -10614,6 +11836,27 @@ class $$AppUsersTableAnnotationComposer
     return f(composer);
   }
 
+  Expression<T> monthlyReportsRefs<T extends Object>(
+      Expression<T> Function($$MonthlyReportsTableAnnotationComposer a) f) {
+    final $$MonthlyReportsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.monthlyReports,
+        getReferencedColumn: (t) => t.userId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$MonthlyReportsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.monthlyReports,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
   Expression<T> attachmentsRefs<T extends Object>(
       Expression<T> Function($$AttachmentsTableAnnotationComposer a) f) {
     final $$AttachmentsTableAnnotationComposer composer = $composerBuilder(
@@ -10661,6 +11904,7 @@ class $$AppUsersTableTableManager extends RootTableManager<
         bool transactionSplitsRefs,
         bool budgetsRefs,
         bool goalsRefs,
+        bool monthlyReportsRefs,
         bool attachmentsRefs})> {
   $$AppUsersTableTableManager(_$LazarusDatabase db, $AppUsersTable table)
       : super(TableManagerState(
@@ -10734,6 +11978,7 @@ class $$AppUsersTableTableManager extends RootTableManager<
               transactionSplitsRefs = false,
               budgetsRefs = false,
               goalsRefs = false,
+              monthlyReportsRefs = false,
               attachmentsRefs = false}) {
             return PrefetchHooks(
               db: db,
@@ -10751,6 +11996,7 @@ class $$AppUsersTableTableManager extends RootTableManager<
                 if (transactionSplitsRefs) db.transactionSplits,
                 if (budgetsRefs) db.budgets,
                 if (goalsRefs) db.goals,
+                if (monthlyReportsRefs) db.monthlyReports,
                 if (attachmentsRefs) db.attachments
               ],
               addJoins: null,
@@ -10921,6 +12167,19 @@ class $$AppUsersTableTableManager extends RootTableManager<
                                 referencedItems) =>
                             referencedItems.where((e) => e.userId == item.id),
                         typedResults: items),
+                  if (monthlyReportsRefs)
+                    await $_getPrefetchedData<AppUser, $AppUsersTable,
+                            MonthlyReportRow>(
+                        currentTable: table,
+                        referencedTable: $$AppUsersTableReferences
+                            ._monthlyReportsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$AppUsersTableReferences(db, table, p0)
+                                .monthlyReportsRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.userId == item.id),
+                        typedResults: items),
                   if (attachmentsRefs)
                     await $_getPrefetchedData<AppUser, $AppUsersTable,
                             Attachment>(
@@ -10966,6 +12225,7 @@ typedef $$AppUsersTableProcessedTableManager = ProcessedTableManager<
         bool transactionSplitsRefs,
         bool budgetsRefs,
         bool goalsRefs,
+        bool monthlyReportsRefs,
         bool attachmentsRefs})>;
 typedef $$AuthLocalTableCreateCompanionBuilder = AuthLocalCompanion Function({
   required String id,
@@ -19848,6 +21108,21 @@ final class $$GoalsTableReferences
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: [item]));
   }
+
+  static MultiTypedResultKey<$MonthlyReportsTable, List<MonthlyReportRow>>
+      _monthlyReportsRefsTable(_$LazarusDatabase db) =>
+          MultiTypedResultKey.fromTable(db.monthlyReports,
+              aliasName:
+                  $_aliasNameGenerator(db.goals.id, db.monthlyReports.goalId));
+
+  $$MonthlyReportsTableProcessedTableManager get monthlyReportsRefs {
+    final manager = $$MonthlyReportsTableTableManager($_db, $_db.monthlyReports)
+        .filter((f) => f.goalId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_monthlyReportsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
 }
 
 class $$GoalsTableFilterComposer
@@ -19944,6 +21219,27 @@ class $$GoalsTableFilterComposer
                   $removeJoinBuilderFromRootComposer,
             ));
     return composer;
+  }
+
+  Expression<bool> monthlyReportsRefs(
+      Expression<bool> Function($$MonthlyReportsTableFilterComposer f) f) {
+    final $$MonthlyReportsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.monthlyReports,
+        getReferencedColumn: (t) => t.goalId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$MonthlyReportsTableFilterComposer(
+              $db: $db,
+              $table: $db.monthlyReports,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
   }
 }
 
@@ -20140,6 +21436,27 @@ class $$GoalsTableAnnotationComposer
             ));
     return composer;
   }
+
+  Expression<T> monthlyReportsRefs<T extends Object>(
+      Expression<T> Function($$MonthlyReportsTableAnnotationComposer a) f) {
+    final $$MonthlyReportsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.monthlyReports,
+        getReferencedColumn: (t) => t.goalId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$MonthlyReportsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.monthlyReports,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$GoalsTableTableManager extends RootTableManager<
@@ -20153,7 +21470,11 @@ class $$GoalsTableTableManager extends RootTableManager<
     $$GoalsTableUpdateCompanionBuilder,
     (FinancialGoal, $$GoalsTableReferences),
     FinancialGoal,
-    PrefetchHooks Function({bool userId, bool walletId, bool currencyId})> {
+    PrefetchHooks Function(
+        {bool userId,
+        bool walletId,
+        bool currencyId,
+        bool monthlyReportsRefs})> {
   $$GoalsTableTableManager(_$LazarusDatabase db, $GoalsTable table)
       : super(TableManagerState(
           db: db,
@@ -20229,10 +21550,15 @@ class $$GoalsTableTableManager extends RootTableManager<
                   (e.readTable(table), $$GoalsTableReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: (
-              {userId = false, walletId = false, currencyId = false}) {
+              {userId = false,
+              walletId = false,
+              currencyId = false,
+              monthlyReportsRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [],
+              explicitlyWatchedTables: [
+                if (monthlyReportsRefs) db.monthlyReports
+              ],
               addJoins: <
                   T extends TableManagerState<
                       dynamic,
@@ -20278,7 +21604,21 @@ class $$GoalsTableTableManager extends RootTableManager<
                 return state;
               },
               getPrefetchedDataCallback: (items) async {
-                return [];
+                return [
+                  if (monthlyReportsRefs)
+                    await $_getPrefetchedData<FinancialGoal, $GoalsTable,
+                            MonthlyReportRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$GoalsTableReferences._monthlyReportsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$GoalsTableReferences(db, table, p0)
+                                .monthlyReportsRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.goalId == item.id),
+                        typedResults: items)
+                ];
               },
             );
           },
@@ -20296,7 +21636,684 @@ typedef $$GoalsTableProcessedTableManager = ProcessedTableManager<
     $$GoalsTableUpdateCompanionBuilder,
     (FinancialGoal, $$GoalsTableReferences),
     FinancialGoal,
-    PrefetchHooks Function({bool userId, bool walletId, bool currencyId})>;
+    PrefetchHooks Function(
+        {bool userId,
+        bool walletId,
+        bool currencyId,
+        bool monthlyReportsRefs})>;
+typedef $$MonthlyReportsTableCreateCompanionBuilder = MonthlyReportsCompanion
+    Function({
+  required String id,
+  required String userId,
+  required int year,
+  required int month,
+  required String status,
+  required String baseCurrencyCode,
+  Value<double> totalIncome,
+  Value<double> totalExpense,
+  Value<double> surplus,
+  Value<double> totalGoalSavings,
+  Value<double> savingsRate,
+  Value<double> previousCarryoverIn,
+  Value<double> availableSurplus,
+  Value<double?> incomeChangePct,
+  Value<double?> expenseChangePct,
+  Value<double?> savingsChangePct,
+  Value<String?> surplusAction,
+  Value<double?> allocatedAmount,
+  Value<String?> goalId,
+  Value<double?> carriedForwardAmount,
+  required String snapshotJson,
+  required DateTime generatedAt,
+  Value<DateTime?> finalizedAt,
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$MonthlyReportsTableUpdateCompanionBuilder = MonthlyReportsCompanion
+    Function({
+  Value<String> id,
+  Value<String> userId,
+  Value<int> year,
+  Value<int> month,
+  Value<String> status,
+  Value<String> baseCurrencyCode,
+  Value<double> totalIncome,
+  Value<double> totalExpense,
+  Value<double> surplus,
+  Value<double> totalGoalSavings,
+  Value<double> savingsRate,
+  Value<double> previousCarryoverIn,
+  Value<double> availableSurplus,
+  Value<double?> incomeChangePct,
+  Value<double?> expenseChangePct,
+  Value<double?> savingsChangePct,
+  Value<String?> surplusAction,
+  Value<double?> allocatedAmount,
+  Value<String?> goalId,
+  Value<double?> carriedForwardAmount,
+  Value<String> snapshotJson,
+  Value<DateTime> generatedAt,
+  Value<DateTime?> finalizedAt,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+final class $$MonthlyReportsTableReferences extends BaseReferences<
+    _$LazarusDatabase, $MonthlyReportsTable, MonthlyReportRow> {
+  $$MonthlyReportsTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $AppUsersTable _userIdTable(_$LazarusDatabase db) =>
+      db.appUsers.createAlias(
+          $_aliasNameGenerator(db.monthlyReports.userId, db.appUsers.id));
+
+  $$AppUsersTableProcessedTableManager get userId {
+    final $_column = $_itemColumn<String>('user_id')!;
+
+    final manager = $$AppUsersTableTableManager($_db, $_db.appUsers)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $GoalsTable _goalIdTable(_$LazarusDatabase db) => db.goals
+      .createAlias($_aliasNameGenerator(db.monthlyReports.goalId, db.goals.id));
+
+  $$GoalsTableProcessedTableManager? get goalId {
+    final $_column = $_itemColumn<String>('goal_id');
+    if ($_column == null) return null;
+    final manager = $$GoalsTableTableManager($_db, $_db.goals)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_goalIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$MonthlyReportsTableFilterComposer
+    extends Composer<_$LazarusDatabase, $MonthlyReportsTable> {
+  $$MonthlyReportsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get year => $composableBuilder(
+      column: $table.year, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get month => $composableBuilder(
+      column: $table.month, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get baseCurrencyCode => $composableBuilder(
+      column: $table.baseCurrencyCode,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get totalIncome => $composableBuilder(
+      column: $table.totalIncome, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get totalExpense => $composableBuilder(
+      column: $table.totalExpense, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get surplus => $composableBuilder(
+      column: $table.surplus, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get totalGoalSavings => $composableBuilder(
+      column: $table.totalGoalSavings,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get savingsRate => $composableBuilder(
+      column: $table.savingsRate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get previousCarryoverIn => $composableBuilder(
+      column: $table.previousCarryoverIn,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get availableSurplus => $composableBuilder(
+      column: $table.availableSurplus,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get incomeChangePct => $composableBuilder(
+      column: $table.incomeChangePct,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get expenseChangePct => $composableBuilder(
+      column: $table.expenseChangePct,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get savingsChangePct => $composableBuilder(
+      column: $table.savingsChangePct,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get surplusAction => $composableBuilder(
+      column: $table.surplusAction, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get allocatedAmount => $composableBuilder(
+      column: $table.allocatedAmount,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get carriedForwardAmount => $composableBuilder(
+      column: $table.carriedForwardAmount,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get snapshotJson => $composableBuilder(
+      column: $table.snapshotJson, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get generatedAt => $composableBuilder(
+      column: $table.generatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get finalizedAt => $composableBuilder(
+      column: $table.finalizedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  $$AppUsersTableFilterComposer get userId {
+    final $$AppUsersTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.appUsers,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AppUsersTableFilterComposer(
+              $db: $db,
+              $table: $db.appUsers,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$GoalsTableFilterComposer get goalId {
+    final $$GoalsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.goalId,
+        referencedTable: $db.goals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GoalsTableFilterComposer(
+              $db: $db,
+              $table: $db.goals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$MonthlyReportsTableOrderingComposer
+    extends Composer<_$LazarusDatabase, $MonthlyReportsTable> {
+  $$MonthlyReportsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get year => $composableBuilder(
+      column: $table.year, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get month => $composableBuilder(
+      column: $table.month, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get baseCurrencyCode => $composableBuilder(
+      column: $table.baseCurrencyCode,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get totalIncome => $composableBuilder(
+      column: $table.totalIncome, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get totalExpense => $composableBuilder(
+      column: $table.totalExpense,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get surplus => $composableBuilder(
+      column: $table.surplus, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get totalGoalSavings => $composableBuilder(
+      column: $table.totalGoalSavings,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get savingsRate => $composableBuilder(
+      column: $table.savingsRate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get previousCarryoverIn => $composableBuilder(
+      column: $table.previousCarryoverIn,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get availableSurplus => $composableBuilder(
+      column: $table.availableSurplus,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get incomeChangePct => $composableBuilder(
+      column: $table.incomeChangePct,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get expenseChangePct => $composableBuilder(
+      column: $table.expenseChangePct,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get savingsChangePct => $composableBuilder(
+      column: $table.savingsChangePct,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get surplusAction => $composableBuilder(
+      column: $table.surplusAction,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get allocatedAmount => $composableBuilder(
+      column: $table.allocatedAmount,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get carriedForwardAmount => $composableBuilder(
+      column: $table.carriedForwardAmount,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get snapshotJson => $composableBuilder(
+      column: $table.snapshotJson,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get generatedAt => $composableBuilder(
+      column: $table.generatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get finalizedAt => $composableBuilder(
+      column: $table.finalizedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  $$AppUsersTableOrderingComposer get userId {
+    final $$AppUsersTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.appUsers,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AppUsersTableOrderingComposer(
+              $db: $db,
+              $table: $db.appUsers,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$GoalsTableOrderingComposer get goalId {
+    final $$GoalsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.goalId,
+        referencedTable: $db.goals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GoalsTableOrderingComposer(
+              $db: $db,
+              $table: $db.goals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$MonthlyReportsTableAnnotationComposer
+    extends Composer<_$LazarusDatabase, $MonthlyReportsTable> {
+  $$MonthlyReportsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<int> get month =>
+      $composableBuilder(column: $table.month, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get baseCurrencyCode => $composableBuilder(
+      column: $table.baseCurrencyCode, builder: (column) => column);
+
+  GeneratedColumn<double> get totalIncome => $composableBuilder(
+      column: $table.totalIncome, builder: (column) => column);
+
+  GeneratedColumn<double> get totalExpense => $composableBuilder(
+      column: $table.totalExpense, builder: (column) => column);
+
+  GeneratedColumn<double> get surplus =>
+      $composableBuilder(column: $table.surplus, builder: (column) => column);
+
+  GeneratedColumn<double> get totalGoalSavings => $composableBuilder(
+      column: $table.totalGoalSavings, builder: (column) => column);
+
+  GeneratedColumn<double> get savingsRate => $composableBuilder(
+      column: $table.savingsRate, builder: (column) => column);
+
+  GeneratedColumn<double> get previousCarryoverIn => $composableBuilder(
+      column: $table.previousCarryoverIn, builder: (column) => column);
+
+  GeneratedColumn<double> get availableSurplus => $composableBuilder(
+      column: $table.availableSurplus, builder: (column) => column);
+
+  GeneratedColumn<double> get incomeChangePct => $composableBuilder(
+      column: $table.incomeChangePct, builder: (column) => column);
+
+  GeneratedColumn<double> get expenseChangePct => $composableBuilder(
+      column: $table.expenseChangePct, builder: (column) => column);
+
+  GeneratedColumn<double> get savingsChangePct => $composableBuilder(
+      column: $table.savingsChangePct, builder: (column) => column);
+
+  GeneratedColumn<String> get surplusAction => $composableBuilder(
+      column: $table.surplusAction, builder: (column) => column);
+
+  GeneratedColumn<double> get allocatedAmount => $composableBuilder(
+      column: $table.allocatedAmount, builder: (column) => column);
+
+  GeneratedColumn<double> get carriedForwardAmount => $composableBuilder(
+      column: $table.carriedForwardAmount, builder: (column) => column);
+
+  GeneratedColumn<String> get snapshotJson => $composableBuilder(
+      column: $table.snapshotJson, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get generatedAt => $composableBuilder(
+      column: $table.generatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get finalizedAt => $composableBuilder(
+      column: $table.finalizedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$AppUsersTableAnnotationComposer get userId {
+    final $$AppUsersTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.appUsers,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AppUsersTableAnnotationComposer(
+              $db: $db,
+              $table: $db.appUsers,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$GoalsTableAnnotationComposer get goalId {
+    final $$GoalsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.goalId,
+        referencedTable: $db.goals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GoalsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.goals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$MonthlyReportsTableTableManager extends RootTableManager<
+    _$LazarusDatabase,
+    $MonthlyReportsTable,
+    MonthlyReportRow,
+    $$MonthlyReportsTableFilterComposer,
+    $$MonthlyReportsTableOrderingComposer,
+    $$MonthlyReportsTableAnnotationComposer,
+    $$MonthlyReportsTableCreateCompanionBuilder,
+    $$MonthlyReportsTableUpdateCompanionBuilder,
+    (MonthlyReportRow, $$MonthlyReportsTableReferences),
+    MonthlyReportRow,
+    PrefetchHooks Function({bool userId, bool goalId})> {
+  $$MonthlyReportsTableTableManager(
+      _$LazarusDatabase db, $MonthlyReportsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MonthlyReportsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MonthlyReportsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MonthlyReportsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> userId = const Value.absent(),
+            Value<int> year = const Value.absent(),
+            Value<int> month = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<String> baseCurrencyCode = const Value.absent(),
+            Value<double> totalIncome = const Value.absent(),
+            Value<double> totalExpense = const Value.absent(),
+            Value<double> surplus = const Value.absent(),
+            Value<double> totalGoalSavings = const Value.absent(),
+            Value<double> savingsRate = const Value.absent(),
+            Value<double> previousCarryoverIn = const Value.absent(),
+            Value<double> availableSurplus = const Value.absent(),
+            Value<double?> incomeChangePct = const Value.absent(),
+            Value<double?> expenseChangePct = const Value.absent(),
+            Value<double?> savingsChangePct = const Value.absent(),
+            Value<String?> surplusAction = const Value.absent(),
+            Value<double?> allocatedAmount = const Value.absent(),
+            Value<String?> goalId = const Value.absent(),
+            Value<double?> carriedForwardAmount = const Value.absent(),
+            Value<String> snapshotJson = const Value.absent(),
+            Value<DateTime> generatedAt = const Value.absent(),
+            Value<DateTime?> finalizedAt = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MonthlyReportsCompanion(
+            id: id,
+            userId: userId,
+            year: year,
+            month: month,
+            status: status,
+            baseCurrencyCode: baseCurrencyCode,
+            totalIncome: totalIncome,
+            totalExpense: totalExpense,
+            surplus: surplus,
+            totalGoalSavings: totalGoalSavings,
+            savingsRate: savingsRate,
+            previousCarryoverIn: previousCarryoverIn,
+            availableSurplus: availableSurplus,
+            incomeChangePct: incomeChangePct,
+            expenseChangePct: expenseChangePct,
+            savingsChangePct: savingsChangePct,
+            surplusAction: surplusAction,
+            allocatedAmount: allocatedAmount,
+            goalId: goalId,
+            carriedForwardAmount: carriedForwardAmount,
+            snapshotJson: snapshotJson,
+            generatedAt: generatedAt,
+            finalizedAt: finalizedAt,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String userId,
+            required int year,
+            required int month,
+            required String status,
+            required String baseCurrencyCode,
+            Value<double> totalIncome = const Value.absent(),
+            Value<double> totalExpense = const Value.absent(),
+            Value<double> surplus = const Value.absent(),
+            Value<double> totalGoalSavings = const Value.absent(),
+            Value<double> savingsRate = const Value.absent(),
+            Value<double> previousCarryoverIn = const Value.absent(),
+            Value<double> availableSurplus = const Value.absent(),
+            Value<double?> incomeChangePct = const Value.absent(),
+            Value<double?> expenseChangePct = const Value.absent(),
+            Value<double?> savingsChangePct = const Value.absent(),
+            Value<String?> surplusAction = const Value.absent(),
+            Value<double?> allocatedAmount = const Value.absent(),
+            Value<String?> goalId = const Value.absent(),
+            Value<double?> carriedForwardAmount = const Value.absent(),
+            required String snapshotJson,
+            required DateTime generatedAt,
+            Value<DateTime?> finalizedAt = const Value.absent(),
+            required DateTime createdAt,
+            required DateTime updatedAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MonthlyReportsCompanion.insert(
+            id: id,
+            userId: userId,
+            year: year,
+            month: month,
+            status: status,
+            baseCurrencyCode: baseCurrencyCode,
+            totalIncome: totalIncome,
+            totalExpense: totalExpense,
+            surplus: surplus,
+            totalGoalSavings: totalGoalSavings,
+            savingsRate: savingsRate,
+            previousCarryoverIn: previousCarryoverIn,
+            availableSurplus: availableSurplus,
+            incomeChangePct: incomeChangePct,
+            expenseChangePct: expenseChangePct,
+            savingsChangePct: savingsChangePct,
+            surplusAction: surplusAction,
+            allocatedAmount: allocatedAmount,
+            goalId: goalId,
+            carriedForwardAmount: carriedForwardAmount,
+            snapshotJson: snapshotJson,
+            generatedAt: generatedAt,
+            finalizedAt: finalizedAt,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$MonthlyReportsTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({userId = false, goalId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (userId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.userId,
+                    referencedTable:
+                        $$MonthlyReportsTableReferences._userIdTable(db),
+                    referencedColumn:
+                        $$MonthlyReportsTableReferences._userIdTable(db).id,
+                  ) as T;
+                }
+                if (goalId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.goalId,
+                    referencedTable:
+                        $$MonthlyReportsTableReferences._goalIdTable(db),
+                    referencedColumn:
+                        $$MonthlyReportsTableReferences._goalIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$MonthlyReportsTableProcessedTableManager = ProcessedTableManager<
+    _$LazarusDatabase,
+    $MonthlyReportsTable,
+    MonthlyReportRow,
+    $$MonthlyReportsTableFilterComposer,
+    $$MonthlyReportsTableOrderingComposer,
+    $$MonthlyReportsTableAnnotationComposer,
+    $$MonthlyReportsTableCreateCompanionBuilder,
+    $$MonthlyReportsTableUpdateCompanionBuilder,
+    (MonthlyReportRow, $$MonthlyReportsTableReferences),
+    MonthlyReportRow,
+    PrefetchHooks Function({bool userId, bool goalId})>;
 typedef $$AttachmentsTableCreateCompanionBuilder = AttachmentsCompanion
     Function({
   required String id,
@@ -20824,6 +22841,8 @@ class $LazarusDatabaseManager {
       $$BudgetsTableTableManager(_db, _db.budgets);
   $$GoalsTableTableManager get goals =>
       $$GoalsTableTableManager(_db, _db.goals);
+  $$MonthlyReportsTableTableManager get monthlyReports =>
+      $$MonthlyReportsTableTableManager(_db, _db.monthlyReports);
   $$AttachmentsTableTableManager get attachments =>
       $$AttachmentsTableTableManager(_db, _db.attachments);
 }

@@ -6,6 +6,7 @@ import '../database/daos/finance_dao.dart';
 import '../features/dashboard/models/dashboard_models.dart';
 import '../l10n/app_localizations.dart';
 import 'lazarus_database_service.dart';
+import 'report_analytics_helper.dart';
 import 'transaction_list_service.dart';
 
 /// Loads dashboard UI data from Lazarus SQLite tables.
@@ -96,6 +97,8 @@ class DashboardService {
     final dailyTotals = await _dao.getDailyExpenseTotals(userId, days: 35);
     final dailyChart = _buildDailyChartPoints(dailyTotals, localeName);
     final weeklyChart = _buildWeeklyChartPoints(dailyTotals, localeName);
+    final changeMetrics =
+        await ReportAnalyticsHelper(_lazarus).loadCurrentMonthChange();
 
     return DashboardSnapshot(
       monthlyIncome: income,
@@ -106,6 +109,8 @@ class DashboardService {
       dailyChart: dailyChart,
       weeklyChart: weeklyChart,
       baseCurrencyCode: baseCode,
+      incomeChangePct: changeMetrics.incomeChangePct,
+      expenseChangePct: changeMetrics.expenseChangePct,
     );
   }
 
@@ -212,6 +217,8 @@ class DashboardSnapshot {
     required this.dailyChart,
     required this.weeklyChart,
     required this.baseCurrencyCode,
+    this.incomeChangePct,
+    this.expenseChangePct,
   });
 
   final double monthlyIncome;
@@ -222,6 +229,8 @@ class DashboardSnapshot {
   final List<DashboardChartPoint> dailyChart;
   final List<DashboardChartPoint> weeklyChart;
   final String baseCurrencyCode;
+  final double? incomeChangePct;
+  final double? expenseChangePct;
 
   factory DashboardSnapshot.empty() {
     return const DashboardSnapshot(

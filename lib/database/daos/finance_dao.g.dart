@@ -20,6 +20,8 @@ mixin _$FinanceDaoMixin on DatabaseAccessor<LazarusDatabase> {
       attachedDatabase.transactionSplits;
   $TransactionSplitParticipantsTable get transactionSplitParticipants =>
       attachedDatabase.transactionSplitParticipants;
+  $BudgetsTable get budgets => attachedDatabase.budgets;
+  $MonthlyReportsTable get monthlyReports => attachedDatabase.monthlyReports;
   FinanceDaoManager get managers => FinanceDaoManager(this);
 }
 
@@ -56,4 +58,9 @@ class FinanceDaoManager {
       get transactionSplitParticipants =>
           $$TransactionSplitParticipantsTableTableManager(
               _db.attachedDatabase, _db.transactionSplitParticipants);
+  $$BudgetsTableTableManager get budgets =>
+      $$BudgetsTableTableManager(_db.attachedDatabase, _db.budgets);
+  $$MonthlyReportsTableTableManager get monthlyReports =>
+      $$MonthlyReportsTableTableManager(
+          _db.attachedDatabase, _db.monthlyReports);
 }

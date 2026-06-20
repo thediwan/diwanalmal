@@ -314,6 +314,39 @@ class Goals extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+/// Frozen monthly financial report snapshot (one row per user per calendar month).
+@DataClassName('MonthlyReportRow')
+class MonthlyReports extends Table {
+  TextColumn get id => text()();
+  TextColumn get userId => text().references(AppUsers, #id)();
+  IntColumn get year => integer()();
+  IntColumn get month => integer()();
+  TextColumn get status => text()();
+  TextColumn get baseCurrencyCode => text().withLength(min: 1, max: 8)();
+  RealColumn get totalIncome => real().withDefault(const Constant(0))();
+  RealColumn get totalExpense => real().withDefault(const Constant(0))();
+  RealColumn get surplus => real().withDefault(const Constant(0))();
+  RealColumn get totalGoalSavings => real().withDefault(const Constant(0))();
+  RealColumn get savingsRate => real().withDefault(const Constant(0))();
+  RealColumn get previousCarryoverIn => real().withDefault(const Constant(0))();
+  RealColumn get availableSurplus => real().withDefault(const Constant(0))();
+  RealColumn get incomeChangePct => real().nullable()();
+  RealColumn get expenseChangePct => real().nullable()();
+  RealColumn get savingsChangePct => real().nullable()();
+  TextColumn get surplusAction => text().nullable()();
+  RealColumn get allocatedAmount => real().nullable()();
+  TextColumn get goalId => text().nullable().references(Goals, #id)();
+  RealColumn get carriedForwardAmount => real().nullable()();
+  TextColumn get snapshotJson => text()();
+  DateTimeColumn get generatedAt => dateTime()();
+  DateTimeColumn get finalizedAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 /// File attachments (local path only).
 class Attachments extends Table {
   TextColumn get id => text()();

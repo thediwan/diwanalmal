@@ -33,6 +33,7 @@ part 'lazarus_database.g.dart';
     DebtPayments,
     Budgets,
     Goals,
+    MonthlyReports,
     Attachments,
   ],
   daos: [FinanceDao],
@@ -71,7 +72,7 @@ class LazarusDatabase extends _$LazarusDatabase {
   }
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -80,6 +81,10 @@ class LazarusDatabase extends _$LazarusDatabase {
           await _createCurrencyUniqueIndex();
           await _createBaseCurrencyUniqueIndex();
           await _createContactsUniqueIndex();
+          await customStatement('''
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_monthly_reports_user_period
+            ON monthly_reports (user_id, year, month)
+          ''');
         },
         beforeOpen: (details) async {
           await ensureLegacySchemaRepairs();
@@ -196,6 +201,14 @@ class LazarusDatabase extends _$LazarusDatabase {
 
           if (from < 13) {
             await _ensureContactsPhoneColumn();
+          }
+
+          if (from < 14) {
+            await m.createTable(monthlyReports);
+            await customStatement('''
+              CREATE UNIQUE INDEX IF NOT EXISTS idx_monthly_reports_user_period
+              ON monthly_reports (user_id, year, month)
+            ''');
           }
         },
       );

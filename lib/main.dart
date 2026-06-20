@@ -10,22 +10,29 @@ import 'core/theme/palettes/app_color_palette.dart';
 import 'l10n/app_localizations.dart';
 import 'core/widgets/app_lifecycle_observer.dart';
 import 'core/widgets/startup_error_app.dart';
+import 'providers/budget_provider.dart';
 import 'providers/dashboard_refresh_provider.dart';
 import 'providers/currency_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/wallet_provider.dart';
+import 'features/reports/presentation/providers/monthly_report_provider.dart';
 import 'router/app_router.dart';
 import 'services/auth_service.dart';
 import 'services/biometric_service.dart';
 import 'services/backup_notification_service.dart';
 import 'services/backup_scheduler_service.dart';
 import 'services/backup_service.dart';
+import 'services/budget_service.dart';
+import 'services/category_service.dart';
 import 'services/currency_deduplication_service.dart';
 import 'services/currency_service.dart';
+import 'services/goal_service.dart';
 import 'services/hive_service.dart';
 import 'services/lazarus_database_service.dart';
+import 'services/monthly_report_service.dart';
 import 'services/profile_service.dart';
+import 'services/report_scheduler_service.dart';
 import 'services/treasury_service.dart';
 import 'services/wallet_balance_service.dart';
 import 'services/wallet_service.dart';
@@ -75,8 +82,15 @@ Future<void> _bootstrapApp() async {
   if (BackupSchedulerService.isBackgroundSchedulingSupported) {
     await BackupNotificationService.initialize();
     await BackupSchedulerService.register();
+    await ReportSchedulerService.register();
   }
   final backupScheduler = BackupSchedulerService(hiveService, backupService);
+  final reportScheduler = ReportSchedulerService(hiveService);
+
+  final categoryService = CategoryService(lazarusService);
+  final budgetService = BudgetService(lazarusService, categoryService);
+  final goalService = GoalService(lazarusService);
+  final monthlyReportService = MonthlyReportService(lazarusService, goalService);
 
   final settingsProvider = SettingsProvider(
     hiveService,
@@ -95,6 +109,8 @@ Future<void> _bootstrapApp() async {
   );
 
   final dashboardRefreshProvider = DashboardRefreshProvider();
+  final budgetProvider = BudgetProvider(budgetService);
+  final monthlyReportProvider = MonthlyReportProvider(monthlyReportService);
 
   await Future.wait([
     walletProvider.loadWallets(),
@@ -103,10 +119,13 @@ Future<void> _bootstrapApp() async {
   ]);
 
   await backupScheduler.scheduleFromSettings();
+  await reportScheduler.scheduleNextMonthlyRun();
   if (settingsProvider.hasAccount && settingsProvider.isSecuritySetupComplete) {
     await backupScheduler.runCatchUpIfDue(
       onSettingsChanged: () => settingsProvider.reloadFromStorage(),
     );
+    await reportScheduler.runCatchUpIfNeeded();
+    await monthlyReportProvider.ensurePreviousMonth();
   }
 
   final appRouter = AppRouter(settingsProvider);
@@ -119,8 +138,12 @@ Future<void> _bootstrapApp() async {
         ChangeNotifierProvider.value(value: currencyProvider),
         ChangeNotifierProvider.value(value: walletProvider),
         ChangeNotifierProvider.value(value: dashboardRefreshProvider),
+        ChangeNotifierProvider.value(value: budgetProvider),
+        ChangeNotifierProvider.value(value: monthlyReportProvider),
         Provider<BackupService>.value(value: backupService),
         Provider<BackupSchedulerService>.value(value: backupScheduler),
+        Provider<ReportSchedulerService>.value(value: reportScheduler),
+        Provider<MonthlyReportService>.value(value: monthlyReportService),
       ],
       child: BaytAlmalApp(router: appRouter.router),
     ),
