@@ -9,6 +9,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/palettes/app_color_palette.dart';
 import 'l10n/app_localizations.dart';
 import 'core/widgets/app_lifecycle_observer.dart';
+import 'core/widgets/startup_error_app.dart';
 import 'providers/dashboard_refresh_provider.dart';
 import 'providers/currency_provider.dart';
 import 'providers/profile_provider.dart';
@@ -34,6 +35,16 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
+  try {
+    await _bootstrapApp();
+  } catch (e, st) {
+    debugPrint('Startup failed: $e');
+    debugPrint('$st');
+    runApp(StartupErrorApp(error: e));
+  }
+}
+
+Future<void> _bootstrapApp() async {
   final hiveService = HiveService();
   await hiveService.init();
 
@@ -60,8 +71,10 @@ Future<void> main() async {
     database: lazarusService.database,
   );
   await backupService.mergeBackgroundBackupMarker();
-  await BackupNotificationService.initialize();
-  await BackupSchedulerService.register();
+  if (BackupSchedulerService.isBackgroundSchedulingSupported) {
+    await BackupNotificationService.initialize();
+    await BackupSchedulerService.register();
+  }
   final backupScheduler = BackupSchedulerService(hiveService, backupService);
 
   final settingsProvider = SettingsProvider(

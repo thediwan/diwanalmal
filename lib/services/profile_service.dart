@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../core/helpers/uuid_helper.dart';
 import '../database/lazarus_database.dart';
 import '../models/profile_data.dart';
+import '../core/helpers/app_storage_paths.dart';
 import 'hive_service.dart';
 import 'lazarus_database_service.dart';
 
@@ -77,8 +77,8 @@ class ProfileService {
 
   Future<String> updateAvatar(String sourcePath) async {
     final userId = await _ensureUserId();
-    final appDir = await getApplicationDocumentsDirectory();
-    final avatarsDir = Directory(p.join(appDir.path, 'avatars'));
+    final appDir = await AppStoragePaths.ensureDataDirectory();
+    final avatarsDir = Directory(p.join(appDir, 'avatars'));
     if (!await avatarsDir.exists()) {
       await avatarsDir.create(recursive: true);
     }

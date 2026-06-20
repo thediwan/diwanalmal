@@ -12,9 +12,15 @@ class BackupNotificationService {
 
   static bool _initialized = false;
 
+  /// Local notifications are used on mobile only.
+  static bool get isSupported =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
+
   /// Initializes channels and request permissions (Android 13+).
   static Future<void> initialize() async {
-    if (_initialized) return;
+    if (!isSupported || _initialized) return;
 
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const ios = DarwinInitializationSettings();
@@ -40,6 +46,7 @@ class BackupNotificationService {
 
   /// Requests notification permission when needed (Android 13+ / iOS).
   static Future<bool> requestPermission() async {
+    if (!isSupported) return true;
     await initialize();
 
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -68,6 +75,7 @@ class BackupNotificationService {
     required String title,
     required String body,
   }) async {
+    if (!isSupported) return;
     await initialize();
 
     const androidDetails = AndroidNotificationDetails(

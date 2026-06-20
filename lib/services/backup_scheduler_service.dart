@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../backup/backup_background.dart';
@@ -9,6 +10,9 @@ import 'backup_service.dart';
 import 'hive_service.dart';
 
 /// Schedules daily one-off WorkManager backups and resume catch-up.
+///
+/// Background scheduling is **Android/iOS only**. Desktop builds skip
+/// WorkManager calls so startup is not blocked by missing plugins.
 class BackupSchedulerService {
   BackupSchedulerService(this._hiveService, this._backupService);
 
@@ -17,13 +21,22 @@ class BackupSchedulerService {
 
   static const String _uniqueTaskName = 'dewanalmal_backup_once';
 
-  /// Registers WorkManager callback (call once from [main]).
+  /// Whether WorkManager background scheduling is available on this platform.
+  static bool get isBackgroundSchedulingSupported =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
+
+  /// Registers WorkManager callback (call once from [main] on mobile only).
   static Future<void> register() async {
+    if (!isBackgroundSchedulingSupported) return;
     await Workmanager().initialize(backupCallbackDispatcher);
   }
 
   /// Schedules the next run from current Hive settings.
   Future<void> scheduleFromSettings() async {
+    if (!isBackgroundSchedulingSupported) return;
+
     final settings = _hiveService.getSettings();
     if (!settings.backupEnabled) {
       await Workmanager().cancelByUniqueName(_uniqueTaskName);
@@ -52,15 +65,21 @@ class BackupSchedulerService {
     final result = await _backupService.runScheduledBackup();
     if (result.success) {
       onSettingsChanged();
-      await _scheduleNext(_hiveService.getSettings());
-      await BackupNotificationService.showBackupSuccess(
-        title: 'Dewan Almal',
-        body: 'Backup completed successfully',
-      );
+      if (isBackgroundSchedulingSupported) {
+        await _scheduleNext(_hiveService.getSettings());
+      }
+      if (BackupNotificationService.isSupported) {
+        await BackupNotificationService.showBackupSuccess(
+          title: 'Dewan Almal',
+          body: 'Backup completed successfully',
+        );
+      }
     }
   }
 
   Future<void> _scheduleNext(AppSettings settings) async {
+    if (!isBackgroundSchedulingSupported) return;
+
     final next = BackupScheduleHelper.computeNextRun(
       hour: settings.backupHour,
       minute: settings.backupMinute,

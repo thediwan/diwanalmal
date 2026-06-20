@@ -11,6 +11,7 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 import '../core/constants/backup_constants.dart';
 import '../core/constants/hive_constants.dart';
 import '../core/helpers/backup_schedule_helper.dart';
+import '../core/helpers/app_storage_paths.dart';
 import '../database/lazarus_database.dart';
 import '../models/app_settings.dart';
 import 'hive_service.dart';
@@ -58,24 +59,23 @@ class BackupService {
 
   /// Resolves the on-device automatic backup archive path.
   static Future<String> localArchivePath() async {
-    final dir = await getApplicationDocumentsDirectory();
+    final dir = await AppStoragePaths.ensureDataDirectory();
     return p.join(
-      dir.path,
+      dir,
       BackupConstants.backupsSubdir,
       BackupConstants.archiveFileName,
     );
   }
 
-  /// Resolves `lazarus.db` in app documents.
+  /// Resolves `lazarus.db` in app data directory.
   static Future<String> databasePath() async {
-    final dir = await getApplicationDocumentsDirectory();
-    return p.join(dir.path, BackupConstants.lazarusDbFileName);
+    final dir = await AppStoragePaths.ensureDataDirectory();
+    return p.join(dir, BackupConstants.lazarusDbFileName);
   }
 
-  /// Resolves app documents directory (Hive box files live here).
+  /// Resolves app data directory (Hive box files live here).
   static Future<String> documentsPath() async {
-    final dir = await getApplicationDocumentsDirectory();
-    return dir.path;
+    return AppStoragePaths.ensureDataDirectory();
   }
 
   Future<BackupStatus> getStatus() async {

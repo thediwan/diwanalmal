@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 
+import '../core/helpers/app_storage_paths.dart';
 import 'daos/finance_dao.dart';
 import 'tables/schema_tables.dart';
 import '../core/helpers/uuid_helper.dart';
@@ -43,8 +44,8 @@ class LazarusDatabase extends _$LazarusDatabase {
       sqlite.sqlite3.tempDirectory = cacheDir.path;
     }
 
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, 'lazarus.db'));
+    final dir = await AppStoragePaths.ensureDataDirectory();
+    final file = File(p.join(dir, 'lazarus.db'));
     final db = LazarusDatabase(NativeDatabase.createInBackground(file));
 
     // Wait until the background isolate finishes Drift migrations, then re-run
