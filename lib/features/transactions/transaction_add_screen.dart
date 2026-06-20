@@ -60,8 +60,6 @@ class TransactionAddScreen extends StatefulWidget {
 }
 
 class _TransactionAddScreenState extends State<TransactionAddScreen> {
-  static const _saveButtonAreaHeight = 78.0;
-
   final _amountInput = TransactionAmountInput();
   final _scrollController = ScrollController();
   final _notesController = TextEditingController();
@@ -868,7 +866,6 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
     final colors = context.appColors;
     final currencies = context.watch<CurrencyProvider>().currencies;
     final uniqueCurrencies = uniqueCurrenciesByCode(currencies);
-    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -893,12 +890,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                     ),
                     keyboardDismissBehavior:
                         ScrollViewKeyboardDismissBehavior.onDrag,
-                    padding: EdgeInsets.fromLTRB(
-                      20,
-                      0,
-                      20,
-                      16 + keyboardInset + _saveButtonAreaHeight,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -1232,11 +1224,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                           maxLines: 3,
                           textInputAction: TextInputAction.done,
                           style: AppFormFields.inputTextStyleOf(context),
-                          scrollPadding: EdgeInsets.only(
-                            bottom: keyboardInset +
-                                _saveButtonAreaHeight +
-                                24,
-                          ),
+                          scrollPadding: const EdgeInsets.only(bottom: 16),
                           decoration: AppFormFields.decoration(
                             context,
                             hintText: l10n.transactionFormNotesHint,
