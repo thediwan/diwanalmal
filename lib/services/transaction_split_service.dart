@@ -549,7 +549,6 @@ class TransactionSplitService {
       await _assertSplitDebtsEditable(transactionId);
     }
 
-    final now = DateTime.now();
 
     await _db.transaction(() async {
       if (split != null) {

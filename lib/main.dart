@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -254,7 +253,7 @@ Future<void> _prepareScreenshotDemo({
   const localeCode = String.fromEnvironment('SCREENSHOT_LOCALE', defaultValue: 'ar');
 
   if (settingsProvider.hasAccount && settingsProvider.isSetupComplete) {
-    await settingsProvider.setLocale(Locale(localeCode));
+    await settingsProvider.setLocale(const Locale(localeCode));
     settingsProvider.unlockSession();
     return;
   }
@@ -284,7 +283,7 @@ Future<void> _prepareScreenshotDemo({
     );
   }
 
-  await settingsProvider.setLocale(Locale(localeCode));
+  await settingsProvider.setLocale(const Locale(localeCode));
   settingsProvider.unlockSession();
   settingsProvider.reloadFromStorage();
 }

@@ -8,7 +8,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   const locale = String.fromEnvironment('SCREENSHOT_LOCALE', defaultValue: 'en');
-  final metadataDir =
+  const metadataDir =
       locale == 'ar' ? '../metadata/ar' : '../metadata/en-US';
 
   testWidgets('capture F-Droid store screenshots ($locale)', (tester) async {

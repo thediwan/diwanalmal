@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../core/constants/backup_constants.dart';
@@ -8,7 +7,6 @@ import '../features/reports/data/repositories/monthly_report_repository_impl.dar
 import '../features/reports/domain/insights/insight_rules.dart';
 import '../services/backup_notification_service.dart';
 import '../services/backup_service.dart';
-import '../services/hive_service.dart';
 
 /// WorkManager task body — kept separate for the entry-point import in main.
 @pragma('vm:entry-point')
