@@ -1,151 +1,231 @@
-# ديوان المال · Dewan Al-Mal
+<p align="center">
+  <img src="assets/images/logo-light.png" alt="Diwan Al-Mal logo" width="180" />
+</p>
 
-تطبيق Flutter لإدارة المالية الشخصية — **بدون إنترنت أولاً** (offline-first)، مستخدم واحد في المرحلة الأولى، مع تصميم لا يعيق دعم تعدد المستخدمين لاحقاً.
+<h1 align="center">Diwan Al-Mal</h1>
+
+<p align="center">
+  <strong>ديوان المال — A privacy-first personal finance manager built with Flutter</strong>
+</p>
+
+<p align="center">
+  <a href="https://flutter.dev"><img src="https://img.shields.io/badge/Flutter-3.5+-02569B?logo=flutter&logoColor=white" alt="Flutter 3.5+" /></a>
+  <a href="https://dart.dev"><img src="https://img.shields.io/badge/Dart-3.5+-0175C2?logo=dart&logoColor=white" alt="Dart 3.5+" /></a>
+  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Desktop%20%7C%20Web-blue" alt="Supported platforms" /></a>
+  <a href="#license"><img src="https://img.shields.io/badge/License-TBD-lightgrey" alt="License" /></a>
+</p>
+
+<p align="center">
+  Offline-first · Arabic-first · Multi-currency · Open source
+</p>
+
+---
+
+## About
+
+**Diwan Al-Mal** (*Dewan Al-Mal*, Arabic for “the treasury”) is a cross-platform personal finance application that keeps your financial data on your device. There is no cloud dependency in Phase 1: wallets, transactions, goals, budgets, and reports all live locally in a SQLite database you control.
+
+The app is designed for **Arabic-speaking users first** — RTL layout, Arabic typography, and full English localization — while following Flutter best practices and a modular architecture that can grow toward multi-user support without a rewrite.
 
 | | |
 |---|---|
-| **اسم العرض** | ديوان المال |
-| **اسم الحزمة** | `baytalmal` |
-| **معرّف التطبيق** | `com.example.baytalmal` |
-| **الإصدار** | 1.0.0+1 |
-| **Flutter / Dart** | ^3.5.4 |
+| **Display name** | ديوان المال (Diwan Al-Mal) |
+| **Package name** | `baytalmal` |
+| **Application ID** | `com.example.baytalmal` |
+| **Version** | 1.0.0+1 |
+| **Repository** | [github.com/thediwan/diwanalmal](https://github.com/thediwan/diwanalmal) |
 
 ---
 
-## الميزات
+## Why Diwan Al-Mal?
 
-### متوفرة حالياً
+- **Your data stays local** — Financial records are stored in `lazarus.db` on-device. No account server required to track income and expenses.
+- **Built for Arabic UX** — RTL-first design, dedicated heading and body fonts, and bilingual UI strings via `flutter gen-l10n`.
+- **Multi-currency by design** — Manage wallets in different currencies with frozen exchange rates at transaction time.
+- **Computed balances** — Wallet balances are derived from transactions and transfers, not stored as mutable totals.
+- **Real features, not a demo** — Auth, dashboards, reports, budgets, goals, backup, and PDF export are implemented as production modules.
 
-- **مصادقة محلية آمنة** — تسجيل، دخول، PIN (4 أرقام)، بصمة/Face ID، رمز استرداد، قفل الجلسة
-- **لوحة تحكم** — رصيد إجمالي، عملات متعددة، ملخص شهري، أهداف، رسم مصروفات، معاملات أخيرة
-- **المحافظ (الخزائن)** — إضافة، تعديل، حذف، بحث، أرصدة افتتاحية
-- **المعاملات** — دخل، مصروف، تحويل بين المحافظ، ذمم (مدين/دائن)، فلترة وبحث
-- **الأهداف المالية** — إدخال → خطة ادخار مقترحة → قبول/تعديل
-- **الفئات** — فئتا نظام ثابتتان + إدارة فئات المستخدم
-- **العملات** — CRUD + عملة أساسية
-- **الإعدادات** — ثيم فاتح/داكن/تلقائي، إدارة العملات
-- **تنسيق الأرقام** — Western / European / Plain (الواجهة في الإعدادات لاحقاً)
-- **تعريب** — العربية (افتراضي، RTL) والإنجليزية عبر `lib/l10n/`
+---
 
-### قيد التطوير أو لاحقاً
+## Features
 
-| الوحدة | الحالة |
+### Available now
+
+| Area | Capabilities |
+|------|--------------|
+| **Security** | Local registration & login, 4-digit PIN, biometric unlock (fingerprint / Face ID), recovery code, session lock |
+| **Dashboard** | Total balance, multi-currency overview, monthly summary, savings goals, expense charts, recent transactions |
+| **Wallets** | Create, edit, delete, search; opening balances; multi-currency accounts per wallet |
+| **Transactions** | Income, expense, wallet transfers, debts (payable / receivable), filters & search |
+| **Goals** | Goal creation → suggested savings plan → accept or customize; deposits & withdrawals |
+| **Budgets** | Monthly budget planning and tracking |
+| **Categories** | Two fixed system categories + user-managed custom categories |
+| **Currencies** | Full CRUD with a configurable base currency |
+| **Reports** | Monthly financial reports, insights, month-over-month comparison, PDF export |
+| **Backup** | Scheduled local backups (`.dmbackup` archive), manual export & import |
+| **Settings** | Light / dark / system theme, color palettes, currency management, number formatting |
+| **Localization** | Arabic (default, RTL) and English |
+
+### In progress or planned
+
+| Module | Status |
 |--------|--------|
-| الملف الشخصي | placeholder — `/profile` |
-| تسديد/تحصيل الذمم | مخطط — `debt_payments` |
-| الميزانيات الشهرية | مخطط — `budgets` |
-| النسخ الاحتياطي | المرحلة 8 |
-| توحيد المصادقة مع Lazarus SQL | المرحلة 4 |
-| تعريب كامل | settings / wallets / onboarding جزئياً |
+| Debt payment / collection flows | Planned — `debt_payments` |
+| Full auth unification (Hive → Lazarus SQL) | Phase 4 |
+| Cloud sync & multi-user | Future phase |
+| Expanded test coverage | Ongoing |
+
+See [`docs/project-progress.md`](docs/project-progress.md) for the latest roadmap and priorities.
 
 ---
 
-## المبادئ المعمارية
+## Platforms
 
-1. **Offline-first** — البيانات المالية محلياً في `lazarus.db`؛ لا اعتماد على الشبكة في المرحلة 1.
-2. **مستخدم واحد** — `getActiveUserId()` يعيد أول مستخدم نشط.
-3. **الرصيد محسوب** — لا يُخزَّن في جدول المحافظ؛ يُحسب من المعاملات والتحويلات.
-4. **سعر الصرف مجمّد** — `exchange_rate` و`base_amount` تُحفظ لحظة إدخال المعاملة.
-5. **العربية أولاً** — لا نصوص واجهة hardcoded؛ استخدم `context.l10n`.
-6. **RTL إلزامي** — اختبر كل شاشة جديدة بالعربية.
+Diwan Al-Mal targets all Flutter-supported platforms:
 
----
+**Android** · **iOS** · **Windows** · **macOS** · **Linux** · **Web**
 
-## التقنيات
-
-| الطبقة | التقنية |
-|--------|---------|
-| الواجهة | Flutter (Material 3) |
-| الحالة | Provider |
-| التوجيه | GoRouter |
-| البيانات المالية | SQLite + [Drift](https://drift.simonbinder.eu/) → `lazarus.db` |
-| الإعدادات والجلسة | Hive (`AppSettings`) |
-| المصادقة البيومetrية | `local_auth` |
-| خط العناوين | **Qomra** — `assets/fonts/Qomra.ttf` |
-| خط النص | **Alyamama** — `assets/fonts/Alyamama.ttf` |
-| التعريب | `flutter gen-l10n` — `app_ar.arb`, `app_en.arb` |
+Biometric authentication and background backup scheduling are most mature on **Android** and **iOS**. Desktop builds are supported; see [Windows build notes](#windows-build-notes) below.
 
 ---
 
-## هيكل المشروع
+## Tech stack
+
+| Layer | Technology |
+|-------|------------|
+| UI | Flutter (Material 3) |
+| State management | [Provider](https://pub.dev/packages/provider) |
+| Routing | [GoRouter](https://pub.dev/packages/go_router) |
+| Financial data | SQLite + [Drift](https://drift.simonbinder.eu/) → `lazarus.db` |
+| Session & settings | [Hive](https://pub.dev/packages/hive) (`AppSettings`) |
+| Biometrics | [`local_auth`](https://pub.dev/packages/local_auth) |
+| Charts | [`fl_chart`](https://pub.dev/packages/fl_chart) |
+| PDF export | [`pdf`](https://pub.dev/packages/pdf) + [`printing`](https://pub.dev/packages/printing) |
+| Background tasks | [`workmanager`](https://pub.dev/packages/workmanager) |
+| Headings font | **Qomra** — `assets/fonts/Qomra.ttf` |
+| Body font | **Alyamama** — `assets/fonts/Alyamama.ttf` |
+| Localization | `flutter gen-l10n` — `lib/l10n/app_ar.arb`, `app_en.arb` |
+
+---
+
+## Architecture
+
+Diwan Al-Mal follows a feature-first folder layout with shared core utilities, services, and a Drift-powered data layer.
 
 ```
 lib/
-├── core/              # ثيم، ألوان، امتدادات، ويدجت مشتركة
+├── core/              # Theme, colors, extensions, shared widgets, charts
 ├── features/
-│   ├── auth/          # تسجيل، دخول، PIN، بصمة، رمز الأمان
-│   ├── onboarding/    # اختيار العملة الأساسية
-│   ├── dashboard/     # لوحة التحكم
-│   ├── wallets/       # المحافظ
-│   ├── transactions/  # المعاملات والذمم
-│   ├── goals/         # الأهداف المالية
-│   ├── categories/    # إدارة الفئات
-│   ├── settings/      # الإعدادات والعملات
-│   └── profile/       # placeholder
-├── database/          # Drift: جداول، DAOs، بذور
-├── l10n/
+│   ├── auth/          # Registration, login, PIN, biometrics, recovery
+│   ├── onboarding/    # Base currency selection
+│   ├── dashboard/     # Home dashboard
+│   ├── wallets/         # Wallet (treasury) management
+│   ├── transactions/    # Transactions, transfers, debts
+│   ├── goals/           # Financial goals & savings plans
+│   ├── budgets/         # Monthly budgets
+│   ├── categories/      # Category management
+│   ├── reports/         # Monthly reports & PDF export
+│   ├── settings/        # Settings, currencies, backup
+│   └── profile/         # Profile, appearance, security
+├── database/          # Drift tables, DAOs, seeds
+├── l10n/              # ARB localization files
 ├── models/
 ├── providers/
-├── router/
-└── services/
+├── router/            # GoRouter + auth redirect guards
+└── services/          # Auth, backup, reports, balances, etc.
 
-docs/                  # وثائق المشروع (انظر أدناه)
+docs/                  # Module & architecture documentation
 assets/
-├── fonts/             # Qomra.ttf, Alyamama.ttf
-├── images/            # شعار التطبيق (light/dark حسب الثيم)
-└── icon/              # أيقونة المنصات (app_icon.png)
+├── fonts/             # Qomra, Alyamama
+├── images/            # App logos & backgrounds
+└── icon/              # Launcher icons
 ```
+
+### Design principles
+
+1. **Offline-first** — Financial data lives in `lazarus.db`; Phase 1 has no network dependency.
+2. **Single active user** — `getActiveUserId()` returns the first active user; architecture leaves room for multi-user later.
+3. **Computed wallet balances** — Balances are calculated from transactions and transfers, never stored on the wallet row.
+4. **Frozen exchange rates** — `exchange_rate` and `base_amount` are persisted at transaction entry time.
+5. **No hardcoded UI strings** — Use `context.l10n` for all user-facing text.
+6. **RTL is mandatory** — Every new screen must be verified in Arabic layout.
+
+### Balance formula
+
+```
+wallet_balance = opening_balance + income − expense + transfers_in − transfers_out
+```
+
+Database schema details: [`docs/database-lazarus.md`](docs/database-lazarus.md)
 
 ---
 
-## التشغيل
+## Getting started
 
-### المتطلبات
+### Prerequisites
 
-- Flutter SDK ^3.5.4
-- Dart ^3.5.4
-- لبناء **Windows**: Visual Studio مع أدوات C++ (راجع [Flutter desktop](https://docs.flutter.dev/platform-integration/windows/setup))
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) **^3.5.4**
+- [Dart SDK](https://dart.dev/get-dart) **^3.5.4**
+- For **Windows** desktop builds: Visual Studio with C++ desktop development workload ([Flutter Windows setup](https://docs.flutter.dev/platform-integration/windows/setup))
 
-### الأوامر
+### Clone & run
 
 ```bash
+git clone https://github.com/thediwan/diwanalmal.git
+cd diwanalmal
+
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 flutter gen-l10n
 flutter run
 ```
 
-### التحقق
+Pick a target device when prompted, or specify one explicitly:
+
+```bash
+flutter run -d windows
+flutter run -d chrome
+flutter run -d <device-id>
+```
+
+### Verify the project
 
 ```bash
 flutter analyze
+flutter test
 flutter build apk --debug
 ```
 
-### إعادة توليد أيقونة التطبيق (جميع المنصات)
+### Regenerate launcher icons
+
+After updating `assets/icon/app_icon.png`:
 
 ```bash
 dart run flutter_launcher_icons
 flutter clean
-flutter build windows   # أو المنصة المطلوبة
+flutter build windows   # or your target platform
 ```
 
-> أيقونة Windows تُضمَّن في `.exe` من `windows/runner/resources/app_icon.ico` — Hot Reload لا يحدّثها.
+> On Windows, the icon is embedded in the `.exe` from `windows/runner/resources/app_icon.ico`. Hot reload does **not** update it — a full rebuild is required.
 
-### إعادة البذور (بيانات تجريبية)
+### Reset seed / demo data
 
-1. احذف التطبيق من الجهاز/المحاكي، **أو**
-2. امسح `lazarus.db` من مجلد بيانات التطبيق
+Demo seeds are **disabled by default** (`SeedConstants.enabled = false`).
 
-> البذور التجريبية معطّلة افتراضياً (`SeedConstants.enabled = false`).
+To start fresh:
 
-### بعد تغييرات native (Android / iOS / Windows)
+1. Uninstall the app from the device or emulator, **or**
+2. Delete `lazarus.db` from the app's data directory
 
-أوقف التطبيق ثم نفّذ **إعادة بناء كاملة** — Hot Reload لا يكفي.
+### After native changes
 
-### Windows — MSVC 14.51+
+When modifying Android, iOS, or Windows native code or plugins, stop the app and perform a **full rebuild**. Hot reload is not sufficient.
 
-إذا فشل البناء بخطأ `STL1011` (coroutine deprecated) في plugins مثل `local_auth_windows`، المشروع يتضمن workaround في `windows/CMakeLists.txt`:
+---
+
+## Windows build notes
+
+If the build fails with MSVC error `STL1011` (coroutine deprecation) in plugins such as `local_auth_windows`, the project includes a workaround in `windows/CMakeLists.txt`:
 
 ```cmake
 add_compile_definitions(_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
@@ -153,123 +233,134 @@ add_compile_definitions(_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
 
 ---
 
-## تدفقات المصادقة
+## Authentication flows
 
-**مستخدم جديد:**
+**New user**
 
 ```
 /auth/start → /auth/register → /auth/setup-lock → /auth/security-code → /onboarding → /
 ```
 
-**مستخدم عائد (مقفل):**
+**Returning user (locked session)**
 
 ```
-/auth/splash → /auth/start أو /auth/unlock → التطبيق
+/auth/splash → /auth/start or /auth/unlock → app
 ```
 
-**نسيت كلمة المرور:**
+**Forgot password**
 
 ```
 /auth/login → /auth/reset-password → /auth/login
 ```
 
-### ترتيب إعادة التوجيه
+### Redirect priority
 
-1. لا حساب → `/auth/start`
-2. لا PIN → `/auth/setup-lock`
-3. يحتاج رمز الأمان → `/auth/security-code`
-4. الجلسة مقفلة → `/auth/unlock`
-5. لم يكتمل الإعداد → `/onboarding`
-6. مسارات auth/onboarding بعد الاكتمال → `/`
+1. No account → `/auth/start`
+2. No PIN configured → `/auth/setup-lock`
+3. Security code required → `/auth/security-code`
+4. Session locked → `/auth/unlock`
+5. Onboarding incomplete → `/onboarding`
+6. Authenticated auth/onboarding routes → `/`
+
+Full auth module documentation: [`docs/modules/auth.md`](docs/modules/auth.md)
 
 ---
 
-## المسارات الرئيسية
+## Main routes
 
 ```
 /auth/splash | /auth/start | /auth/register | /auth/login
 /auth/setup-lock | /auth/security-code | /auth/unlock | /auth/reset-password
 /onboarding
-/                          ← Dashboard (ShellRoute)
-/transactions | /transactions/add
+/                          ← Dashboard (shell)
+/transactions | /transactions/add | /transactions/:id
 /wallets | /wallets/add | /wallets/:id/edit
 /goals/add | /goals/plan | /goals/:id
-/categories
+/budgets | /budgets/add | /budgets/:id/edit
+/categories | /categories/add | /categories/:id/edit
+/reports | /reports/:year/:month | /reports/compare
 /settings | /settings/currencies
 /profile
 ```
 
 ---
 
-## قاعدة البيانات Lazarus
+## Documentation
 
-ملف **`lazarus.db`** — مصدر الحقيقة المحلي للبيانات المالية.
-
-```
-wallet_balance = opening_balance + income − expense + transfers_in − transfers_out
-```
-
-| الجدول | الغرض |
-|--------|--------|
-| `app_users`, `auth_local`, `security_settings`, `user_settings` | المستخدم والمصادقة |
-| `currencies`, `wallets`, `wallet_currency_accounts` | العملات والمحافظ |
-| `transactions`, `transfers`, `categories` | الحركة المالية |
-| `debts`, `debt_payments` | الذمم |
-| `goals`, `budgets`, `attachments` | التخطيط والمرفقات |
-
-**Hive** يحتفظ بإعدادات الجلسة (`AppSettings`) حتى اكتمال المرحلة 4 (توحيد المصادقة مع SQL).
-
-التفاصيل الكاملة: [`docs/database-lazarus.md`](docs/database-lazarus.md)
+| Topic | Document |
+|-------|----------|
+| Project progress & roadmap | [`docs/project-progress.md`](docs/project-progress.md) |
+| Database schema (Lazarus) | [`docs/database-lazarus.md`](docs/database-lazarus.md) |
+| Responsive layout | [`docs/responsive-architecture.md`](docs/responsive-architecture.md) |
+| Authentication | [`docs/modules/auth.md`](docs/modules/auth.md) |
+| Backup module | [`docs/modules/backup.md`](docs/modules/backup.md) |
+| Monthly reports | [`docs/modules/reports.md`](docs/modules/reports.md) |
+| Budgets | [`docs/modules/budgets.md`](docs/modules/budgets.md) |
+| Goals | [`docs/modules/goals.md`](docs/modules/goals.md) |
+| Number formatting | [`docs/modules/number-formatting.md`](docs/modules/number-formatting.md) |
+| Theming & color palettes | [`docs/modules/color-palettes-and-theming.md`](docs/modules/color-palettes-and-theming.md) |
+| Dashboard design spec | [`docs/dashboard-design-alignment-plan.md`](docs/dashboard-design-alignment-plan.md) |
 
 ---
 
-## قواعد حرجة للمطورين
+## Contributing
 
-1. **رمز الأمان** — يُولَّد في `AuthService.completeSecuritySetup()` فقط.
-2. **بعد حفظ PIN** — `context.go('/auth/security-code', extra: code)`؛ لا `notifyListeners()` قبل التنقل.
-3. **قفل الجلسة** — على `paused`/`detached` فقط؛ ليس `inactive` (حتى لا تتعطل نافذة البصمة).
-4. **الرصيد** — لا تخزّنه في `wallets`؛ استخدم `WalletBalanceService`.
-5. **النصوص** — لا `Text('حفظ')`؛ استخدم `context.l10n`.
-6. **RTL** — اختبر كل شاشة جديدة بالعربية.
-7. **Android للبصمة** — `MainActivity` يجب أن يبقى `FlutterFragmentActivity`.
+Contributions are welcome. Whether you fix a bug, improve documentation, add tests, or propose a feature, please:
 
----
+1. **Fork** the repository and create a branch from `main`.
+2. **Follow existing conventions** — feature-first structure, Provider for state, GoRouter for navigation, Drift for persistence.
+3. **Localize all user-facing text** — add keys to `app_ar.arb` and `app_en.arb`; never hardcode UI strings.
+4. **Test RTL** — verify layouts in Arabic before opening a pull request.
+5. **Run analysis** before submitting:
 
-## الوثائق
+   ```bash
+   flutter analyze
+   flutter test
+   ```
 
-| الموضوع | الملف |
-|---------|-------|
-| متابعة المشروع والخطة | [`docs/project-progress.md`](docs/project-progress.md) |
-| مخطط قاعدة البيانات | [`docs/database-lazarus.md`](docs/database-lazarus.md) |
-| مواصفات لوحة التحكم | [`docs/dashboard-design-alignment-plan.md`](docs/dashboard-design-alignment-plan.md) |
-| وحدة المصادقة | [`docs/modules/auth.md`](docs/modules/auth.md) |
-| تنسيق الأرقام | [`docs/modules/number-formatting.md`](docs/modules/number-formatting.md) |
-| بيانات البذور المرجعية | [`docs/seeds/dashboard-mockup.json`](docs/seeds/dashboard-mockup.json) |
-| قواعد Cursor | [`.cursor/rules/`](.cursor/rules/) |
+6. Open a **pull request** with a clear description of the change and how you tested it.
 
----
+For larger changes, open an issue first to discuss scope and approach.
 
-## خارطة الطريق (ملخص)
+### Developer guidelines
 
-| المرحلة | المحتوى | الحالة |
-|---------|---------|--------|
-| 1 | أساس، مصادقة، لوحة تحكم، محافظ | ~85% |
-| 2 | المعاملات والتحويلات والذمم | مكتمل |
-| 3 | أهداف، ديون (تسديد لاحقاً)، ميزانيات | جزئي |
-| 4 | توحيد Hive ↔ Lazarus للمصادقة | مخطط |
-| 5 | ملف شخصي، إشعارات، تحسينات UX | مخطط |
-| 6 | تقارير وتصدير | مخطط |
-| 7 | اختبارات وجودة | مخطط |
-| 8 | نسخ احتياطي ومزامنة مستقبلية | مخطط |
-
-التفاصيل والأولويات الفورية: [`docs/project-progress.md`](docs/project-progress.md)
+- **Security code** is generated only in `AuthService.completeSecuritySetup()`.
+- **After saving a PIN**, navigate with `context.go('/auth/security-code', extra: code)` — do not call `notifyListeners()` before navigation.
+- **Session lock** triggers on `paused` / `detached`, not `inactive` (avoids breaking the biometric prompt).
+- **Never store wallet balance** in the `wallets` table — use `WalletBalanceService`.
+- **Android biometrics** require `MainActivity` to extend `FlutterFragmentActivity`.
 
 ---
 
-## المنصات المدعومة
+## Roadmap (summary)
 
-Android · iOS · Windows · macOS · Linux · Web
+| Phase | Focus | Status |
+|-------|-------|--------|
+| 1 | Foundation, auth, dashboard, wallets | ~85% |
+| 2 | Transactions, transfers, debts | Complete |
+| 3 | Goals, debt payments, budgets | Partial |
+| 4 | Unify Hive ↔ Lazarus for auth | Planned |
+| 5 | Profile, notifications, UX polish | Planned |
+| 6 | Reports & export | In progress |
+| 7 | Testing & quality | Planned |
+| 8 | Backup, sync, multi-user | Partial / planned |
+
+Detailed milestones: [`docs/project-progress.md`](docs/project-progress.md)
 
 ---
 
-*آخر تحديث للوثائق: يونيو 2026 — راجع `docs/project-progress.md` لأحدث حالة المشروع.*
+## License
+
+A formal open-source license has not been added yet. If you intend to use, distribute, or contribute to this codebase commercially, please open an issue or contact the [The Diwan](https://github.com/thediwan) maintainers to confirm licensing terms.
+
+---
+
+## Acknowledgments
+
+Built with [Flutter](https://flutter.dev) and maintained by [The Diwan](https://github.com/thediwan).
+
+---
+
+<p align="center">
+  <sub>Last updated: June 2026 · See <a href="docs/project-progress.md">docs/project-progress.md</a> for the latest project status.</sub>
+</p>
