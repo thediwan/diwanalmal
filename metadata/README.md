@@ -11,15 +11,13 @@ Triple-T / Fastlane layout used by F-Droid for in-repo store descriptions.
 
 ## Screenshots
 
-Replace placeholder images in `*/images/phoneScreenshots/` with **release-build UI
-screenshots** before opening the fdroiddata merge request:
+UI screenshots are generated from a Windows integration test with demo data:
 
-1. Build: `flutter build apk --release`
-2. Install on emulator or device (1080×1920 or 1080×2340)
-3. Capture: dashboard, transactions, wallets, reports, settings/backup
-4. Capture Arabic locale shots for `metadata/ar/images/phoneScreenshots/`
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/generate_fdroid_screenshots.ps1
+```
 
-Recommended filenames: `01_dashboard.png`, `02_transactions.png`, etc.
+Uses `--dart-define=SEED_DEMO=true` and golden files at 1080×1920.
 
 ## Icon
 

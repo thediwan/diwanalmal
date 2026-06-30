@@ -39,9 +39,10 @@ This document is the internal checklist for publishing **Diwan Al-Mal** to F-Dro
 | Dependency audit | ✅ Done | [`docs/third-party-licenses.md`](third-party-licenses.md) |
 | NOTICE / font licenses | ✅ Done | [`NOTICE`](../NOTICE), [`assets/fonts/LICENSE.md`](../assets/fonts/LICENSE.md) |
 | fdroiddata recipe draft | ✅ Done | [`fdroid/org.thediwan.diwanalmal.yml`](../fdroid/org.thediwan.diwanalmal.yml) |
-| Local fdroidserver build | ⏳ Manual | Requires Linux — see [`fdroid-server-runbook.md`](fdroid-server-runbook.md) |
-| Release screenshots | ⏳ Manual | Replace placeholders in `metadata/*/images/phoneScreenshots/` |
-| fdroiddata MR submitted | ⏳ Manual | See [`fdroid-release-runbook.md`](fdroid-release-runbook.md) |
+| Local fdroidserver build | ⏳ Manual | Requires Linux + `fdroidserver` — see [`fdroid-server-runbook.md`](fdroid-server-runbook.md) |
+| Release screenshots | ✅ Done | Generated via `scripts/generate_fdroid_screenshots.ps1` |
+| Git tag v1.0.0 | ✅ Done | Pushed to GitHub |
+| fdroiddata MR submitted | ⏳ Manual | Run [`scripts/submit-fdroiddata-mr.sh`](../scripts/submit-fdroiddata-mr.sh) |
 | GPL source headers | ⏳ Optional | Recommended for new/changed files |
 
 ---
@@ -324,9 +325,10 @@ No `INTERNET` permission is required for core app function (offline-first) — v
 4. ~~**Patch `android/app/build.gradle`**~~ — `dependenciesInfo`, minSdk 21 ✅
 5. ~~**Scaffold `metadata/en-US/` and `metadata/ar/`**~~ ✅
 6. ~~**Add `.github/workflows/`**~~ — CI + release ✅
-7. **Replace placeholder screenshots** with release-build UI captures
-8. **Run local `fdroid build`** — [`fdroid-server-runbook.md`](fdroid-server-runbook.md)
-9. **Tag `v1.0.0`**, push, open fdroiddata MR — [`fdroid-release-runbook.md`](fdroid-release-runbook.md)
+7. ~~**Replace placeholder screenshots**~~ ✅ — `scripts/generate_fdroid_screenshots.ps1`
+8. ~~**Tag `v1.0.0` and push**~~ ✅
+9. **Run local `fdroid build`** — [`fdroid-server-runbook.md`](fdroid-server-runbook.md) (Linux + fdroidserver)
+10. **Open fdroiddata MR** — [`scripts/submit-fdroiddata-mr.sh`](../scripts/submit-fdroiddata-mr.sh)
 
 ---
 
