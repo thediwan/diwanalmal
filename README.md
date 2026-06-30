@@ -166,17 +166,30 @@ Database schema details: [`docs/database-lazarus.md`](docs/database-lazarus.md)
 
 ### Prerequisites
 
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) **^3.5.4**
-- [Dart SDK](https://dart.dev/get-dart) **^3.5.4**
+- Flutter SDK **3.44.1** (pinned in [`.flutter-version`](.flutter-version) and [`.flutter/`](.flutter) submodule)
+- Dart **3.12.1** (bundled with pinned Flutter)
 - For **Windows** desktop builds: Visual Studio with C++ desktop development workload ([Flutter Windows setup](https://docs.flutter.dev/platform-integration/windows/setup))
+- For **Android** release builds: Android SDK ([Flutter Android setup](https://docs.flutter.dev/platform-integration/android/setup))
 
 ### Clone & run
 
 ```bash
-git clone https://github.com/thediwan/diwanalmal.git
+git clone --recurse-submodules https://github.com/thediwan/diwanalmal.git
 cd diwanalmal
 
-flutter pub get
+# If you already cloned without submodules:
+git submodule update --init --recursive
+
+.flutter/bin/flutter pub get --enforce-lockfile
+.flutter/bin/dart run build_runner build --delete-conflicting-outputs
+.flutter/bin/flutter gen-l10n
+.flutter/bin/flutter run
+```
+
+Alternatively, use a system Flutter matching `.flutter-version` (3.44.1):
+
+```bash
+flutter pub get --enforce-lockfile
 dart run build_runner build --delete-conflicting-outputs
 flutter gen-l10n
 flutter run
@@ -303,6 +316,9 @@ Full auth module documentation: [`docs/modules/auth.md`](docs/modules/auth.md)
 | Theming & color palettes | [`docs/modules/color-palettes-and-theming.md`](docs/modules/color-palettes-and-theming.md) |
 | Dashboard design spec | [`docs/dashboard-design-alignment-plan.md`](docs/dashboard-design-alignment-plan.md) |
 | F-Droid publishing plan | [`docs/f-droid-publishing-plan.md`](docs/f-droid-publishing-plan.md) |
+| F-Droid local build runbook | [`docs/fdroid-server-runbook.md`](docs/fdroid-server-runbook.md) |
+| F-Droid release runbook | [`docs/fdroid-release-runbook.md`](docs/fdroid-release-runbook.md) |
+| Third-party licenses | [`docs/third-party-licenses.md`](docs/third-party-licenses.md) |
 
 ---
 
@@ -370,6 +386,12 @@ Copyright © 2026 [The Diwan](https://github.com/thediwan).
 We are preparing Diwan Al-Mal for inclusion in [F-Droid](https://f-droid.org/) — the community-maintained repository of free and open source Android apps.
 
 The full checklist, blockers, metadata layout, build recipe outline, and timeline are documented in [`docs/f-droid-publishing-plan.md`](docs/f-droid-publishing-plan.md).
+
+**Maintainer runbooks:**
+
+- Local fdroidserver validation: [`docs/fdroid-server-runbook.md`](docs/fdroid-server-runbook.md)
+- Submission and version bumps: [`docs/fdroid-release-runbook.md`](docs/fdroid-release-runbook.md)
+- Draft fdroiddata recipe: [`fdroid/org.thediwan.diwanalmal.yml`](fdroid/org.thediwan.diwanalmal.yml)
 
 ---
 

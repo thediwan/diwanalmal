@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -5,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'core/constants/app_constants.dart';
+import 'core/constants/seed_constants.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/palettes/app_color_palette.dart';
 import 'l10n/app_localizations.dart';
@@ -38,6 +40,11 @@ import 'services/treasury_service.dart';
 import 'services/wallet_balance_service.dart';
 import 'services/wallet_service.dart';
 import 'services/wallets_display_service.dart';
+import 'database/seed/database_seed_service.dart';
+
+/// Entry point for integration tests (screenshot generation, etc.).
+@visibleForTesting
+Future<void> bootstrapAppForIntegrationTests() => _bootstrapApp();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -98,6 +105,15 @@ Future<void> _bootstrapApp() async {
     biometricService,
     profileService,
   );
+
+  if (SeedConstants.enabled) {
+    await _prepareScreenshotDemo(
+      settingsProvider: settingsProvider,
+      currencyService: currencyService,
+      lazarusService: lazarusService,
+    );
+  }
+
   final profileProvider = ProfileProvider(profileService);
   final currencyProvider = CurrencyProvider(currencyService);
   final walletProvider = WalletProvider(
@@ -227,4 +243,48 @@ class DiwanAlmalApp extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Seeds a demo account when [SeedConstants.enabled] (SEED_DEMO=true).
+Future<void> _prepareScreenshotDemo({
+  required SettingsProvider settingsProvider,
+  required CurrencyService currencyService,
+  required LazarusDatabaseService lazarusService,
+}) async {
+  const localeCode = String.fromEnvironment('SCREENSHOT_LOCALE', defaultValue: 'ar');
+
+  if (settingsProvider.hasAccount && settingsProvider.isSetupComplete) {
+    await settingsProvider.setLocale(Locale(localeCode));
+    settingsProvider.unlockSession();
+    return;
+  }
+
+  await settingsProvider.registerAccount(username: 'demo', password: 'demo1234');
+  await settingsProvider.completeSecuritySetup(
+    pinCode: '1234',
+    enableBiometric: false,
+  );
+  settingsProvider.reloadFromStorage();
+  await settingsProvider.acknowledgeSecurityCode();
+
+  final base = await currencyService.createBaseCurrency(
+    code: 'USD',
+    name: 'US Dollar',
+    symbol: r'$',
+  );
+  await settingsProvider.markSetupComplete('USD');
+
+  final userId = await lazarusService.getActiveUserId();
+  if (userId != null) {
+    await DatabaseSeedService(lazarusService.database)
+        .seedDemoDataAfterBaseCurrencySelection(
+      userId: userId,
+      baseCurrencyId: base.id,
+      baseCode: 'USD',
+    );
+  }
+
+  await settingsProvider.setLocale(Locale(localeCode));
+  settingsProvider.unlockSession();
+  settingsProvider.reloadFromStorage();
 }

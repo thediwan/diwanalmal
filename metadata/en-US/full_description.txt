@@ -1,0 +1,16 @@
+Diwan Al-Mal is a privacy-first personal finance manager. All your financial data stays on your device in a local SQLite database — no cloud account, no tracking, no ads.
+
+Features:
+• Offline-first — works without internet
+• Arabic-first RTL layout with full English support
+• Multi-currency wallets with frozen exchange rates
+• Income, expense, transfer, and debt tracking
+• Monthly budgets and savings goals
+• Monthly financial reports with PDF export
+• Scheduled local backups (.dmbackup archives)
+• Optional biometric app lock (PIN + fingerprint / Face ID)
+• Light, dark, and system themes with color palettes
+
+Your data belongs to you. Diwan Al-Mal is free software licensed under GPL-3.0-or-later.
+
+Source: https://github.com/thediwan/diwanalmal

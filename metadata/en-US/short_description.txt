@@ -1,0 +1,1 @@
+Offline-first personal finance manager with Arabic RTL support

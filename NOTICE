@@ -1,0 +1,29 @@
+Diwan Al-Mal
+Copyright (C) 2026 The Diwan
+
+This application is licensed under the GNU General Public License v3.0 or later.
+See LICENSE for the full license text.
+
+---
+
+Third-Party Software
+
+This application includes open-source software components. A summary of direct
+dependencies and their licenses is in docs/third-party-licenses.md.
+
+Bundled Fonts
+
+The following font files are redistributed with this application with permission
+of The Diwan (copyright holder) for distribution under GPL-3.0-or-later:
+
+  - assets/fonts/Qomra.ttf (Qomra — headings)
+  - assets/fonts/Alyamama.ttf (Alyamama — body text)
+
+See assets/fonts/LICENSE.md for details.
+
+---
+
+Flutter SDK
+
+Builds use the Flutter SDK (BSD-3-Clause) pinned as a git submodule at .flutter/.
+See https://github.com/flutter/flutter for license terms.

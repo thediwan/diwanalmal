@@ -1,6 +1,6 @@
 # F-Droid Publishing Plan — Diwan Al-Mal
 
-> **Status:** Planning  
+> **Status:** Ready for fdroidserver trial & fdroiddata MR  
 > **Last updated:** June 2026  
 > **Target:** First listing on [F-Droid](https://f-droid.org/)  
 > **License:** GPL-3.0-or-later ([`LICENSE`](../LICENSE))
@@ -30,13 +30,19 @@ This document is the internal checklist for publishing **Diwan Al-Mal** to F-Dro
 | No Firebase / GMS | ✅ Clean | No proprietary Google mobile services in app code |
 | `pubspec.lock` committed | ✅ Done | Required for `--enforce-lockfile` builds |
 | Stable application ID | ✅ Done | `org.thediwan.diwanalmal` |
-| Release signing strategy | ❌ Blocker | Release build uses debug keystore |
-| Flutter SDK pinned | ❌ Missing | No `.fvm/` or CI pin yet |
-| F-Droid store metadata | ❌ Missing | No `metadata/` or `fastlane/` descriptions |
-| Reproducible build setup | ❌ Missing | No pinned paths, no `dependenciesInfo` fix |
-| GitHub release APK workflow | ❌ Missing | No `.github/workflows/` |
-| Dependency audit | ⏳ Pending | Manual review of all pub + native deps |
-| GPL source headers | ⏳ Optional | Recommended for `.dart` / native files |
+| Release signing strategy | ✅ Done | F-Droid signs; debug signing removed from release |
+| Flutter SDK pinned | ✅ Done | Submodule `.flutter` @ 3.44.1, [`.flutter-version`](../.flutter-version) |
+| F-Droid store metadata | ✅ Done | [`metadata/en-US/`](../metadata/en-US/), [`metadata/ar/`](../metadata/ar/) |
+| Reproducible build setup | ✅ Done | `dependenciesInfo { includeInApk false }`, minSdk 21 |
+| GitHub release APK workflow | ✅ Done | [`.github/workflows/release.yml`](../.github/workflows/release.yml) |
+| CI workflow | ✅ Done | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) |
+| Dependency audit | ✅ Done | [`docs/third-party-licenses.md`](third-party-licenses.md) |
+| NOTICE / font licenses | ✅ Done | [`NOTICE`](../NOTICE), [`assets/fonts/LICENSE.md`](../assets/fonts/LICENSE.md) |
+| fdroiddata recipe draft | ✅ Done | [`fdroid/org.thediwan.diwanalmal.yml`](../fdroid/org.thediwan.diwanalmal.yml) |
+| Local fdroidserver build | ⏳ Manual | Requires Linux — see [`fdroid-server-runbook.md`](fdroid-server-runbook.md) |
+| Release screenshots | ⏳ Manual | Replace placeholders in `metadata/*/images/phoneScreenshots/` |
+| fdroiddata MR submitted | ⏳ Manual | See [`fdroid-release-runbook.md`](fdroid-release-runbook.md) |
+| GPL source headers | ⏳ Optional | Recommended for new/changed files |
 
 ---
 
@@ -54,65 +60,35 @@ The application ID is set for F-Droid and store releases. Do not change it after
 
 ### 3.2 Signing strategy
 
-**Current:** `signingConfig = signingConfigs.debug` in release (`android/app/build.gradle`).
+**Current:** F-Droid builds and signs (Strategy A) ✅
 
-For F-Droid, choose one path and commit to it for the first published version:
+Release builds no longer use debug signing. See [android/app/build.gradle](../android/app/build.gradle).
 
-| Strategy | Pros | Cons |
-|----------|------|------|
-| **A. F-Droid builds & signs (recommended for new apps)** | No keystore to manage; aligns with F-Droid trust model | You do not ship your own signed APK to users |
-| **B. Reproducible builds with upstream APK** | You publish signed APKs; F-Droid verifies they match source | Must set up reproducible toolchain from day one |
-
-**Recommendation:** Strategy **A** for v1 — let F-Droid sign. Remove debug signing from release; do not commit keystores.
-
-If choosing **B** later, add to `fdroiddata` metadata:
-
-```yaml
-AllowedAPKSigningKeys: <SHA-256 fingerprint of your release key>
-Binaries: https://github.com/thediwan/diwanalmal/releases/download/v<version>/app-release.apk
-```
+GitHub release APKs (`.github/workflows/release.yml`) are for maintainer testing only.
 
 ---
 
 ### 3.3 Flutter SDK pinning
 
-F-Droid builds must reproduce your exact Flutter version. Pick one method:
+**Current:** `.flutter` git submodule @ **3.44.1** (commit `924134a44c`) ✅
 
-**Option A — Git submodule (preferred by F-Droid Flutter template)**
+Files:
+- [`.gitmodules`](../.gitmodules)
+- [`.flutter-version`](../.flutter-version)
 
-```bash
-git submodule add https://github.com/flutter/flutter.git .flutter
-cd .flutter && git checkout <tag>   # e.g. 3.32.5
-```
-
-**Option B — Document version in CI and read it in `fdroiddata` prebuild**
-
-Add `.github/workflows/release.yml` with a pinned `flutter-version:` and reference it from the F-Droid recipe (see upstream template).
-
-**Option C — FVM**
-
-Add `.fvm/fvm_config.json` and document that maintainers must use the same version.
-
-**Acceptance criteria:** Two builds on different machines with the same tag produce identical APK hashes (after reproducibility fixes in §3.5).
+Clone with: `git clone --recurse-submodules ...`
 
 ---
 
 ### 3.4 Android build.gradle adjustments
 
-Add for reproducibility ([Android dependency info block](https://developer.android.com/build/dependencies#dependency-info-play)):
+**Current:** Applied ✅
 
-```gradle
-android {
-    dependenciesInfo {
-        includeInApk false
-    }
-}
-```
+- `dependenciesInfo { includeInApk false }`
+- `minSdk = 21`
+- Unsigned release build type
 
-Also verify:
-
-- `minSdk` is explicit and documented (currently from Flutter defaults)
-- No proprietary Maven repos required at build time (Aliyun mirrors in Gradle are OK as fallbacks but F-Droid builders use standard repos)
+Verify release APK permissions: [`scripts/verify-android-release.md`](../scripts/verify-android-release.md)
 
 ---
 
@@ -134,7 +110,9 @@ F-Droid rejects apps with non-free dependencies (e.g. Firebase, Google Play Serv
 
 ### Action
 
-Run [F-Droid scanner](https://gitlab.com/fdroid/fdroidscanner) locally or rely on F-Droid CI after MR. Document any flagged transitive deps and replace if needed.
+Completed — see [`docs/third-party-licenses.md`](third-party-licenses.md) and [`NOTICE`](../NOTICE).
+
+Run [fdroidscanner](https://gitlab.com/fdroid/fdroidscanner) on release APK before fdroiddata MR for automated verification.
 
 ---
 
@@ -301,10 +279,12 @@ No `INTERNET` permission is required for core app function (offline-first) — v
 | LICENSE in repo root | ✅ Done |
 | README license section | ✅ Done |
 | `license:` in `pubspec.yaml` | ✅ Done |
+| NOTICE file | ✅ Done |
+| Third-party licenses doc | ✅ Done |
+| Font license doc | ✅ Done — [`assets/fonts/LICENSE.md`](../assets/fonts/LICENSE.md) |
 | Source offer | GitHub repo satisfies “source available” |
 | Corresponding source for releases | Tag each release; source at tag must build |
 | License headers in source files | Add SPDX header to new files; batch-add to existing over time |
-| Third-party notices | Consider `NOTICE` or `docs/third-party-licenses.md` for bundled fonts (Qomra, Alyamama) — confirm font licenses allow GPL app distribution |
 
 ---
 
@@ -312,14 +292,14 @@ No `INTERNET` permission is required for core app function (offline-first) — v
 
 | Phase | Tasks | Owner | Target |
 |-------|-------|-------|--------|
-| **0 — Legal** | GPL license, README | Done | ✅ |
-| **1 — Android identity** | ~~Final application ID, package move~~ ✅ Done | Dev | Week 1 |
-| **2 — Build hardening** | Pin Flutter, `dependenciesInfo`, release Gradle cleanup | Dev | Week 1–2 |
-| **3 — Metadata** | `metadata/en-US/`, screenshots, icon 512px | Design + Dev | Week 2 |
-| **4 — CI** | GitHub Actions release on tag | Dev | Week 2 |
-| **5 — Local F-Droid test** | `fdroidserver` build in VM / Docker | Dev | Week 3 |
-| **6 — fdroiddata MR** | Submit recipe, address review | Dev | Week 3–4 |
-| **7 — Post-release** | Monitor issues, version bumps, UpdateCheckMode tags | Maintainers | Ongoing |
+| **0 — Legal** | GPL license, README, NOTICE, third-party licenses | Done | ✅ |
+| **1 — Android identity** | Application ID, package move | Done | ✅ |
+| **2 — Build hardening** | Flutter submodule, dependenciesInfo, release Gradle | Done | ✅ |
+| **3 — Metadata** | `metadata/en-US/`, `metadata/ar/`, icon | Done | ✅ |
+| **4 — CI** | GitHub Actions CI + release workflows, CHANGELOG | Done | ✅ |
+| **5 — Local F-Droid test** | fdroidserver build in VM / Docker | Manual | See runbook |
+| **6 — fdroiddata MR** | Submit recipe, address review | Manual | See runbook |
+| **7 — Post-release** | Monitor issues, version bumps | Ongoing | See runbook |
 
 ---
 
@@ -339,13 +319,14 @@ No `INTERNET` permission is required for core app function (offline-first) — v
 ## 12. Next actions (immediate)
 
 1. ~~**Decide final application ID**~~ — `org.thediwan.diwanalmal` ✅
-2. **Decide signing strategy** — recommend F-Droid-signed v1
-3. **Add Flutter submodule** at `.flutter` and pin version tag
-4. **Patch `android/app/build.gradle`** — `dependenciesInfo { includeInApk false }`
-5. **Scaffold `metadata/en-US/`** with descriptions (screenshots can follow)
-6. **Add `.github/workflows/release.yml`** for tagged releases
-7. **Capture 4–6 screenshots** from release build
-8. **Open fdroiddata MR** after a successful local `fdroid build`
+2. ~~**Decide signing strategy**~~ — F-Droid-signed v1 ✅
+3. ~~**Add Flutter submodule**~~ — `.flutter` @ 3.44.1 ✅
+4. ~~**Patch `android/app/build.gradle`**~~ — `dependenciesInfo`, minSdk 21 ✅
+5. ~~**Scaffold `metadata/en-US/` and `metadata/ar/`**~~ ✅
+6. ~~**Add `.github/workflows/`**~~ — CI + release ✅
+7. **Replace placeholder screenshots** with release-build UI captures
+8. **Run local `fdroid build`** — [`fdroid-server-runbook.md`](fdroid-server-runbook.md)
+9. **Tag `v1.0.0`**, push, open fdroiddata MR — [`fdroid-release-runbook.md`](fdroid-release-runbook.md)
 
 ---
 

@@ -1,0 +1,5 @@
+[submodule ".flutter"]
+	path = .flutter
+	url = https://github.com/flutter/flutter.git
+	branch = 3.44.1
+	shallow = true

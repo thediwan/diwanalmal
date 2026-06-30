@@ -1,0 +1,50 @@
+Categories:
+  - Money
+
+License: GPL-3.0-or-later
+SourceCode: https://github.com/thediwan/diwanalmal
+IssueTracker: https://github.com/thediwan/diwanalmal/issues
+WebSite: https://github.com/thediwan/diwanalmal
+
+Summary: Offline-first personal finance manager
+Description: |-
+  Diwan Al-Mal is a privacy-first personal finance manager. All your financial
+  data stays on your device in a local SQLite database — no cloud account, no
+  tracking, no ads.
+
+  Features include offline-first operation, Arabic-first RTL layout with English
+  support, multi-currency wallets, budgets, savings goals, monthly reports with
+  PDF export, and scheduled local backups.
+
+  Licensed under GPL-3.0-or-later.
+
+RepoType: git
+Repo: https://github.com/thediwan/diwanalmal
+
+Builds:
+  - versionName: '1.0.0'
+    versionCode: 1
+    commit: v1.0.0
+    submodules: true
+    output: build/app/outputs/flutter-apk/app-release.apk
+    rm:
+      - ios
+      - linux
+      - macos
+      - web
+      - windows
+    prebuild:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - .flutter/bin/flutter config --no-analytics
+      - .flutter/bin/flutter pub get --enforce-lockfile
+      - .flutter/bin/dart run build_runner build --delete-conflicting-outputs
+      - .flutter/bin/flutter gen-l10n
+    scandelete:
+      - .pub-cache
+    build:
+      - .flutter/bin/flutter build apk --release --target-platform android-arm64
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '1.0.0'
+CurrentVersionCode: 1
