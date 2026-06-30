@@ -12,7 +12,8 @@
   <a href="https://flutter.dev"><img src="https://img.shields.io/badge/Flutter-3.5+-02569B?logo=flutter&logoColor=white" alt="Flutter 3.5+" /></a>
   <a href="https://dart.dev"><img src="https://img.shields.io/badge/Dart-3.5+-0175C2?logo=dart&logoColor=white" alt="Dart 3.5+" /></a>
   <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Desktop%20%7C%20Web-blue" alt="Supported platforms" /></a>
-  <a href="#license"><img src="https://img.shields.io/badge/License-TBD-lightgrey" alt="License" /></a>
+  <a href="#license"><img src="https://img.shields.io/badge/License-GPL--3.0--or--later-blue" alt="GPL-3.0-or-later" /></a>
+  <a href="docs/f-droid-publishing-plan.md"><img src="https://img.shields.io/badge/F--Droid-planned-00CF35?logo=f-droid&logoColor=white" alt="F-Droid planned" /></a>
 </p>
 
 <p align="center">
@@ -30,10 +31,11 @@ The app is designed for **Arabic-speaking users first** — RTL layout, Arabic t
 | | |
 |---|---|
 | **Display name** | ديوان المال (Diwan Al-Mal) |
-| **Package name** | `baytalmal` |
-| **Application ID** | `com.example.baytalmal` |
+| **Package name** | `diwanalmal` |
+| **Application ID** | `org.thediwan.diwanalmal` |
 | **Version** | 1.0.0+1 |
 | **Repository** | [github.com/thediwan/diwanalmal](https://github.com/thediwan/diwanalmal) |
+| **License** | [GPL-3.0-or-later](LICENSE) |
 
 ---
 
@@ -300,6 +302,7 @@ Full auth module documentation: [`docs/modules/auth.md`](docs/modules/auth.md)
 | Number formatting | [`docs/modules/number-formatting.md`](docs/modules/number-formatting.md) |
 | Theming & color palettes | [`docs/modules/color-palettes-and-theming.md`](docs/modules/color-palettes-and-theming.md) |
 | Dashboard design spec | [`docs/dashboard-design-alignment-plan.md`](docs/dashboard-design-alignment-plan.md) |
+| F-Droid publishing plan | [`docs/f-droid-publishing-plan.md`](docs/f-droid-publishing-plan.md) |
 
 ---
 
@@ -351,7 +354,22 @@ Detailed milestones: [`docs/project-progress.md`](docs/project-progress.md)
 
 ## License
 
-A formal open-source license has not been added yet. If you intend to use, distribute, or contribute to this codebase commercially, please open an issue or contact the [The Diwan](https://github.com/thediwan) maintainers to confirm licensing terms.
+Diwan Al-Mal is free software licensed under the **GNU General Public License v3.0 or later** (GPL-3.0-or-later).
+
+- Full license text: [LICENSE](LICENSE)
+- SPDX identifier: `GPL-3.0-or-later`
+
+You may use, modify, and distribute this software under the terms of the GPL. Derivative works must also be licensed under the GPL and provide corresponding source code. See the [GPL FAQ](https://www.gnu.org/licenses/gpl-faq.html) for common questions.
+
+Copyright © 2026 [The Diwan](https://github.com/thediwan).
+
+---
+
+## F-Droid
+
+We are preparing Diwan Al-Mal for inclusion in [F-Droid](https://f-droid.org/) — the community-maintained repository of free and open source Android apps.
+
+The full checklist, blockers, metadata layout, build recipe outline, and timeline are documented in [`docs/f-droid-publishing-plan.md`](docs/f-droid-publishing-plan.md).
 
 ---
 

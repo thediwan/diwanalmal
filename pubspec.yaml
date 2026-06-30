@@ -1,5 +1,6 @@
-name: baytalmal
+name: diwanalmal
 description: "Personal finance manager - offline first."
+license: GPL-3.0-or-later
 publish_to: 'none'
 
 version: 1.0.0+1

@@ -1,4 +1,4 @@
-import 'package:baytalmal/core/responsive/app_breakpoints.dart';
+import 'package:diwanalmal/core/responsive/app_breakpoints.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

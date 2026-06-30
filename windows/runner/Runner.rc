@@ -92,9 +92,9 @@ BEGIN
             VALUE "CompanyName", "com.example" "\0"
             VALUE "FileDescription", "\u062F\u064A\u0648\u0627\u0646 \u0627\u0644\u0645\u0627\u0644" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "baytalmal" "\0"
+            VALUE "InternalName", "diwanalmal" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "baytalmal.exe" "\0"
+            VALUE "OriginalFilename", "diwanalmal.exe" "\0"
             VALUE "ProductName", "\u062F\u064A\u0648\u0627\u0646 \u0627\u0644\u0645\u0627\u0644" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END

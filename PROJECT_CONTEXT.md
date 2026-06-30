@@ -2,7 +2,7 @@
 
 ## Overview
 
-Offline-first personal finance app (Arabic-first, RTL). Package: `baytalmal`.
+Offline-first personal finance app (Arabic-first, RTL). Package: `diwanalmal`.
 
 ## Architecture
 

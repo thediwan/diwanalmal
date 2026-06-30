@@ -21,8 +21,8 @@
 | خط العناوين | قمرة (عند توفر الملفات) |
 | خط النص | اليمامة (Alyamama) — حالياً Almarai/Cairo عبر `google_fonts` |
 
-**اسم الحزمة التقني** (لم يتغيّر): `baytalmal`  
-**معرّف التطبيق**: `com.example.baytalmal`
+**اسم الحزمة التقني:** `diwanalmal`  
+**معرّف التطبيق**: `org.thediwan.diwanalmal`
 
 ---
 
@@ -160,7 +160,7 @@ docs/
 | iOS `Info.plist` | `CFBundleDisplayName` |
 | Web / Windows / Linux | عنوان النافذة والتطبيق |
 
-**لم يتغيّر:** اسم الحزمة `baytalmal`، معرّف التطبيق، أسماء الملفات التنفيذية.
+**تم تحديثه:** اسم الحزمة `diwanalmal`، معرّف التطبيق `org.thediwan.diwanalmal`، أسماء الملفات التنفيذية.
 
 #### ب) إصلاح البصمة / المصادقة البيومترية
 

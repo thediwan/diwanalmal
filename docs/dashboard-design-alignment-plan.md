@@ -1,6 +1,6 @@
 # Dashboard Design Alignment Plan (Client Mockup)
 
-This document maps the **client dashboard image** to the BaytAlmal implementation: UI specs, Lazarus data model, seeding, validation, and constraints.
+This document maps the **client dashboard image** to the DiwanAlmal implementation: UI specs, Lazarus data model, seeding, validation, and constraints.
 
 **Reference image:** `assets/.../dashboard_1-*.png` (RTL Arabic, white background, primary blue `#1A56BE`).
 

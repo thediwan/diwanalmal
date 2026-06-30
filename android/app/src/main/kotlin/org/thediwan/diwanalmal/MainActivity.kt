@@ -1,4 +1,4 @@
-package com.example.baytalmal
+package org.thediwan.diwanalmal
 
 import android.content.Intent
 import android.net.Uri
@@ -18,7 +18,7 @@ class MainActivity : FlutterFragmentActivity() {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
-            "com.example.baytalmal/external_url",
+            "org.thediwan.diwanalmal/external_url",
         ).setMethodCallHandler { call, result ->
             when (call.method) {
                 "openUrl" -> {

@@ -11,7 +11,7 @@ import UIKit
 
     if let controller = window?.rootViewController as? FlutterViewController {
       let channel = FlutterMethodChannel(
-        name: "com.example.baytalmal/external_url",
+        name: "org.thediwan.diwanalmal/external_url",
         binaryMessenger: controller.binaryMessenger
       )
       channel.setMethodCallHandler { call, result in

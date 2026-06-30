@@ -160,7 +160,7 @@ Future<void> _bootstrapApp() async {
         Provider<ReportSchedulerService>.value(value: reportScheduler),
         Provider<MonthlyReportService>.value(value: monthlyReportService),
       ],
-      child: BaytAlmalApp(router: appRouter.router),
+      child: DiwanAlmalApp(router: appRouter.router),
     ),
   );
 }
@@ -178,8 +178,8 @@ Future<void> _runNonFatalStartupTask(
   }
 }
 
-class BaytAlmalApp extends StatelessWidget {
-  const BaytAlmalApp({super.key, required this.router});
+class DiwanAlmalApp extends StatelessWidget {
+  const DiwanAlmalApp({super.key, required this.router});
 
   final GoRouter router;
 

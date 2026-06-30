@@ -1,10 +1,10 @@
 {
-  "$schema": "BaytAlmal dashboard mockup seed — import via DatabaseSeedService",
+  "$schema": "DiwanAlmal dashboard mockup seed — import via DatabaseSeedService",
   "version": "1.0.0",
   "user": {
     "id": "seed-user-0001",
     "full_name": "مستخدم تجريبي",
-    "email": "demo@baytalmal.app",
+    "email": "demo@diwanalmal.app",
     "settings": {
       "base_currency_code": "USD",
       "language": "ar",

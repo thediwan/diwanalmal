@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 /// Opens external URLs without the url_launcher plugin (avoids androidx.browser).
 abstract final class ExternalUrlLauncher {
   static const MethodChannel _channel =
-      MethodChannel('com.example.baytalmal/external_url');
+      MethodChannel('org.thediwan.diwanalmal/external_url');
 
   /// Opens [url] in the platform handler (browser, WhatsApp, etc.).
   static Future<bool> open(String url) async {
